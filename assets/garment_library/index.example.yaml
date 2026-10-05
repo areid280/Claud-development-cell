@@ -1,0 +1,18 @@
+# Copy to index.yaml and fill in. One entry per garment folder.
+items:
+  - id: boots_knee_01
+    category: boots
+    tags: [knee_high, flat, leather]
+    layer: 2
+    mesh: boots_knee_01/mesh.fbx
+    licence: "Fab standard licence (example)"
+    licence_file: boots_knee_01/LICENSE.txt
+    fitted_to: assets/body_base/feminine_base.fbx
+  - id: jacket_cropped_01
+    category: jacket
+    tags: [cropped, long_sleeve, high_collar]
+    layer: 3
+    mesh: jacket_cropped_01/mesh.fbx
+    licence: "made by owner"
+    licence_file: jacket_cropped_01/LICENSE.txt
+    fitted_to: assets/body_base/feminine_base.fbx

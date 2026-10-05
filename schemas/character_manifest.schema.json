@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "character_manifest.schema.json",
+  "title": "Character job manifest",
+  "description": "Single source of truth for one job. Written only by core.runner / core.job. Opus-owned.",
+  "type": "object",
+  "required": ["schema_version", "job_id", "created_at", "consent", "inputs", "overrides", "stages", "body", "garments"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "job_id": { "type": "string", "pattern": "^[0-9]{8}-[0-9]{6}-[0-9a-f]{6}$" },
+    "created_at": { "type": "string" },
+    "consent": {
+      "type": "object",
+      "required": ["adult_confirmed", "consent_confirmed", "confirmed_at"],
+      "additionalProperties": false,
+      "properties": {
+        "adult_confirmed": { "const": true },
+        "consent_confirmed": { "const": true },
+        "confirmed_at": { "type": "string" }
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["view", "path"],
+        "additionalProperties": false,
+        "properties": {
+          "view": { "enum": ["front", "back", "left", "right"] },
+          "path": { "type": "string" },
+          "width": { "type": "integer", "minimum": 1 },
+          "height": { "type": "integer", "minimum": 1 },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        }
+      }
+    },
+    "overrides": {
+      "type": "object",
+      "properties": {
+        "set": { "type": "object", "additionalProperties": { "type": "string" } },
+        "disabled_garments": { "type": "array", "items": { "type": "string" } },
+        "normalise": { "type": "boolean" }
+      }
+    },
+    "stages": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["status", "started_at", "finished_at", "outputs", "messages", "data"],
+        "additionalProperties": false,
+        "properties": {
+          "status": { "enum": ["ok", "warn", "fail", "skipped"] },
+          "started_at": { "type": "string" },
+          "finished_at": { "type": "string" },
+          "outputs": { "type": "array", "items": { "type": "string" } },
+          "messages": { "type": "array", "items": { "type": "string" } },
+          "data": { "type": "object" }
+        }
+      }
+    },
+    "body": {
+      "oneOf": [{ "type": "null" }, { "$ref": "body_params.schema.json" }]
+    },
+    "garments": { "type": "array", "items": { "$ref": "garment.schema.json" } }
+  }
+}

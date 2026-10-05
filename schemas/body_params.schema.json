@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "body_params.schema.json",
+  "title": "Body parameters",
+  "description": "Body shape as measurements in centimetres plus colours. Independent of any body model (docs/05_DECISIONS.md D-001). Opus-owned.",
+  "type": "object",
+  "required": ["units", "source", "measurements", "colors"],
+  "additionalProperties": false,
+  "properties": {
+    "units": { "const": "cm" },
+    "source": {
+      "type": "string",
+      "description": "Which stage/model produced these values, e.g. 's04_body_fit:<model-name>' or 's05_body_params'."
+    },
+    "measurements": {
+      "type": "object",
+      "required": ["height", "bust", "underbust", "waist", "hips", "shoulder_width", "inseam"],
+      "additionalProperties": false,
+      "properties": {
+        "height":         { "$ref": "#/$defs/cm" },
+        "bust":           { "$ref": "#/$defs/cm" },
+        "underbust":      { "$ref": "#/$defs/cm" },
+        "waist":          { "$ref": "#/$defs/cm" },
+        "hips":           { "$ref": "#/$defs/cm" },
+        "shoulder_width": { "$ref": "#/$defs/cm" },
+        "inseam":         { "$ref": "#/$defs/cm" },
+        "arm_length":     { "$ref": "#/$defs/cm" },
+        "thigh":          { "$ref": "#/$defs/cm" },
+        "neck":           { "$ref": "#/$defs/cm" }
+      }
+    },
+    "confidence": {
+      "type": "object",
+      "description": "Optional 0-1 confidence per measurement key.",
+      "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1 }
+    },
+    "colors": {
+      "type": "object",
+      "required": ["skin", "hair", "eyes"],
+      "additionalProperties": false,
+      "properties": {
+        "skin": { "$ref": "#/$defs/hex" },
+        "hair": { "$ref": "#/$defs/hex" },
+        "eyes": { "$ref": "#/$defs/hex" }
+      }
+    },
+    "body_type_hint": {
+      "type": "string",
+      "enum": ["feminine", "masculine", "neutral"],
+      "description": "Which base body to start from."
+    },
+    "normalise": {
+      "type": "object",
+      "description": "Filled by s05 when normalise ran: per-key {from, to, reason}.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["from", "to", "reason"],
+        "properties": {
+          "from": { "type": "number" },
+          "to": { "type": "number" },
+          "reason": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "cm": { "type": "number", "exclusiveMinimum": 0, "maximum": 300 },
+    "hex": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" }
+  }
+}

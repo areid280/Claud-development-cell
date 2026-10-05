@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "avatar-forge"
+version = "0.0.1"
+description = "Image(s) of an adult character -> rigged, game-ready UE5 character with separate garments"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary" }
+dependencies = [
+  "pyyaml>=6.0",
+  "jsonschema>=4.21",
+  "pillow>=10.3",
+  "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.2", "ruff>=0.5"]
+# GPU/model extras are added at gate G1 once models are chosen:
+# models = [...]
+
+[project.scripts]
+avatar-forge = "avatar_forge.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/avatar_forge"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "gpu: needs an NVIDIA GPU (skipped automatically when none is present)",
+  "blender: needs Blender (skipped automatically when not installed)",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "SIM"]

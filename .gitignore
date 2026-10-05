@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv*/
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+
+# Secrets
+.env
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+
+# Pipeline outputs and heavy files
+jobs/
+weights/
+*.ckpt
+*.safetensors
+*.pth
+*.onnx
+*.blend1
+
+# Test inputs: never commit images of real people
+samples/*
+!samples/README.md
+
+# Garment library assets (licensed; keep out of git unless you own them)
+assets/garment_library/*
+!assets/garment_library/README.md
+!assets/garment_library/index.example.yaml
+assets/body_base/*
+!assets/body_base/README.md
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json

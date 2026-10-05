@@ -1,0 +1,47 @@
+# T12 — Trials: pose and background removal
+milestone: M1 · effort: medium · depends: T11
+owner input: none
+
+## Goal
+Working wrappers + trial outputs for every `pose` and `bg_remove` candidate in config/models.yaml.
+
+## Read first
+- config/models.yaml → roles `pose`, `bg_remove`
+- src/avatar_forge/models/base.py, src/avatar_forge/models/trials.py
+- The candidate's own README (open the `source` link) for install and usage — **only** the usage section.
+
+## Do
+1. For each candidate, create `src/avatar_forge/models/<role>_<shortname>.py`
+   with a `ModelWrapper` subclass. Canonical outputs:
+   - pose: `predict(image: PIL.Image) -> list[Person]` where
+     `Person = {"bbox": [x0, y0, x1, y1], "score": float,
+     "keypoints": {coco_name: [x, y, score]}}` using the 17 COCO names
+     (`nose, left_eye, right_eye, left_ear, right_ear, left_shoulder, …, right_ankle`).
+     Whole-body models may add extra names (`left_heel`, `left_big_toe`, …).
+   - bg_remove: `predict(image: PIL.Image) -> PIL.Image` in RGBA.
+2. Create `src/avatar_forge/models/trial_adapters_pose_bg.py` registering one
+   trial per candidate. Each writes into `out_dir`:
+   - pose: `keypoints.json`, `overlay.png` (skeleton drawn with Pillow `ImageDraw`).
+   - bg_remove: `cutout.png`, `on_grey.png` (cut-out composited on #808080).
+3. Install each candidate's dependencies **inside the venv** following its README.
+   Record every install command you ran in `docs/INSTALL_LOG.md` (create it; Opus
+   turns this into the extras at G1).
+4. Run `python scripts/trial_model.py --role pose --name <each> --images "samples/*.png"`
+   and the same for `bg_remove`. Then `python scripts/trials_report.py`.
+
+## Must not
+- Change `selected`/`licence_ok`. Commit weights or outputs.
+- Spend more than ~30 minutes of attempts on one candidate: record it as failed in Log and move on.
+
+## Verify
+- `ruff check src tests` · `pytest -q` (keep CPU tests green; heavy imports inside functions)
+- `jobs/_model_trials/REPORT.md` lists every candidate for both roles.
+
+## Done when
+- [ ] Each candidate has a summary.json (ok or with the error)
+- [ ] REPORT.md path in Log
+
+## Escalate if
+- A candidate needs compiling CUDA extensions that fail twice.
+
+## Log

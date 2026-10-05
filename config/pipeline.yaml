@@ -1,0 +1,97 @@
+# Pipeline settings. Code reads values from here; no magic numbers in code.
+# Workers may add keys that a task card asks for. Changing existing values
+# that affect quality is a gatekeeper decision.
+
+tools:
+  blender: /workspace/tools/blender/blender   # installed by scripts/install_blender.sh
+  blender_timeout_s: 900
+
+stages:
+  s00_ingest:
+    max_long_side_px: 4096          # larger inputs are downscaled
+
+  s01_validate:
+    min_long_side_px: 1024
+    max_people: 1
+    keypoint_min_score: 0.3
+    # Hard rules: these keypoints must be visible (COCO names).
+    required_keypoints: [nose, left_shoulder, right_shoulder, left_hip, right_hip,
+                         left_knee, right_knee, left_ankle, right_ankle]
+    min_person_height_frac: 0.5     # person bbox height / image height
+    # Soft rules -> "warn"
+    warn_crossed_arms: true
+    warn_wrists_inside_torso: true
+
+  s02_prepare:
+    crop_margin_frac: 0.05
+    output_long_side_px: 2048
+
+  s03_parse:
+    # Canonical part labels. Model-specific labels are mapped to these in the wrapper.
+    labels: [background, hair, face, skin, neck, upper_clothes, lower_clothes, dress,
+             bodysuit, jacket, gloves, belt, collar, hat, shoes, boots, socks_stockings,
+             bag, accessory]
+    min_part_area_px: 400
+
+  s04_body_fit:
+    default_height_cm: 168          # used when the image has no scale; override with --set height=
+    body_type_hint: feminine
+
+  s05_body_params:
+    normalise: true
+    strength: 1.0                   # 1.0 = clamp fully into range; 0.5 = halfway
+    ranges_cm:                      # plausible adult ranges; tune at G4
+      height:         [150, 195]
+      bust:           [75, 125]
+      underbust:      [60, 100]
+      waist:          [55, 100]
+      hips:           [80, 125]
+      shoulder_width: [33, 50]
+      inseam:         [65, 95]
+    ratios:                         # checked after ranges
+      waist_to_hips:  [0.62, 0.90]
+      inseam_to_height: [0.42, 0.50]
+      bust_minus_underbust_cm: [5, 30]
+
+  s06_garments:
+    mode: mvp_fused                 # mvp_fused (M2) | separate (M3+)
+    default_strategy:               # category -> strategy; T30 refines
+      bodysuit: skin_layer
+      leggings: skin_layer
+      stockings: skin_layer
+      top: skin_layer
+      bra: skin_layer
+      underwear: skin_layer
+      jacket: template
+      coat: template
+      dress: template
+      skirt: template
+      shorts: template
+      trousers: template
+      gloves: template
+      boots: template
+      shoes: template
+      hat: template
+      belt: template
+      collar: generated
+      harness: generated
+      jewellery: generated
+      glasses: template
+      accessory: generated
+      other: generated
+    generated_max_triangles: 50000
+
+  s07_texture:
+    resolution_body_px: 4096
+    resolution_garment_px: 2048
+    unseen_fill: mirror_then_inpaint   # how to fill areas no view saw
+
+  s08_assemble:
+    skin_layer_offset_mm: 1.5
+    anti_clip_offset_mm: 2.0
+    lod_triangle_ratios: [1.0, 0.5, 0.25, 0.1]
+
+  s09_export:
+    format: fbx
+    unit_scale: 1.0                  # Blender metres -> UE handles conversion on import
+    texture_format: png

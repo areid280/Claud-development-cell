@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "import_manifest.schema.json",
+  "title": "UE5 import manifest",
+  "description": "Written by s09_export, read by unreal/import_character.py. Paths are relative to the export folder. Opus-owned.",
+  "type": "object",
+  "required": ["schema_version", "job_id", "body", "meshes"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "job_id": { "type": "string" },
+    "body": { "$ref": "body_params.schema.json" },
+    "meshes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "path"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+          "kind": { "enum": ["fused", "body", "garment"] },
+          "path": { "type": "string" },
+          "skeletal": { "type": "boolean", "default": false },
+          "category": { "type": "string" },
+          "layer": { "type": "integer" },
+          "lods": { "type": "array", "items": { "type": "string" } },
+          "material": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "basecolor": { "type": "string" },
+              "normal": { "type": "string" },
+              "roughness": { "type": "string" },
+              "metallic": { "type": "string" },
+              "tint": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

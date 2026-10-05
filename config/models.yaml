@@ -1,0 +1,147 @@
+# Model registry. One entry per candidate, grouped by role.
+#
+# RULES
+# - licence / licence_note below are STARTING POINTS written during planning
+#   and are NOT verified. The gatekeeper must read the real licence (code AND
+#   weights, which can differ) at gate G1 before setting licence_ok: true.
+# - Only the gatekeeper sets `selected: true` or `licence_ok: true`.
+# - The owner is in the UK. Check territory clauses.
+# - Non-commercial (NC) licences are fine for private experiments only.
+#
+# Fields: name, source (repo or HF id), install (pip/git), weights (HF id or URL),
+#         licence, licence_note, vram_gb_est, selected, licence_ok, trial (T12–T15 fill this)
+
+roles:
+  pose:
+    purpose: 2D whole-body keypoints for validation, cropping and measurement.
+    candidates:
+      - name: rtmlib-rtmw
+        source: https://github.com/Tau-J/rtmlib
+        install: pip install rtmlib onnxruntime-gpu
+        weights: downloaded automatically by rtmlib
+        licence: Apache-2.0 (claimed; VERIFY code and weights)
+        licence_note: Lightweight ONNX; no mmcv needed.
+        vram_gb_est: 2
+        selected: false
+        licence_ok: false
+      - name: vitpose-hf
+        source: https://huggingface.co/docs/transformers/model_doc/vitpose
+        install: pip install transformers
+        weights: usyd-community/vitpose-base-simple
+        licence: Apache-2.0 (claimed; VERIFY)
+        licence_note: Needs a person detector first (e.g. RT-DETR via transformers).
+        vram_gb_est: 3
+        selected: false
+        licence_ok: false
+
+  bg_remove:
+    purpose: Person cut-out on transparent background.
+    candidates:
+      - name: birefnet
+        source: https://github.com/ZhengPeng7/BiRefNet
+        install: pip install transformers timm kornia
+        weights: ZhengPeng7/BiRefNet
+        licence: MIT (claimed; VERIFY)
+        vram_gb_est: 4
+        selected: false
+        licence_ok: false
+      - name: rembg
+        source: https://github.com/danielgatis/rembg
+        install: pip install "rembg[gpu]"
+        weights: downloaded by rembg (choose a human-seg model)
+        licence: MIT code (claimed); each bundled model has its own licence (VERIFY)
+        vram_gb_est: 2
+        selected: false
+        licence_ok: false
+
+  parsing:
+    purpose: Per-part masks (hair, face, skin, each garment).
+    candidates:
+      - name: segformer-clothes
+        source: https://huggingface.co/mattmdjaga/segformer_b2_clothes
+        install: pip install transformers
+        weights: mattmdjaga/segformer_b2_clothes
+        licence: VERIFY (model card; trained on ATR dataset, check dataset terms)
+        licence_note: Simple, fixed label set incl. hat, upper/lower clothes, shoes, belt, bag.
+        vram_gb_est: 2
+        selected: false
+        licence_ok: false
+      - name: florence2-plus-sam2
+        source: https://huggingface.co/microsoft/Florence-2-large ; https://github.com/facebookresearch/sam2
+        install: pip install transformers sam2
+        weights: microsoft/Florence-2-large ; facebook/sam2.1-hiera-large
+        licence: MIT (Florence-2) + Apache-2.0 (SAM 2) (claimed; VERIFY)
+        licence_note: Open vocabulary - finds 'collar', 'gloves', 'harness' etc. by text, SAM makes masks.
+        vram_gb_est: 8
+        selected: false
+        licence_ok: false
+      - name: sapiens-seg
+        source: https://github.com/facebookresearch/sapiens
+        install: see repo
+        weights: facebook/sapiens-seg-1b (or smaller)
+        licence: VERIFY (Sapiens has its own licence; may be non-commercial)
+        licence_note: Very high quality human parsing; check licence carefully.
+        vram_gb_est: 10
+        selected: false
+        licence_ok: false
+
+  body_measure:
+    purpose: Body shape -> measurements in cm (D-001). Body-model params never leave the wrapper.
+    candidates:
+      - name: keypoint-ratio
+        source: in-house (src/avatar_forge/body/keypoint_ratio.py, written in T14)
+        install: none
+        weights: none
+        licence: ours
+        licence_note: Fallback. Uses pose keypoints + silhouette widths + user height. Lower accuracy, no licence risk.
+        vram_gb_est: 0
+        selected: false
+        licence_ok: false
+      - name: sam-3d-body
+        source: https://github.com/facebookresearch/sam-3d-body
+        install: see repo
+        weights: see repo
+        licence: VERIFY (Meta release; check code, weights and body-model licence)
+        licence_note: Recent single-image human mesh recovery; measure circumferences by slicing the mesh.
+        vram_gb_est: 12
+        selected: false
+        licence_ok: false
+      - name: smpler-x
+        source: https://github.com/caizhongang/SMPLer-X
+        install: see repo
+        weights: see repo (+ SMPL-X body model from smpl-x.is.tue.mpg.de)
+        licence: VERIFY - SMPL-X body model is non-commercial by default
+        licence_note: Good accuracy; licence likely limits commercial use.
+        vram_gb_est: 8
+        selected: false
+        licence_ok: false
+
+  image_to_3d:
+    purpose: M2 fused mesh of the whole figure; M3 'generated' garments from masked crops.
+    candidates:
+      - name: trellis
+        source: https://github.com/microsoft/TRELLIS
+        install: see repo (needs custom CUDA ops; use their setup script)
+        weights: microsoft/TRELLIS-image-large
+        licence: MIT (claimed; VERIFY incl. any dependency with NVIDIA source licence)
+        licence_note: Check for a newer TRELLIS release and compare at G1.
+        vram_gb_est: 16
+        selected: false
+        licence_ok: false
+      - name: hunyuan3d-2
+        source: https://github.com/Tencent-Hunyuan/Hunyuan3D-2
+        install: see repo
+        weights: tencent/Hunyuan3D-2 (or newer)
+        licence: VERIFY - Tencent Hunyuan community licence has had territory exclusions (reportedly incl. UK/EU)
+        licence_note: Strong textured output; may be unusable from the UK. Check first, before installing.
+        vram_gb_est: 16
+        selected: false
+        licence_ok: false
+      - name: stable-fast-3d
+        source: https://github.com/Stability-AI/stable-fast-3d
+        install: see repo
+        weights: stabilityai/stable-fast-3d (gated)
+        licence: VERIFY - Stability community licence (revenue thresholds)
+        vram_gb_est: 8
+        selected: false
+        licence_ok: false
