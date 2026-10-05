@@ -15,16 +15,7 @@ Everything here is done once by the project owner. Total time: about 45 minutes.
    ```
    Copy the line that starts with `ssh-ed25519`. This is your **public** key.
    Never share the file without `.pub` (the private key) with anyone, including AI chats.
-5. Create a **private** GitHub repo called `avatar-forge`, then push this
-   folder to it:
-   ```powershell
-   cd path\to\avatar-forge
-   git init -b main
-   git add .
-   git commit -m "Initial scaffold"
-   git remote add origin https://github.com/<you>/avatar-forge.git
-   git push -u origin main
-   ```
+5. The code lives in the private repo `areid280/Claud-development-cell` (already pushed).
 
 ## B. Rent the GPU (RunPod)
 
@@ -51,7 +42,7 @@ a stop. Files outside `/workspace` do not.
 3. In the remote window, open a terminal and run:
    ```bash
    cd /workspace
-   git clone https://github.com/<you>/avatar-forge.git
+   git clone https://github.com/areid280/Claud-development-cell.git avatar-forge
    cd avatar-forge
    bash scripts/setup_pod.sh
    ```
