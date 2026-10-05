@@ -20,3 +20,14 @@ Resolution (Opus): <filled in by Opus>
 ```
 
 ---
+
+## E-001 — T00 — Not running on the GPU pod   status: open
+Trigger: §4 GPU / CUDA / environment problems; task card requires the RunPod pod ("owner input").
+What I tried:
+1. nvidia-smi, ls /workspace, which blender -> none exist (cloud container, not the pod)
+2. pip install -e . then ruff + pytest -> ruff passes; pytest fails at conftest: PIL (Pillow) missing
+Error / evidence: see tasks/M0/T00_install_and_verify.md ## Log
+Files involved: tasks/M0/T00_install_and_verify.md, pyproject.toml (Pillow not installed by `pip install -e .`?)
+My best guess: Owner must run T00 on the pod (setup_pod.sh); separately check whether Pillow is a missing dependency in pyproject.toml.
+
+Resolution (Opus): 

@@ -39,3 +39,16 @@ Prove the scaffold installs and its tests pass on the rented GPU pod.
 - Python is not 3.11 (wrong template — tell the owner instead of working around it).
 
 ## Log
+
+Session ran in a cloud container, not the GPU pod (no /workspace, no nvidia-smi, no Blender).
+Python 3.11.15 is present. Steps 1-4 and 6 could not be run.
+
+```
+$ nvidia-smi        -> command not found
+$ ls /workspace     -> No such file or directory
+$ which blender     -> (not found)
+$ pip install -e .  -> ok (root-pip warning only)
+$ ruff check src tests -> All checks passed!
+$ pytest -q         -> ImportError while loading conftest: No module named 'PIL'
+```
+Result: Verify NOT met. Task set to blocked; see E-001.

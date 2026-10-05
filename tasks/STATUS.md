@@ -4,7 +4,7 @@ Single source of truth. Workers take the **first** `todo` whose dependencies are
 
 | id | title | milestone | depends | status |
 |----|-------|-----------|---------|--------|
-| T00 | Install and verify on the pod | M0 | — | todo |
+| T00 | Install and verify on the pod | M0 | — | blocked |
 | T01 | Blender runner and smoke test | M0 | T00 | todo |
 | T02 | Stage s00_ingest | M0 | T00 | todo |
 | T03 | CI and repo hygiene | M0 | T01, T02 | todo |
