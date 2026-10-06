@@ -27,3 +27,15 @@ Consequences: Small hourly GPU cost outside the GitHub budget.
 Context: Garment reconstruction from one image is unreliable for loose items.
 Decision: `skin_layer` for tight items, `template` from a garment library for common items, `generated` image-to-3D for unusual items.
 Consequences: Quality depends heavily on the garment library (assets/garment_library).
+
+## D-004 — Public repo; M0 work lands on main by direct push  (2026-10-06, T03 pre-gate)
+Context: Owner made the repo public so the pod could clone without credentials. T03 assumed a
+private repo and work on `main`, but M0 work lives on `claude/next-task-card-lscp12`, and CI
+(`.github/workflows/ci.yml`) only runs on pushes to `main` or on pull requests.
+Decision: Keep the repo public (owner decision). Merge the working branch into `main` on the pod
+and push `main` directly so CI runs on it. The owner does the push; workers never handle tokens (AGENTS.md §4).
+Alternatives: Private repo (rejected by owner); a PR to `main` (rejected by owner as an extra step).
+Consequences: All history is public, so the CI secret scan and `.gitignore` rules are the only
+guard against leaking secrets, weights or real-person images. Never commit test images of people.
+Pushing from the pod needs a fine-grained token (this repo only, Contents: read/write), kept by the owner.
+

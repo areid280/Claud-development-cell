@@ -15,7 +15,8 @@ Everything here is done once by the project owner. Total time: about 45 minutes.
    ```
    Copy the line that starts with `ssh-ed25519`. This is your **public** key.
    Never share the file without `.pub` (the private key) with anyone, including AI chats.
-5. The code lives in the private repo `areid280/Claud-development-cell` (already pushed).
+5. The code lives in the public repo `areid280/Claud-development-cell` (D-004). Cloning needs no
+   login; pushing from the pod needs a fine-grained token (this repo only, Contents: read/write).
 
 ## B. Rent the GPU (RunPod)
 
