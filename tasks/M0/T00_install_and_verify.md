@@ -52,3 +52,10 @@ $ ruff check src tests -> All checks passed!
 $ pytest -q         -> ImportError while loading conftest: No module named 'PIL'
 ```
 Result: Verify NOT met. Task set to blocked; see E-001.
+
+### Update: pod run
+doctor.sh on pod: RTX 4090 24564 MiB, Blender/avatar-forge not yet installed (expected).
+`setup_pod.sh` exited silently after printing "repo:" line. Cause: the generated
+`~/.avatar_forge_env` ended with `[ -f venv/bin/activate ] && source ...`; with no venv yet
+this returns 1, so `source` returns 1 and `set -e` aborts. Fixed in scripts/setup_pod.sh
+(if/then form). Reproduced and verified the fix with a minimal script.
