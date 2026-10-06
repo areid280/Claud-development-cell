@@ -47,10 +47,18 @@ A single, tested way for pipeline code to run Blender headless scripts.
 - `pytest -q tests/test_blender_runner.py` → 2 passed (on the pod, Blender test runs, not skipped).
 
 ## Done when
-- [ ] Both tests pass on the pod
-- [ ] Log contains the pytest output
+- [x] Both tests pass on the pod
+- [x] Log contains the pytest output
 
 ## Escalate if
 - Blender crashes on start-up with missing system libraries not listed in setup_pod.sh.
 
 ## Log
+```text
+$ ruff check src tests
+All checks passed!
+
+$ pytest -q tests/test_blender_runner.py
+..                                                                       [100%]
+2 passed in 2.12s
+```
