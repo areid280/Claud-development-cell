@@ -47,8 +47,8 @@ Green CI on GitHub and no way to accidentally commit secrets, weights or real-pe
 - Step 2 outputs match expectations.
 
 ## Done when
-- [ ] CI green
-- [ ] Ignore checks pass
+- [x] CI green
+- [x] Ignore checks pass
 
 GATE: G0
 
@@ -57,3 +57,21 @@ GATE: G0
 Opus pre-check (cloud copy, 2026-10-06): step 2 ignore checks match expectations; step 3 secret
 scan printed nothing. Card rewritten for D-004 (public repo, direct push to main).
 
+Worker verification (2026-10-06):
+```text
+$ git check-ignore -v jobs/x/manifest.json samples/a_front.png weights/m.safetensors .env assets/garment_library/boots/mesh.fbx assets/body_base/body.fbx
+.gitignore:20:jobs/    jobs/x/manifest.json
+.gitignore:29:samples/*    samples/a_front.png
+.gitignore:21:weights/    weights/m.safetensors
+.gitignore:13:.env    .env
+.gitignore:33:assets/garment_library/*    assets/garment_library/boots/mesh.fbx
+.gitignore:36:assets/body_base/*    assets/body_base/body.fbx
+
+$ git check-ignore samples/README.md assets/garment_library/README.md assets/garment_library/index.example.yaml
+[no output; none are ignored]
+
+$ git grep -nIE "(BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9]{20,}|hf_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9]{20,})" -- . ':!.github/workflows/ci.yml'
+[no output; no matches]
+```
+GitHub Actions `ci` run #3 on `main` succeeded for commit `1c1d939d43f3b4a638de87df47f22f559b049bbf`:
+https://github.com/areid280/Claud-development-cell/actions/runs/37520099827
