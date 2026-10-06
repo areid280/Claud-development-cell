@@ -21,7 +21,7 @@ Resolution (Opus): <filled in by Opus>
 
 ---
 
-## E-001 — T00 — Not running on the GPU pod   status: open
+## E-001 — T00 — Not running on the GPU pod   status: resolved
 Trigger: §4 GPU / CUDA / environment problems; task card requires the RunPod pod ("owner input").
 What I tried:
 1. nvidia-smi, ls /workspace, which blender -> none exist (cloud container, not the pod)
@@ -33,4 +33,22 @@ My best guess: Owner must run T00 on the pod (setup_pod.sh); separately check wh
 Worker note: trigger no longer applies. Owner ran T00 on the pod; all Verify items passed and
 setup_pod.sh was fixed (silent exit under set -e). Pillow was installed by the pod run. Opus to confirm and close.
 
-Resolution (Opus): 
+Resolution (Opus): status: resolved. Environment confirmed on the pod (RTX 4090, cuda=True,
+Blender 4.2.3, 14 tests pass). The Pillow failure was only the cloud container lacking the venv. The real
+defect found was the setup_pod.sh silent exit, fixed in 6d30baf. No architecture or schema change.
+
+## E-002 — T02 — s00_ingest test runner API   status: resolved
+Trigger: §4 task card ambiguity; the card does not specify the module exporting `run_job` and `StageFailedError`.
+What I tried:
+1. Imported `StageFailedError`, `create_job`, and `run_job` from `avatar_forge.core.job` -> `StageFailedError` not exported there.
+2. Removed that exception import and kept the runner helpers from `avatar_forge.core.job` -> `run_job` not exported there.
+Error / evidence: `pytest -q` cannot collect `tests/test_s00_ingest.py`: `ImportError: cannot import name 'run_job' from 'avatar_forge.core.job'`; see `tasks/M0/T02_s00_ingest.md` ## Log.
+Files involved: `src/avatar_forge/stages/s00_ingest.py`, `tests/test_s00_ingest.py`, `tasks/M0/T02_s00_ingest.md`
+My best guess: The job runner and failure exception are defined in another module.
+
+Resolution (Opus): Card defect, not a code defect. `create_job` lives in `avatar_forge.core.job`, but
+`run_job` and `StageFailedError` live in `avatar_forge.core.runner` (tests/test_core.py already imports them
+that way). The T02 card now lists the exact imports and call pattern, adds tests/test_core.py to
+"Read first", and asks for the `downscaled` key to be added to the stage docstring so it matches the card.
+No code under core/ or schemas/ changes. T02 set back to `todo`; the worker keeps its s00_ingest.py work
+and fixes only the test imports.
