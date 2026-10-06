@@ -30,4 +30,7 @@ Error / evidence: see tasks/M0/T00_install_and_verify.md ## Log
 Files involved: tasks/M0/T00_install_and_verify.md, pyproject.toml (Pillow not installed by `pip install -e .`?)
 My best guess: Owner must run T00 on the pod (setup_pod.sh); separately check whether Pillow is a missing dependency in pyproject.toml.
 
+Worker note: trigger no longer applies. Owner ran T00 on the pod; all Verify items passed and
+setup_pod.sh was fixed (silent exit under set -e). Pillow was installed by the pod run. Opus to confirm and close.
+
 Resolution (Opus): 

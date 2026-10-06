@@ -30,8 +30,8 @@ Prove the scaffold installs and its tests pass on the rented GPU pod.
 - `pytest -q`: all pass (GPU/Blender-marked tests may be skipped at this point).
 
 ## Done when
-- [ ] All Verify items true
-- [ ] Outputs pasted in Log
+- [x] All Verify items true
+- [x] Outputs pasted in Log
 
 ## Escalate if
 - `pip install -e` fails on a dependency conflict with the template's torch.
@@ -59,3 +59,31 @@ doctor.sh on pod: RTX 4090 24564 MiB, Blender/avatar-forge not yet installed (ex
 `~/.avatar_forge_env` ended with `[ -f venv/bin/activate ] && source ...`; with no venv yet
 this returns 1, so `source` returns 1 and `set -e` aborts. Fixed in scripts/setup_pod.sh
 (if/then form). Reproduced and verified the fix with a minimal script.
+
+### Final run on pod (RunPod RTX 4090, owner-pasted output)
+```
+(venv-af) $ which python
+/workspace/venv-af/bin/python
+$ bash scripts/doctor.sh   (python/avatar-forge section)
+avatar-forge 0.0.1
+python       3.11.10 (/workspace/venv-af/bin/python)
+weights dir  /workspace/weights (exists: True)
+torch        2.4.1+cu124  cuda=True  gpu=NVIDIA GeForce RTX 4090
+blender      /workspace/tools/blender/blender   (Blender 4.2.3 LTS)
+disk free    105.8 GB
+$ python scripts/smoke_test_gpu.py
+GPU: NVIDIA GeForce RTX 4090  VRAM: 25.3 GB
+torch 2.4.1+cu124  CUDA 12.4
+matmul fp16: 0.262s for 10 iters (~42 TFLOPS)
+PASS
+$ ruff check src tests && pytest -q
+All checks passed!
+14 passed in 1.85s
+$ bash scripts/setup_pod.sh   (2nd run)
+... Successfully installed avatar-forge-0.0.1
+Blender 4.2.3 already installed at /workspace/tools/blender
+```
+Verify: GPU 24 GB, cuda=True, Blender 4.2.3, smoke PASS, 14 tests pass, 2nd setup run
+did not re-download Blender or recreate the venv. All met.
+Note: `df /workspace` shows the overlay fs mounted on `/` (not a separate volume) - owner to confirm
+the pod has a volume disk at /workspace so files persist across pod stops.
