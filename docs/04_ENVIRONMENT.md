@@ -67,3 +67,22 @@ Then run the UE5 import script (see `docs/03_UE5_INTEGRATION.md`).
   the task card log, or into an escalation.
 - A pod that won't start: deploy a new one with the same volume.
 - Never try to fix GPU drivers on the pod. Deploy a different pod or template instead.
+
+## F. After every pod start (added at G0)
+
+Only `/workspace` survives a stop. `~/.bashrc`, `~/.avatar_forge_env`, git settings and apt
+packages live outside it and are reset. Each time you start the pod:
+
+1. RunPod → **Connect** → copy the new "SSH over exposed TCP" command; update `HostName` and
+   `Port` in VS Code (`F1` → *Remote-SSH: Open SSH Configuration File…*).
+2. On the pod:
+   ```bash
+   cd /workspace/avatar-forge && bash scripts/setup_pod.sh   # fast: skips Blender and the venv
+   git config --global user.name "<your name>"
+   git config --global user.email "<your email or GitHub no-reply address>"
+   ```
+3. Open a **new** terminal so the environment loads, then `bash scripts/doctor.sh`.
+
+Until step 2 has run, `HF_HOME`/`TORCH_HOME` are unset and downloads would go to the
+non-persistent container disk.
+

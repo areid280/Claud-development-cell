@@ -31,21 +31,24 @@ def run_blender(
     if timeout is None:
         timeout = config["tools"]["blender_timeout_s"]
 
-    result = subprocess.run(
-        [
-            blender,
-            "--background",
-            "--factory-startup",
-            "--python",
-            str(script),
-            "--",
-            *script_args,
-        ],
-        capture_output=True,
-        text=True,
-        timeout=timeout,
-        check=False,
-    )
+    try:
+        result = subprocess.run(
+            [
+                blender,
+                "--background",
+                "--factory-startup",
+                "--python",
+                str(script),
+                "--",
+                *script_args,
+            ],
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as error:
+        raise BlenderError(f"Blender script timed out after {timeout}s: {script}") from error
     output = "\n".join(part for part in (result.stdout, result.stderr) if part)
     if log_path is not None:
         log_path.parent.mkdir(parents=True, exist_ok=True)

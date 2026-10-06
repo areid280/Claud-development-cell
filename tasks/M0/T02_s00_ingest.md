@@ -83,7 +83,6 @@ ImportError: cannot import name 'run_job' from 'avatar_forge.core.job'
 ```
 Opus (E-002): card now gives exact imports. Keep the existing s00_ingest.py work;
 fix only the imports in tests/test_s00_ingest.py, then run Verify.
-```
 
 ### Final verification
 ```text
@@ -93,3 +92,4 @@ All checks passed!
 $ pytest -q
 ....................                                                     [100%]
 20 passed in 3.70s
+```

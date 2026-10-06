@@ -8,8 +8,9 @@ Single source of truth. Workers take the **first** `todo` whose dependencies are
 | T01 | Blender runner and smoke test | M0 | T00 | done |
 | T02 | Stage s00_ingest | M0 | T00 | done |
 | T03 | CI and repo hygiene | M0 | T01, T02 | done |
-| **G0** | **Gate: environment (Opus)** | M0 | T00–T03 | todo |
-| T10 | Model wrapper base and weights fetcher | M1 | G0 | todo |
+| **G0** | **Gate: environment (Opus)** | M0 | T00–T03 | done (PASS WITH FIXES) |
+| T04 | Pod restart persistence check | M0 | G0 | todo |
+| T10 | Model wrapper base and weights fetcher | M1 | G0, T04 | todo |
 | T11 | Model trial harness | M1 | T10 | todo |
 | T12 | Trials: pose and background removal | M1 | T11 | todo |
 | T13 | Trials: human/garment parsing | M1 | T12 | todo |

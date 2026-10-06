@@ -1,5 +1,5 @@
 # T10 — Model wrapper base and weights fetcher
-milestone: M1 · effort: low · depends: G0
+milestone: M1 · effort: low · depends: G0, T04
 owner input: a Hugging Face account token **only if** a gated model needs it (store it with `huggingface-cli login` on the pod; never in the repo or chat)
 
 ## Goal
