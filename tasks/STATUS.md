@@ -6,7 +6,7 @@ Single source of truth. Workers take the **first** `todo` whose dependencies are
 |----|-------|-----------|---------|--------|
 | T00 | Install and verify on the pod | M0 | — | done |
 | T01 | Blender runner and smoke test | M0 | T00 | done |
-| T02 | Stage s00_ingest | M0 | T00 | todo |
+| T02 | Stage s00_ingest | M0 | T00 | done |
 | T03 | CI and repo hygiene | M0 | T01, T02 | todo |
 | **G0** | **Gate: environment (Opus)** | M0 | T00–T03 | todo |
 | T10 | Model wrapper base and weights fetcher | M1 | G0 | todo |

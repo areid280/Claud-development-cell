@@ -61,8 +61,8 @@ Normalise input images (orientation, colour mode, size) and record metadata.
 - `pytest -q` → all pass
 
 ## Done when
-- [ ] Four new tests pass
-- [ ] `test_real_run_with_stubs_does_not_fail` still passes
+- [x] Four new tests pass
+- [x] `test_real_run_with_stubs_does_not_fail` still passes
 
 ## Escalate if
 - Pillow can't write EXIF orientation in the test (ask Opus for a fixture approach rather than skipping the test).
@@ -83,3 +83,13 @@ ImportError: cannot import name 'run_job' from 'avatar_forge.core.job'
 ```
 Opus (E-002): card now gives exact imports. Keep the existing s00_ingest.py work;
 fix only the imports in tests/test_s00_ingest.py, then run Verify.
+```
+
+### Final verification
+```text
+$ ruff check src tests
+All checks passed!
+
+$ pytest -q
+....................                                                     [100%]
+20 passed in 3.70s
