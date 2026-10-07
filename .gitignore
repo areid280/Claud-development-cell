@@ -18,6 +18,7 @@ id_ed25519*
 
 # Pipeline outputs and heavy files
 jobs/
+/jobs
 weights/
 *.ckpt
 *.safetensors
