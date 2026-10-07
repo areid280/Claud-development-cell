@@ -80,4 +80,8 @@ is recorded as failed; moving the torch/CUDA stack is a gate decision. Never `pi
 Alternatives: per-candidate venvs (heavier; revisit at G1 if many candidates need newer torch).
 Consequences: Workers check `python -c "import torch; print(torch.cuda.is_available())"` after any
 install in T12–T15; False means stop and escalate.
+Addendum (E-004 diagnosis): on inspection the pod was healthy (venv had no torch; system torch
+2.4.1+cu124 cuda=True; onnxruntime-gpu 1.30.0 with CUDAExecutionProvider). The worker's report most
+likely came from a terminal not using the venv. The constraints stay as a guard; T12's check now
+prints the interpreter path.
 

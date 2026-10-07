@@ -29,6 +29,7 @@ export HF_HOME=$WS/cache/hf
 export PIP_CACHE_DIR=$WS/cache/pip
 export TORCH_HOME=$WS/cache/torch
 export PATH=/opt/tools/blender:\$PATH
+export GIT_MERGE_AUTOEDIT=no   # merges never open an editor (none on the pod)
 export PIP_CONSTRAINT=$REPO_DIR/config/pip-constraints.txt   # D-007: never replace the template torch
 if [ -f $VENV/bin/activate ]; then source $VENV/bin/activate; fi
 EOF
