@@ -31,8 +31,9 @@ Working wrappers + trial outputs for every `pose` and `bg_remove` candidate in c
      Running a trial does not need `licence_ok`; licences are judged at G1.
 3. Install each candidate's dependencies **inside the venv** following its README
    (`PIP_CONSTRAINT` keeps torch at 2.4.1, D-007). After each install run
-   `python -c "import torch, onnxruntime as o; print(torch.cuda.is_available(), o.get_available_providers())"`;
-   it must print `True` and include `CUDAExecutionProvider`. If an install fails on the torch
+   `source ~/.avatar_forge_env && python -c "import sys, torch, onnxruntime as o; print(sys.executable, torch.__version__, torch.cuda.is_available(), o.get_available_providers())"`;
+   it must print `/opt/venv-af/bin/python`, `2.4.1+cu124`, `True` and include `CUDAExecutionProvider`.
+   Any other interpreter path means the terminal is not using the venv: fix that, do not escalate. If an install fails on the torch
    constraint, record that candidate as failed (needs newer torch) and move on.
    Record every install command you ran in `docs/INSTALL_LOG.md` (create it; Opus
    turns this into the extras at G1).

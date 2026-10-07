@@ -5,3 +5,5 @@
 # and escalate; changing the torch stack is a gate decision.
 torch==2.4.1
 numpy<2
+torchvision==0.19.1
+torchaudio==2.4.1
