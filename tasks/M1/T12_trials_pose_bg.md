@@ -47,3 +47,7 @@ Working wrappers + trial outputs for every `pose` and `bg_remove` candidate in c
 - A candidate needs compiling CUDA extensions that fail twice.
 
 ## Log
+
+- `nvidia-smi`: NVIDIA A40, 46,068 MiB VRAM; prerequisite passed.
+- Install commands recorded in `docs/INSTALL_LOG.md`; all exited successfully.
+- Blocked before trials: `config/models.yaml` does not name the rembg human-segmentation weights or their licence. See escalation E-003 in `tasks/ESCALATIONS.md`.

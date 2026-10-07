@@ -12,7 +12,7 @@ Single source of truth. Workers take the **first** `todo` whose dependencies are
 | T04 | Network volume persistence check | M0 | G0 | done |
 | T10 | Model wrapper base and weights fetcher | M1 | G0, T04 | done |
 | T11 | Model trial harness | M1 | T10 | done |
-| T12 | Trials: pose and background removal | M1 | T11 | todo |
+| T12 | Trials: pose and background removal | M1 | T11 | blocked |
 | T13 | Trials: human/garment parsing | M1 | T12 | todo |
 | T14 | Trials: body measurements | M1 | T12 | todo |
 | T15 | Trials: image-to-3D | M1 | T14 | todo |

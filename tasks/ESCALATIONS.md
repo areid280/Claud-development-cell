@@ -52,3 +52,14 @@ that way). The T02 card now lists the exact imports and call pattern, adds tests
 "Read first", and asks for the `downscaled` key to be added to the stage docstring so it matches the card.
 No code under core/ or schemas/ changes. T02 set back to `todo`; the worker keeps its s00_ingest.py work
 and fixes only the test imports.
+
+## E-003 — T12 — Unspecified rembg human-segmentation weights   status: open
+Trigger: §4 model / asset choice requires licence resolution.
+What I tried:
+1. Checked `nvidia-smi` -> A40 with 46,068 MiB VRAM; the GPU prerequisite passes.
+2. Installed the dependency commands listed for all four T12 candidates -> all four commands exited successfully; no model weights were downloaded.
+Error / evidence: `config/models.yaml` identifies the rembg candidate weights only as "downloaded by rembg (choose a human-seg model)" and does not name the model or its licence.
+Files involved: `config/models.yaml`, `tasks/M1/T12_trials_pose_bg.md`, `docs/INSTALL_LOG.md`
+My best guess: Opus should identify an eligible human-segmentation model and verify its code/weights licence before T12 runs the rembg trial.
+
+Resolution (Opus): <filled in by Opus>
