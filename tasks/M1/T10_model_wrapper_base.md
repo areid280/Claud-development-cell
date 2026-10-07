@@ -56,3 +56,33 @@ One consistent pattern for loading third-party models and downloading their weig
 - `onnxruntime-gpu` conflicts with the template's CUDA version.
 
 ## Log
+- `pip install -e ".[dev,models]"`
+  ```
+  Successfully built avatar-forge
+  Successfully installed avatar-forge-0.0.1
+  ```
+- `ruff check src tests scripts`
+  ```
+  All checks passed!
+  ```
+- `pytest -q`
+  ```
+  27 passed in 4.05s
+  ```
+- `python scripts/fetch_weights.py --list`
+  ```
+  pose/rtmlib-rtmw: Apache-2.0 (claimed; VERIFY code and weights)
+  pose/vitpose-hf: Apache-2.0 (claimed; VERIFY)
+  bg_remove/birefnet: MIT (claimed; VERIFY)
+  bg_remove/rembg: MIT code (claimed); each bundled model has its own licence (VERIFY)
+  parsing/segformer-clothes: VERIFY (model card; trained on ATR dataset, check dataset terms)
+  parsing/florence2-plus-sam2: MIT (Florence-2) + Apache-2.0 (SAM 2) (claimed; VERIFY)
+  parsing/sapiens-seg: VERIFY (Sapiens has its own licence; may be non-commercial)
+  body_measure/keypoint-ratio: ours
+  body_measure/sam-3d-body: VERIFY (Meta release; check code, weights and body-model licence)
+  body_measure/smpler-x: VERIFY - SMPL-X body model is non-commercial by default
+  image_to_3d/trellis: MIT (claimed; VERIFY incl. any dependency with NVIDIA source licence)
+  image_to_3d/hunyuan3d-2: VERIFY - Tencent Hunyuan community licence has had territory exclusions (reportedly incl. UK/EU)
+  image_to_3d/stable-fast-3d: VERIFY - Stability community licence (revenue thresholds)
+  ```
+- [x] Tests pass; `--list` output in Log
