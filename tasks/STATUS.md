@@ -14,7 +14,7 @@ Single source of truth. Workers take the **first** `todo` whose dependencies are
 | T11 | Model trial harness | M1 | T10 | done |
 | T12 | Trials: pose and background removal | M1 | T11 | done |
 | T16 | Re-run ViTPose and BiRefNet (transformers<5) | M1 | T12 | done |
-| T13 | Trials: human/garment parsing | M1 | T12, T16 | todo |
+| T13 | Trials: human/garment parsing | M1 | T12, T16 | blocked |
 | T14 | Trials: body measurements | M1 | T12 | todo |
 | T15 | Trials: image-to-3D | M1 | T14 | todo |
 | **G1** | **Gate: model choice and licences (Opus)** | M1 | T10–T16 | todo |

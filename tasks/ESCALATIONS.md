@@ -89,3 +89,14 @@ Resolution (Opus, commit 9661370): Workers may run `git push` and `git pull` usi
 the owner's saved credential. Never read, print, or edit a token or credential
 file; if a push asks for a password, stop and tell the owner. The Transformers
 module cache is set permanently via `HF_MODULES_CACHE` on local disk.
+
+## E-006 — T13 — Unspecified background-removal trial input   status: open
+Trigger: §4 visual quality must be judged; the task card requires the "best-looking" T12 background-removal output as the parsing input.
+What I tried:
+1. Checked the T12 task log -> it reports candidate success counts but does not identify a best-looking candidate or image.
+2. Checked the T13 card -> it requires an image chosen by visual quality, which I must not judge as a worker.
+Error / evidence: T13 requires an input under `jobs/_model_trials/bg_remove/<name>/<stem>/cutout.png`, but neither T13 nor the T12 log names the candidate/image to use.
+Files involved: `tasks/M1/T13_trials_parsing.md`, `tasks/M1/T12_trials_pose_bg.md`, `tasks/STATUS.md`
+My best guess: Opus should review the T12 cutouts, specify the chosen candidate and image path, then return T13 to `todo`.
+
+Resolution (Opus): <filled in by Opus>
