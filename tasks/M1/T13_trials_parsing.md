@@ -24,8 +24,10 @@ Working wrappers + trial outputs for every `parsing` candidate.
    for `top`, `socks_stockings` for `stockings`).
 3. Trial adapter module `trial_adapters_parsing.py`: per image write
    `masks/<label>.png`, `labels.png` (colour-coded, fixed colour per label),
-   `parts.json` ({label: area_px}). Run on the background-removed image from the
-   best-looking T12 bg_remove output (read it from `jobs/_model_trials/bg_remove/<name>/<stem>/cutout.png`).
+   `parts.json` ({label: area_px}). Input (Opus, E-006): use the **BiRefNet** cut-outs for every
+   candidate, `jobs/_model_trials/bg_remove/birefnet/<stem>/cutout.png`. Do not judge or switch
+   inputs; if a BiRefNet cut-out is missing for an image, fall back to the `rembg` one and note it
+   in the Log. Background-removal quality is judged at G1, not here.
 4. Run trials for every candidate; append installs to `docs/INSTALL_LOG.md`;
    rerun `scripts/trials_report.py`.
 
