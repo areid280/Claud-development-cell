@@ -18,7 +18,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.2", "ruff>=0.5"]
-models = ["huggingface_hub>=0.24", "onnxruntime-gpu>=1.18", "transformers>=4.44", "trimesh>=4.4"]
+models = ["huggingface_hub>=0.24", "onnxruntime-gpu>=1.18", "transformers>=4.48,<5", "trimesh>=4.4"]
 
 [project.scripts]
 avatar-forge = "avatar_forge.cli:main"

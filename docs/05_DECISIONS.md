@@ -84,4 +84,5 @@ Addendum (E-004 diagnosis): on inspection the pod was healthy (venv had no torch
 2.4.1+cu124 cuda=True; onnxruntime-gpu 1.30.0 with CUDAExecutionProvider). The worker's report most
 likely came from a terminal not using the venv. The constraints stay as a guard; T12's check now
 prints the interpreter path.
+Addendum (T12): `transformers>=4.48,<5` added to the constraints; 5.x needs torch>=2.5. T16 re-runs the two affected trials.
 

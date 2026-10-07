@@ -7,3 +7,5 @@ torch==2.4.1
 numpy<2
 torchvision==0.19.1
 torchaudio==2.4.1
+# transformers 5.x requires torch>=2.5 and silently disables torch on 2.4.1 (T12: ViTPose, BiRefNet failed).
+transformers>=4.48,<5
