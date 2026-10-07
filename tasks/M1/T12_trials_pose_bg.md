@@ -29,7 +29,11 @@ Working wrappers + trial outputs for every `pose` and `bg_remove` candidate in c
      set `os.environ.setdefault("U2NET_HOME", str(weights_dir() / "rembg"))` (`from avatar_forge.core.paths import weights_dir`) before importing rembg so
      the weights land on the volume, not in `~/.u2net`. Do not trial other rembg sessions.
      Running a trial does not need `licence_ok`; licences are judged at G1.
-3. Install each candidate's dependencies **inside the venv** following its README.
+3. Install each candidate's dependencies **inside the venv** following its README
+   (`PIP_CONSTRAINT` keeps torch at 2.4.1, D-007). After each install run
+   `python -c "import torch, onnxruntime as o; print(torch.cuda.is_available(), o.get_available_providers())"`;
+   it must print `True` and include `CUDAExecutionProvider`. If an install fails on the torch
+   constraint, record that candidate as failed (needs newer torch) and move on.
    Record every install command you ran in `docs/INSTALL_LOG.md` (create it; Opus
    turns this into the extras at G1).
 4. Run `python scripts/trial_model.py --role pose --name <each> --images "samples/*.png"`
