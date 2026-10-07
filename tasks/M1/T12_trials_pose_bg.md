@@ -11,6 +11,8 @@ Working wrappers + trial outputs for every `pose` and `bg_remove` candidate in c
 - The candidate's own README (open the `source` link) for install and usage — **only** the usage section.
 
 ## Do
+0. Run `nvidia-smi`. If the GPU has < 20 GB VRAM, stop and tell the human:
+   "Switch to the RTX 4090 pod (D-005, docs/04 §B) before T12." Do not run trials on a budget GPU.
 1. For each candidate, create `src/avatar_forge/models/<role>_<shortname>.py`
    with a `ModelWrapper` subclass. Canonical outputs:
    - pose: `predict(image: PIL.Image) -> list[Person]` where
