@@ -59,3 +59,45 @@ the volume caches. A budget GPU (< 20 GB VRAM) is expected here and is not an es
 - The new pod has no GPU (`nvidia-smi` fails).
 
 ## Log
+
+### Step 1 — first pod (2026-10-07)
+
+```text
+caabf492-6228-4ac4-b0df-2eddbf2b9bd8 on /workspace type fuse.geesefs (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
+Filesystem                            Size  Used Avail Use% Mounted on
+caabf492-6228-4ac4-b0df-2eddbf2b9bd8  1.0P     0  1.0P   0% /workspace
+overlay                                20G  3.2G   17G  16% /
+Wed Oct  7 20:11:29 UTC 2026
+/workspace/downloads:
+blender-4.2.3-linux-x64.tar.xz
+
+/workspace/git:
+credentials
+identity
+== system ==
+Linux 90b460c94240 6.8.0-60-generic #63~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Tue Apr 22 19:00:15 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+date: 2026-10-07T20:11:29Z
+
+== gpu ==
+NVIDIA A40, 46068 MiB, 570.195.03
+
+== disk (/workspace = network volume, / = local) ==
+Filesystem                            Size  Used Avail Use% Mounted on
+caabf492-6228-4ac4-b0df-2eddbf2b9bd8  1.0P     0  1.0P   0% /workspace
+overlay                                20G  3.2G   17G  16% /
+
+== blender ==
+Blender 4.2.3 LTS (hash 0e22e4fcea03 built 2024-10-14 23:31:34)
+
+== python / avatar-forge ==
+avatar-forge 0.0.1
+python       3.11.10 (/opt/venv-af/bin/python)
+repo root    /root/avatar-forge
+jobs dir     /workspace/jobs
+weights dir  /workspace/weights (exists: True)
+torch        2.4.1+cu124  cuda=True  gpu=NVIDIA A40
+blender      /opt/tools/blender/blender
+disk free    1125899.9 GB
+.......................                                                  [100%]
+23 passed in 4.85s
+```
