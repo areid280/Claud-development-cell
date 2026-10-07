@@ -75,3 +75,14 @@ Files involved: `tasks/M1/T12_trials_pose_bg.md`, `tasks/STATUS.md`, `docs/04_EN
 My best guess: Deploy the A40 with the documented CUDA 12.x RunPod PyTorch template and rebuild the venv with `setup_pod.sh`.
 
 Resolution (Opus): Resolved in `4129b41` (D-007 addendum). The prior check used a terminal outside the configured virtual environment; after `source ~/.avatar_forge_env`, the documented CUDA check reports `/opt/venv-af/bin/python`, PyTorch `2.4.1+cu124`, CUDA available, and `CUDAExecutionProvider`.
+
+## E-005 — T16 — Push instruction conflicts with D-004   status: open
+Trigger: §4 task card contradicts another file.
+What I tried:
+1. Compared the T16 instruction to "commit and push" with D-004 -> D-004 says the owner pushes and workers never handle tokens.
+2. Ran the requested install and trials -> `vitpose-hf` 6/6 and `birefnet` 6/6; documented commands and results in T16's Log and `docs/INSTALL_LOG.md`.
+Error / evidence: T16's final push requirement conflicts with `docs/05_DECISIONS.md` D-004. Model results are in `jobs/_model_trials/REPORT.md`.
+Files involved: `tasks/M1/T16_rerun_vitpose_birefnet.md`, `tasks/STATUS.md`, `docs/05_DECISIONS.md`, `docs/INSTALL_LOG.md`, `jobs/_model_trials/REPORT.md`
+My best guess: Opus should clarify that T16 workers may commit locally but only the owner pushes, or update D-004 if the policy has changed.
+
+Resolution (Opus): <filled in by Opus>
