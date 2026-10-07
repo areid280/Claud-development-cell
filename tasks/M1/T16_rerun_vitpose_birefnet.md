@@ -46,4 +46,7 @@ Re-run only these two trials so G1 compares all four candidates.
 - Installed `.[dev,models]`, `timm`, `kornia`; environment check reported `/opt/venv-af/bin/python 2.4.1+cu124 True 4.57.6 ['TensorrtExecutionProvider', 'CUDAExecutionProvider', 'CPUExecutionProvider']`.
 - Initial trials: `vitpose-hf` passed 6/6; `birefnet` failed 0/6 because its Transformers dynamic module cache on `/workspace` could not be chmod'ed and `einops` was missing. Installed `einops` 0.8.2 and reran BiRefNet with `HF_MODULES_CACHE=/tmp/avatar-forge-hf-modules`.
 - Final report: `jobs/_model_trials/REPORT.md` reports `vitpose-hf` 6/6 (mean 26.035 s, 1.532 GB max VRAM) and `birefnet` 6/6 (mean 13.207 s, 3.352 GB max VRAM). Outputs were generated for all six sample images.
-- Blocked before final verification/commit/push: this card asks the worker to push, while D-004 in `docs/05_DECISIONS.md` says the owner does the push and workers never handle tokens. See E-005 in `tasks/ESCALATIONS.md`.
+- The Opus resolution for E-005 (commit `9661370`) authorizes workers to pull and push with the owner's saved credential; never read, print, or edit credentials, and stop if push requests a password. `HF_MODULES_CACHE` is now set permanently to a local-disk cache.
+- `git pull --ff-only` could not fast-forward because the trial-record commit was already local; `git pull --no-rebase` then merged upstream commit `9661370`.
+- Ran `bash scripts/setup_pod.sh` and sourced `~/.avatar_forge_env`; setup completed successfully.
+- Verify: `ruff check src tests` -> `All checks passed!`; `pytest -q` -> `28 passed in 5.71s`.
