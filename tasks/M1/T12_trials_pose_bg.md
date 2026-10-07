@@ -58,6 +58,10 @@ Working wrappers + trial outputs for every `pose` and `bg_remove` candidate in c
 ## Log
 
 - `nvidia-smi`: NVIDIA A40, 46,068 MiB VRAM; prerequisite passed.
-- Install commands recorded in `docs/INSTALL_LOG.md`; all exited successfully.
+- Environment check after `source ~/.avatar_forge_env`: `/opt/venv-af/bin/python 2.4.1+cu124 True ['TensorrtExecutionProvider', 'CUDAExecutionProvider', 'CPUExecutionProvider']`.
+- Install commands recorded in `docs/INSTALL_LOG.md`. `rtmlib` installed CPU `onnxruntime` alongside the GPU package; removed the CPU package and reinstalled the GPU package. ONNX Runtime 1.30 required CUDA 13, so pinned the session to 1.20.2 and added the pod's cuDNN/cuBLAS/CUDA runtime libraries to `LD_LIBRARY_PATH` for RTMLib inference.
 - E-003 resolved in `7e3e172`: the rembg trial uses only `u2net_human_seg`; its weights are stored under `weights_dir() / "rembg"` via `U2NET_HOME`.
-- Blocked before model trials by E-004: installed PyTorch CUDA 13.0 build is incompatible with this pod's driver (CUDA 12.8); ONNX Runtime also has no CUDA provider. `ruff check src tests` passed; `PYTHONPATH=. pytest -q` passed (28 tests).
+- E-004 resolved in `4129b41`: the check must run after sourcing `~/.avatar_forge_env`.
+- Trial results over 6 images each: `rtmlib-rtmw` 6/6; `vitpose-hf` 0/6 (Transformers 5.19 requires PyTorch >=2.5; the pinned PyTorch 2.4.1 also yielded an unrecognized RT-DETR processor); `birefnet` 0/6 (Transformers disabled PyTorch because 2.4.1 is below its minimum); `rembg` 6/6.
+- Report: `jobs/_model_trials/REPORT.md` lists all four candidates, both roles, output images, and per-candidate summaries.
+- Verify: `ruff check src tests` -> `All checks passed!`; `pytest -q` -> `28 passed in 5.73s`.

@@ -64,7 +64,7 @@ My best guess: Opus should identify an eligible human-segmentation model and ver
 
 Resolution (Opus): rembg trial uses only session u2net_human_seg; set U2NET_HOME to weights_dir()/rembg before importing rembg so weights land on the volume. Trials do not need licence_ok; licences are judged at G1. models.yaml and the T12 card updated in 7e3e172.
 
-## E-004 — T12 — GPU runtime unavailable on model pod   status: open
+## E-004 — T12 — GPU runtime unavailable on model pod   status: resolved
 Trigger: §4 GPU / CUDA / driver problem; `docs/04_ENVIRONMENT.md` says not to repair pod drivers in place.
 What I tried:
 1. Checked `nvidia-smi` -> NVIDIA A40, driver 570.195.03, CUDA 12.8.
@@ -74,4 +74,4 @@ Error / evidence: PyTorch warns that the NVIDIA driver is too old for the instal
 Files involved: `tasks/M1/T12_trials_pose_bg.md`, `tasks/STATUS.md`, `docs/04_ENVIRONMENT.md`
 My best guess: Deploy the A40 with the documented CUDA 12.x RunPod PyTorch template and rebuild the venv with `setup_pod.sh`.
 
-Resolution (Opus): <filled in by Opus>
+Resolution (Opus): Resolved in `4129b41` (D-007 addendum). The prior check used a terminal outside the configured virtual environment; after `source ~/.avatar_forge_env`, the documented CUDA check reports `/opt/venv-af/bin/python`, PyTorch `2.4.1+cu124`, CUDA available, and `CUDAExecutionProvider`.
