@@ -101,3 +101,46 @@ disk free    1125899.9 GB
 .......................                                                  [100%]
 23 passed in 4.85s
 ```
+
+### Step 4 — pod restart (2026-10-07; owner chose restart, not terminate/redeploy)
+
+The marker is still present after restart:
+
+```text
+Wed Oct  7 20:11:29 UTC 2026
+```
+
+`bash scripts/setup_pod.sh` returned exit 0. Its final output included:
+
+```text
+Successfully installed avatar-forge-0.0.1
+Blender 4.2.3 already installed at /opt/tools/blender
+
+== done. Open a NEW terminal (or run: source /root/.avatar_forge_env), then: ==
+   bash scripts/doctor.sh
+```
+
+In a fresh shell after sourcing `/root/.avatar_forge_env`:
+
+```text
+== gpu ==
+NVIDIA A40, 46068 MiB, 570.195.03
+
+== blender ==
+Blender 4.2.3 LTS (hash 0e22e4fcea03 built 2024-10-14 23:31:34)
+
+== python / avatar-forge ==
+avatar-forge 0.0.1
+python       3.11.10 (/opt/venv-af/bin/python)
+repo root    /root/avatar-forge
+jobs dir     /workspace/jobs
+weights dir  /workspace/weights (exists: True)
+torch        2.4.1+cu124  cuda=True  gpu=NVIDIA A40
+blender      /opt/tools/blender/blender
+disk free    1125899.9 GB
+.......................                                                  [100%]
+23 passed in 6.17s
+Aaron Reid
+```
+
+Opus waiver 2026-10-07: terminate+redeploy and the cached-Blender path are deferred to the next fresh pod deploy (docs/04 §F). Persistence across restart and a from-scratch rebuild on a new pod (earlier today) are proven.
