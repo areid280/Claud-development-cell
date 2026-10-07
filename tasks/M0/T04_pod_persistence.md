@@ -1,54 +1,61 @@
 # T04 — Network volume persistence check
 milestone: M0 · effort: low · depends: G0
-owner input: a budget pod deployed on the RunPod network volume (D-005, docs/04 §B); terminate and redeploy it in step 2
+owner input: a budget pod on the RunPod network volume (D-005, D-006); terminate and redeploy it in step 3
 
 ## Goal
-Prove that `/workspace` survives a pod stop/start before M1 downloads model weights there.
-G0 found the first pod had no persistent volume. D-005 moves all state to a network volume;
-this card proves it survives the pod being terminated and replaced. A budget GPU (< 20 GB VRAM)
-is expected here and is not an escalation.
+Prove the D-006 layout works: data on the network volume (`/workspace`) survives the pod being
+terminated and replaced, and `setup_pod.sh` rebuilds code, venv and Blender on a fresh pod using
+the volume caches. A budget GPU (< 20 GB VRAM) is expected here and is not an escalation.
 
 ## Read first
 - docs/04_ENVIRONMENT.md §B and §F
-- docs/05_DECISIONS.md D-005
+- docs/05_DECISIONS.md D-005, D-006
 
 ## Do
-1. **Before the stop**, on the pod:
+1. On the first pod (repo at `~/avatar-forge`, `setup_pod.sh` already run):
    ```bash
-   mount | grep -i workspace; df -h /workspace   # must show a mount that is NOT overlay
+   mount | grep -i workspace; df -h /workspace /
    date -u > /workspace/.persist_marker && cat /workspace/.persist_marker
-   ```
-   Paste the output into the Log.
-2. **Owner:** in RunPod, **Terminate** the pod, then deploy a new budget pod with the same
-   template and the same network volume. Reconnect VS Code (new IP/port: update
-   `HostName`/`Port` via `F1` → *Remote-SSH: Open SSH Configuration File…*).
-3. **After the restart**, on the pod:
-   ```bash
-   cat /workspace/.persist_marker
-   ls /workspace/avatar-forge /workspace/venv-af/bin/python /workspace/tools/blender/blender
-   cd /workspace/avatar-forge && bash scripts/setup_pod.sh
-   source ~/.avatar_forge_env
+   ls /workspace/downloads /workspace/git
    bash scripts/doctor.sh
    pytest -q
    ```
-4. Paste outputs into the Log (last 40 lines each). Set T04 `done` and commit `T04: <summary>`.
+2. Set T04 to `doing` in STATUS.md, paste step 1 output into the Log, commit, and **push**
+   (`git push`). Uncommitted work is lost in step 3.
+3. **Owner:** terminate the pod; deploy a new budget pod with the same template and network
+   volume; reconnect VS Code (docs/04 §F step 1).
+4. On the new pod:
+   ```bash
+   cat /workspace/.persist_marker
+   git clone https://github.com/areid280/Claud-development-cell.git ~/avatar-forge
+   cd ~/avatar-forge && git checkout claude/next-task-card-lscp12
+   time bash scripts/setup_pod.sh 2>&1 | tail -15
+   ```
+   Then open a new terminal:
+   ```bash
+   cd ~/avatar-forge && bash scripts/doctor.sh && pytest -q && git config --get user.name
+   ```
+5. Paste step 4 outputs into the Log (last 40 lines each). Set T04 `done`, commit `T04: <summary>`,
+   and push.
 
 ## Must not
-- Delete or redeploy the pod yourself. Do not change any file under `src/` or `scripts/`.
+- Put the repo, venv or any executable on `/workspace`.
+- Change any file under `src/` or `scripts/`.
 
 ## Verify
-- Step 1 shows `/workspace` on its own mount (not `overlay`).
-- The marker file prints the same timestamp on the new pod.
-- `setup_pod.sh` does not download Blender or create a new venv (it may reinstall apt libraries).
-- `doctor.sh` shows `cuda=True` and Blender 4.2.x (any VRAM size is fine here); `pytest -q` all pass.
+- Step 1: `/workspace` is `fuse.geesefs` (or another non-overlay mount).
+- The marker prints the same timestamp on the new pod.
+- `setup_pod.sh` on the new pod prints "Using cached Blender download" (no Blender download).
+- `doctor.sh`: `cuda=True`, Blender 4.2.x (any VRAM size is fine here); `pytest -q` all pass;
+  `git config --get user.name` prints the owner's name (identity restored from the volume).
 
 ## Done when
 - [ ] Marker survived terminate + redeploy
-- [ ] doctor + pytest outputs pasted in Log
+- [ ] Rebuild used the cached Blender; doctor + pytest outputs pasted in Log
 
 ## Escalate if
-- `/workspace` is still `overlay`, or the marker or `/workspace/avatar-forge` is missing on the
-  new pod (the network volume is not attached).
-- The restarted pod has no GPU (`nvidia-smi` fails).
+- The marker or `/workspace/downloads/blender-*.tar.xz` is missing on the new pod.
+- `setup_pod.sh` fails on the fresh pod.
+- The new pod has no GPU (`nvidia-smi` fails).
 
 ## Log

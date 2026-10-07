@@ -38,8 +38,11 @@ Everything here is done once by the project owner. Total time: about 45 minutes.
 **Switching GPU:** terminate the pod (the network volume is kept), deploy a new pod with the
 same template and volume, then follow §F.
 
-**Stop or terminate the pod whenever you finish a session.** Files in `/workspace` (the network
-volume) survive. Files outside `/workspace` do not.
+**Stop or terminate the pod whenever you finish a session.** Only `/workspace` (the network
+volume) survives, and it holds **data only** (D-006): weights, caches, downloads, `jobs/`, git
+identity and token. The code checkout (`~/avatar-forge`), venv and Blender live on the pod's own
+disk and are rebuilt by `setup_pod.sh`. **Commit and push before you terminate a pod**, or
+uncommitted work is lost.
 
 ## C. Connect VS Code to the pod
 
@@ -48,14 +51,14 @@ volume) survive. Files outside `/workspace` do not.
 2. `F1` → **Remote-SSH: Connect to Host…** → pick the new host.
 3. In the remote window, open a terminal and run:
    ```bash
-   cd /workspace
+   cd ~
    git clone https://github.com/areid280/Claud-development-cell.git avatar-forge
    cd avatar-forge
    bash scripts/setup_pod.sh
    ```
    (GitHub will ask you to sign in; use the browser flow or a fine-grained
    token with access to this one repo only.)
-4. **File → Open Folder** → `/workspace/avatar-forge`.
+4. **File → Open Folder** → `/root/avatar-forge`.
 5. Open Copilot Chat, choose **Agent** mode. You're ready for `/run-task`.
 
 The pod's IP and port change each time you start it. Update the host entry in
@@ -74,20 +77,21 @@ Then run the UE5 import script (see `docs/03_UE5_INTEGRATION.md`).
 - A pod that won't start: deploy a new one with the same volume.
 - Never try to fix GPU drivers on the pod. Deploy a different pod or template instead.
 
-## F. After every pod start (added at G0)
-
-Only `/workspace` survives a stop. `~/.bashrc`, `~/.avatar_forge_env`, git settings and apt
-packages live outside it and are reset. Each time you start the pod:
+## F. After every pod start (D-006)
 
 1. RunPod → **Connect** → copy the new "SSH over exposed TCP" command; update `HostName` and
-   `Port` in VS Code (`F1` → *Remote-SSH: Open SSH Configuration File…*).
-2. On the pod:
+   `Port` in VS Code (`F1` → *Remote-SSH: Open SSH Configuration File…*), then connect.
+2. On the pod (the clone is needed only on a **new** pod; a restarted pod still has it):
    ```bash
-   cd /workspace/avatar-forge && bash scripts/setup_pod.sh   # fast: skips Blender and the venv
-   # git name, email and saved token are on the volume (/workspace/.gitconfig) - nothing to redo
+   [ -d ~/avatar-forge ] || git clone https://github.com/areid280/Claud-development-cell.git ~/avatar-forge
+   cd ~/avatar-forge && git checkout claude/next-task-card-lscp12 && git pull
+   bash scripts/setup_pod.sh      # a few minutes: Blender and pip come from the volume cache
    ```
-3. Open a **new** terminal so the environment loads, then `bash scripts/doctor.sh`.
+3. Open a **new** terminal, then `bash scripts/doctor.sh`. In VS Code open `/root/avatar-forge`.
 
-Until step 2 has run, `HF_HOME`/`TORCH_HOME` are unset and downloads would go to the
-non-persistent container disk.
-
+**One-time git setup** (stored on the volume, reused by every pod):
+```bash
+printf 'name=Your Name\nemail=you@example.com\n' > /workspace/git/identity
+bash scripts/setup_pod.sh          # applies it
+git push                           # first push asks for the token once; saved to /workspace/git/credentials
+```

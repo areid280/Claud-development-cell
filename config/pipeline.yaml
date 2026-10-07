@@ -3,7 +3,7 @@
 # that affect quality is a gatekeeper decision.
 
 tools:
-  blender: /workspace/tools/blender/blender   # installed by scripts/install_blender.sh
+  blender: /opt/tools/blender/blender   # installed by scripts/install_blender.sh (D-006)
   blender_timeout_s: 900
 
 stages:

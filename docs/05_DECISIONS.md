@@ -50,5 +50,22 @@ torch 2.7+, a different stack; revisit at a gate if 24 GB proves too small).
 Consequences: Before T12 the GPU will show < 20 GB VRAM; that is expected, not an escalation.
 T12 cards must check `nvidia-smi` shows ≥ 20 GB before running trials. Volume costs a small
 monthly fee even with no pod running.
-Addendum (2026-10-07): an A40 (48 GB) is acceptable for both phases. Git config and the
-credential store live on the volume (`GIT_CONFIG_GLOBAL=/workspace/.gitconfig`, set by setup_pod.sh).
+Addendum (2026-10-07): an A40 (48 GB) is acceptable for both phases. Git storage on the volume:
+see D-006.
+
+## D-006 — Network volume holds data only; code, venv and Blender on local disk  (2026-10-07, T04 setup)
+Context: The RunPod network volume mounts as `fuse.geesefs` (object storage). Tested on the pod:
+`chmod` fails ("Operation not permitted"), files cannot be executed (exec → Permission denied),
+and `git clone` onto it fails setting `core.filemode`.
+Decision: `/workspace` keeps data only: weights, HF/torch/pip caches, the Blender tarball
+(`downloads/`), job outputs (`jobs/`, via `AF_JOBS_DIR`), and git identity + saved token (`git/`).
+The repo is cloned to `~/avatar-forge`, the venv is `/opt/venv-af`, Blender is unpacked to
+`/opt/tools/blender`; `setup_pod.sh` rebuilds these on each new pod from the volume caches and
+refuses to run from a repo on `/workspace`.
+Alternatives: a pod-bound Volume Disk (supports chmod, but cannot move to a bigger GPU pod);
+another datacenter's storage type (availability uncertain).
+Consequences: Uncommitted work is lost when a pod is terminated, so commit and push before
+terminating. `config/pipeline.yaml` points Blender at `/opt/tools/blender/blender`. Paths like
+`/workspace/avatar-forge` in older task logs are historical. T10 must confirm a Hugging Face
+download into `HF_HOME` on the volume works (its cache uses symlinks); if it fails, escalate.
+
