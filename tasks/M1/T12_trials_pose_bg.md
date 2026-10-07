@@ -54,4 +54,5 @@ Working wrappers + trial outputs for every `pose` and `bg_remove` candidate in c
 
 - `nvidia-smi`: NVIDIA A40, 46,068 MiB VRAM; prerequisite passed.
 - Install commands recorded in `docs/INSTALL_LOG.md`; all exited successfully.
-- Blocked before trials: `config/models.yaml` does not name the rembg human-segmentation weights or their licence. See escalation E-003 in `tasks/ESCALATIONS.md`.
+- E-003 resolved in `7e3e172`: the rembg trial uses only `u2net_human_seg`; its weights are stored under `weights_dir() / "rembg"` via `U2NET_HOME`.
+- Blocked before model trials by E-004: installed PyTorch CUDA 13.0 build is incompatible with this pod's driver (CUDA 12.8); ONNX Runtime also has no CUDA provider. `ruff check src tests` passed; `PYTHONPATH=. pytest -q` passed (28 tests).

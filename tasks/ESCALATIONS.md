@@ -53,7 +53,7 @@ that way). The T02 card now lists the exact imports and call pattern, adds tests
 No code under core/ or schemas/ changes. T02 set back to `todo`; the worker keeps its s00_ingest.py work
 and fixes only the test imports.
 
-## E-003 — T12 — Unspecified rembg human-segmentation weights   status: open
+## E-003 — T12 — Unspecified rembg human-segmentation weights   status: resolved
 Trigger: §4 model / asset choice requires licence resolution.
 What I tried:
 1. Checked `nvidia-smi` -> A40 with 46,068 MiB VRAM; the GPU prerequisite passes.
@@ -61,5 +61,17 @@ What I tried:
 Error / evidence: `config/models.yaml` identifies the rembg candidate weights only as "downloaded by rembg (choose a human-seg model)" and does not name the model or its licence.
 Files involved: `config/models.yaml`, `tasks/M1/T12_trials_pose_bg.md`, `docs/INSTALL_LOG.md`
 My best guess: Opus should identify an eligible human-segmentation model and verify its code/weights licence before T12 runs the rembg trial.
+
+Resolution (Opus): rembg trial uses only session u2net_human_seg; set U2NET_HOME to weights_dir()/rembg before importing rembg so weights land on the volume. Trials do not need licence_ok; licences are judged at G1. models.yaml and the T12 card updated in 7e3e172.
+
+## E-004 — T12 — GPU runtime unavailable on model pod   status: open
+Trigger: §4 GPU / CUDA / driver problem; `docs/04_ENVIRONMENT.md` says not to repair pod drivers in place.
+What I tried:
+1. Checked `nvidia-smi` -> NVIDIA A40, driver 570.195.03, CUDA 12.8.
+2. Checked the configured venv -> PyTorch 2.14.1+cu130 (built for CUDA 13.0) reports `torch.cuda.is_available() == False`; ONNX Runtime 1.30.0 reports only `AzureExecutionProvider` and `CPUExecutionProvider`.
+3. Ran `ruff check src tests` -> passed. `pytest -q` failed collection because `scripts` was not importable; `PYTHONPATH=. pytest -q` -> 28 passed, 1 warning.
+Error / evidence: PyTorch warns that the NVIDIA driver is too old for the installed CUDA build; ONNX Runtime has no CUDA execution provider. No model trials were launched.
+Files involved: `tasks/M1/T12_trials_pose_bg.md`, `tasks/STATUS.md`, `docs/04_ENVIRONMENT.md`
+My best guess: Deploy the A40 with the documented CUDA 12.x RunPod PyTorch template and rebuild the venv with `setup_pod.sh`.
 
 Resolution (Opus): <filled in by Opus>
