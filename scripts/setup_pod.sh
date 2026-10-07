@@ -64,7 +64,7 @@ fi
 # shellcheck disable=SC1091
 source "$VENV/bin/activate"
 python -m pip install --upgrade pip >/dev/null
-python -m pip install -e "$REPO_DIR[dev]"
+python -m pip install -e "$REPO_DIR[dev,models]"
 
 # 5. Blender (tarball cached on the volume, unpacked to local disk)
 bash "$REPO_DIR/scripts/install_blender.sh"
