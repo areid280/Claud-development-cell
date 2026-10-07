@@ -69,3 +69,15 @@ terminating. `config/pipeline.yaml` points Blender at `/opt/tools/blender/blende
 `/workspace/avatar-forge` in older task logs are historical. T10 must confirm a Hugging Face
 download into `HF_HOME` on the volume works (its cache uses symlinks); if it fails, escalate.
 
+## D-007 — Pin the template torch inside the venv  (2026-10-07, E-004)
+Context: Installing T12 candidate dependencies pulled a CUDA 13 PyTorch build into `/opt/venv-af`.
+It shadowed the template's torch 2.4.1+cu124, so CUDA became unavailable on the 12.8 driver; a
+CPU-only onnxruntime likewise shadowed onnxruntime-gpu. Earlier the same pod reported cuda=True.
+Decision: `config/pip-constraints.txt` (torch==2.4.1, numpy<2) is applied to every pip install via
+`PIP_CONSTRAINT` (set by setup_pod.sh). A candidate that needs a newer torch now fails to install and
+is recorded as failed; moving the torch/CUDA stack is a gate decision. Never `pip install onnxruntime`
+(CPU) alongside `onnxruntime-gpu`.
+Alternatives: per-candidate venvs (heavier; revisit at G1 if many candidates need newer torch).
+Consequences: Workers check `python -c "import torch; print(torch.cuda.is_available())"` after any
+install in T12–T15; False means stop and escalate.
+

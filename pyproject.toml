@@ -28,6 +28,7 @@ packages = ["src/avatar_forge"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]   # tests may import scripts/*
 markers = [
   "gpu: needs an NVIDIA GPU (skipped automatically when none is present)",
   "blender: needs Blender (skipped automatically when not installed)",

@@ -1,0 +1,7 @@
+# Applied to every pip install on the pod via PIP_CONSTRAINT (set by scripts/setup_pod.sh). D-007.
+# The template's torch (CUDA 12.4 build) must never be replaced inside the venv: a newer wheel
+# (e.g. a CUDA 13 build) shadows it and CUDA becomes unavailable on the 12.x driver.
+# If a candidate needs a newer torch, pip will now fail instead: record the candidate as failed
+# and escalate; changing the torch stack is a gate decision.
+torch==2.4.1
+numpy<2
