@@ -22,18 +22,24 @@ Everything here is done once by the project owner. Total time: about 45 minutes.
 
 1. Create a RunPod account and add about $10 credit.
 2. **Settings → SSH Public Keys**: paste your public key from A4.
-3. **Pods → Deploy**:
-   - GPU: **RTX 4090** (Community Cloud is cheapest)
-   - Template: the official **RunPod PyTorch** template with **Python 3.11**
-     and CUDA 12.x (the template name shows both, e.g. `py3.11-cuda12.x`)
-   - Volume disk: **100 GB**, mounted at `/workspace`
+3. **Storage → New Network Volume** (D-005): about **100 GB**, in a datacenter that also
+   offers **RTX 4090** pods. A volume only attaches to pods in its own datacenter.
+4. **Pods → Deploy**, choosing that network volume (it mounts at `/workspace`):
+   - GPU: **budget phase** (M0 to T11): the cheapest NVIDIA GPU in that datacenter.
+     **Model phase** (T12 onward): **RTX 4090**. Not a 5090: it needs CUDA 12.8+/torch 2.7+,
+     newer than the template (gate decision required).
+   - Template: the official **RunPod PyTorch** template with **Python 3.11** and CUDA 12.x
+     (e.g. `py3.11-cuda12.x`). **Always the same template**: the venv uses its torch.
    - Expose TCP port 22
-4. When the pod is running, click **Connect** and copy the
+5. When the pod is running, click **Connect** and copy the
    "SSH over exposed TCP" command. It looks like
    `ssh root@<ip> -p <port> -i ~/.ssh/id_ed25519`.
 
-**Stop the pod whenever you finish a session.** Files in `/workspace` survive
-a stop. Files outside `/workspace` do not.
+**Switching GPU:** terminate the pod (the network volume is kept), deploy a new pod with the
+same template and volume, then follow §F.
+
+**Stop or terminate the pod whenever you finish a session.** Files in `/workspace` (the network
+volume) survive. Files outside `/workspace` do not.
 
 ## C. Connect VS Code to the pod
 
