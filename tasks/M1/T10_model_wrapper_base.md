@@ -86,3 +86,14 @@ One consistent pattern for loading third-party models and downloading their weig
   image_to_3d/stable-fast-3d: VERIFY - Stability community licence (revenue thresholds)
   ```
 - [x] Tests pass; `--list` output in Log
+
+Opus post-check (2026-10-07, A40 pod): the `models` extra was missing from the venv, and
+setup_pod.sh only installed `[dev]`; fixed in d91e46f (installs `[dev,models]`). After re-running setup:
+```
+hf_hub_download("hf-internal-testing/tiny-random-bert", "config.json") -> OK, file under
+  /workspace/cache/hf/hub/.../snapshots/... (warning "Could not set the permissions ...
+  Continuing without setting permissions." is expected on geesefs, D-006)
+onnxruntime 1.30.0 ['TensorrtExecutionProvider', 'CUDAExecutionProvider', 'CPUExecutionProvider']
+torch 2.4.1+cu124 cuda=True, numpy 1.26.3 (not upgraded)
+```
+D-006 HF-on-volume check: PASS.
