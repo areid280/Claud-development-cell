@@ -26,6 +26,7 @@ cat > "$PROFILE_SNIPPET" <<EOF
 export AF_WEIGHTS_DIR=$WS/weights
 export AF_JOBS_DIR=$WS/jobs
 export HF_HOME=$WS/cache/hf
+export HF_MODULES_CACHE=$HOME/.cache/hf_modules   # remote-code .py files need local disk (D-006)
 export PIP_CACHE_DIR=$WS/cache/pip
 export TORCH_HOME=$WS/cache/torch
 export PATH=/opt/tools/blender:\$PATH

@@ -56,6 +56,8 @@ happen**:
   following `docs/04_ENVIRONMENT.md`.
 - Visual quality must be judged (meshes, textures, proportions).
 - Anything touches secrets, tokens, SSH keys or paid services.
+  (Running `git pull`/`git push` with the owner's already-saved credential is allowed;
+  never read, print, type, create or edit a token or credential file. D-004.)
 - The task card is ambiguous or contradicts another file.
 
 Escalating early is cheaper than looping. Never guess at licences.
