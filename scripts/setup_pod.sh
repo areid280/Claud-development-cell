@@ -19,6 +19,8 @@ export HF_HOME=$WS/cache/hf
 export PIP_CACHE_DIR=$WS/cache/pip
 export TORCH_HOME=$WS/cache/torch
 export PATH=$WS/tools/blender:\$PATH
+# git identity + credential helper live on the volume so they survive new pods (D-005)
+export GIT_CONFIG_GLOBAL=$WS/.gitconfig
 if [ -f $VENV/bin/activate ]; then source $VENV/bin/activate; fi
 EOF
 grep -qxF "source $PROFILE_SNIPPET" "$HOME/.bashrc" || echo "source $PROFILE_SNIPPET" >> "$HOME/.bashrc"

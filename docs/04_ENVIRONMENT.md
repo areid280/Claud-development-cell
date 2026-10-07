@@ -26,7 +26,7 @@ Everything here is done once by the project owner. Total time: about 45 minutes.
    offers **RTX 4090** pods. A volume only attaches to pods in its own datacenter.
 4. **Pods → Deploy**, choosing that network volume (it mounts at `/workspace`):
    - GPU: **budget phase** (M0 to T11): the cheapest NVIDIA GPU in that datacenter.
-     **Model phase** (T12 onward): **RTX 4090**. Not a 5090: it needs CUDA 12.8+/torch 2.7+,
+     **Model phase** (T12 onward): **RTX 4090** or **A40** (≥ 24 GB). Not a 5090: it needs CUDA 12.8+/torch 2.7+,
      newer than the template (gate decision required).
    - Template: the official **RunPod PyTorch** template with **Python 3.11** and CUDA 12.x
      (e.g. `py3.11-cuda12.x`). **Always the same template**: the venv uses its torch.
@@ -84,8 +84,7 @@ packages live outside it and are reset. Each time you start the pod:
 2. On the pod:
    ```bash
    cd /workspace/avatar-forge && bash scripts/setup_pod.sh   # fast: skips Blender and the venv
-   git config --global user.name "<your name>"
-   git config --global user.email "<your email or GitHub no-reply address>"
+   # git name, email and saved token are on the volume (/workspace/.gitconfig) - nothing to redo
    ```
 3. Open a **new** terminal so the environment loads, then `bash scripts/doctor.sh`.
 
