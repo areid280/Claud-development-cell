@@ -46,3 +46,14 @@ Run any candidate model on the sample images in a uniform way so Opus can compar
 - [ ] samples present on the pod (or status `waiting-owner`)
 
 ## Log
+- Samples present: `a_front.png`, `a_back.png`, `b_front.png`, `c_front.png`,
+  `bad_cropped_feet.png`, `bad_crossed_arms.png`.
+- `ruff check src tests scripts` (via configured venv):
+  ```
+  All checks passed!
+  ```
+- `pytest -q` (via configured venv):
+  ```
+  ............................                                             [100%]
+  28 passed in 3.09s
+  ```
