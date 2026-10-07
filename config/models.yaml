@@ -48,8 +48,8 @@ roles:
       - name: rembg
         source: https://github.com/danielgatis/rembg
         install: pip install "rembg[gpu]"
-        weights: downloaded by rembg (choose a human-seg model)
-        licence: MIT code (claimed); each bundled model has its own licence (VERIFY)
+        weights: rembg session "u2net_human_seg" (auto-downloaded to $U2NET_HOME; E-003)
+        licence: MIT code (claimed); u2net_human_seg weights from U-2-Net (Apache-2.0, claimed), trained on Supervisely Person data (dataset terms VERIFY at G1)
         vram_gb_est: 2
         selected: false
         licence_ok: false

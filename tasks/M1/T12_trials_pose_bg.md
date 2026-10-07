@@ -25,6 +25,10 @@ Working wrappers + trial outputs for every `pose` and `bg_remove` candidate in c
    trial per candidate. Each writes into `out_dir`:
    - pose: `keypoints.json`, `overlay.png` (skeleton drawn with Pillow `ImageDraw`).
    - bg_remove: `cutout.png`, `on_grey.png` (cut-out composited on #808080).
+   - **rembg (Opus, E-003):** use exactly one session, `new_session("u2net_human_seg")`, and
+     set `os.environ.setdefault("U2NET_HOME", str(weights_dir() / "rembg"))` (`from avatar_forge.core.paths import weights_dir`) before importing rembg so
+     the weights land on the volume, not in `~/.u2net`. Do not trial other rembg sessions.
+     Running a trial does not need `licence_ok`; licences are judged at G1.
 3. Install each candidate's dependencies **inside the venv** following its README.
    Record every install command you ran in `docs/INSTALL_LOG.md` (create it; Opus
    turns this into the extras at G1).
