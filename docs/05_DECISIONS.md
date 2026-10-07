@@ -85,4 +85,10 @@ Addendum (E-004 diagnosis): on inspection the pod was healthy (venv had no torch
 likely came from a terminal not using the venv. The constraints stay as a guard; T12's check now
 prints the interpreter path.
 Addendum (T12): `transformers>=4.48,<5` added to the constraints; 5.x needs torch>=2.5. T16 re-runs the two affected trials.
+Addendum to D-004 (E-005, 2026-10-07): workers may run `git push`/`git pull` using the credential
+the owner saved on the volume (`/workspace/git/credentials`). They must never read, print, type,
+create or edit a token or credential file. If a push asks for a password, stop and tell the owner.
+Addendum to D-006 (T16): Hugging Face `trust_remote_code` modules (e.g. BiRefNet) are Python files
+that need normal permissions, so `HF_MODULES_CACHE` points at local disk (`~/.cache/hf_modules`);
+weights stay on the volume under `HF_HOME`.
 
