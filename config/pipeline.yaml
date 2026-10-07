@@ -32,6 +32,8 @@ stages:
              bodysuit, jacket, gloves, belt, collar, hat, shoes, boots, socks_stockings,
              bag, accessory]
     min_part_area_px: 400
+    open_vocab_prompts: [hair, face, jacket, bodysuit, gloves, belt, collar, boots,
+                         shoes, skirt, dress, hat, stockings, harness, bra, top]
 
   s04_body_fit:
     default_height_cm: 168          # used when the image has no scale; override with --set height=

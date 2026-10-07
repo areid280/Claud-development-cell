@@ -90,7 +90,7 @@ the owner's saved credential. Never read, print, or edit a token or credential
 file; if a push asks for a password, stop and tell the owner. The Transformers
 module cache is set permanently via `HF_MODULES_CACHE` on local disk.
 
-## E-006 — T13 — Unspecified background-removal trial input   status: open
+## E-006 — T13 — Unspecified background-removal trial input   status: resolved
 Trigger: §4 visual quality must be judged; the task card requires the "best-looking" T12 background-removal output as the parsing input.
 What I tried:
 1. Checked the T12 task log -> it reports candidate success counts but does not identify a best-looking candidate or image.
@@ -99,4 +99,8 @@ Error / evidence: T13 requires an input under `jobs/_model_trials/bg_remove/<nam
 Files involved: `tasks/M1/T13_trials_parsing.md`, `tasks/M1/T12_trials_pose_bg.md`, `tasks/STATUS.md`
 My best guess: Opus should review the T12 cutouts, specify the chosen candidate and image path, then return T13 to `todo`.
 
-Resolution (Opus): <filled in by Opus>
+Resolution (Opus, commit 9897e93): No visual judgment is needed for T13. Use
+BiRefNet cut-outs for every parsing candidate at
+`jobs/_model_trials/bg_remove/birefnet/<stem>/cutout.png`; if one is missing,
+fall back to the corresponding rembg cut-out and note the fallback in the T13
+log. Evaluate background-removal quality at G1.
