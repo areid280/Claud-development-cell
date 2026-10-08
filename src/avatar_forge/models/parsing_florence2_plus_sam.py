@@ -9,8 +9,19 @@ from avatar_forge.models.parsing_utils import image_rgb_and_alpha
 
 MODEL_LABEL_MAP = {
     "top": "upper_clothes",
+    "bra": "upper_clothes",
+    "skirt": "lower_clothes",
     "stockings": "socks_stockings",
 }
+
+# Detection answers are a few dozen tokens; a large budget lets a confused generation run for
+# minutes (T13: c_front stalled). Gatekeeper fix at G1 review.
+MAX_NEW_TOKENS = 256
+
+
+def florence_image_size(image: Image.Image) -> tuple[int, int]:
+    """Florence-2's post_process_generation expects (width, height), not (height, width)."""
+    return (image.width, image.height)
 
 
 def canonical_label_for_prompt(prompt: str, labels: set[str]) -> str:
@@ -70,7 +81,7 @@ class Florence2PlusSam(ModelWrapper):
                 generated_ids = self.florence.generate(
                     input_ids=inputs["input_ids"],
                     pixel_values=inputs["pixel_values"],
-                    max_new_tokens=1024,
+                    max_new_tokens=MAX_NEW_TOKENS,
                     do_sample=False,
                     use_cache=False,
                 )
@@ -80,7 +91,7 @@ class Florence2PlusSam(ModelWrapper):
             detections = self.florence_processor.post_process_generation(
                 generated_text,
                 task=task,
-                image_size=(image.height, image.width),
+                image_size=florence_image_size(image),
             )[task]
             if not detections["bboxes"]:
                 continue
