@@ -133,7 +133,7 @@ roles:
         source: https://github.com/Tencent-Hunyuan/Hunyuan3D-2
         install: see repo
         weights: tencent/Hunyuan3D-2 (or newer)
-        licence: EXCLUDED (D-009) - Tencent Hunyuan 3D 2.0 Community Licence "does not apply in the European Union, United Kingdom and South Korea" (checked 2026-10-08); owner is in the UK
+        licence: 'EXCLUDED (D-009) - Tencent Hunyuan 3D 2.0 Community Licence "does not apply in the European Union, United Kingdom and South Korea" (checked 2026-10-08); owner is in the UK'
         licence_note: Do not install or trial.
         vram_gb_est: 16
         selected: false
@@ -141,7 +141,7 @@ roles:
       - name: stable-fast-3d
         source: https://github.com/Stability-AI/stable-fast-3d
         install: see repo
-        weights: stabilityai/stable-fast-3d (gated: owner must accept the licence on Hugging Face; optional, D-009)
+        weights: "stabilityai/stable-fast-3d (gated - owner must accept the licence on Hugging Face; optional, D-009)"
         licence: VERIFY - Stability community licence (revenue thresholds)
         vram_gb_est: 8
         selected: false
