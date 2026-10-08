@@ -38,6 +38,12 @@ stages:
   s04_body_fit:
     default_height_cm: 168          # used when the image has no scale; override with --set height=
     body_type_hint: feminine
+    hair_allowance_frac: 0.02
+    depth_ratio:
+      bust: 0.75
+      underbust: 0.70
+      waist: 0.70
+      hips: 0.72
 
   s05_body_params:
     normalise: true

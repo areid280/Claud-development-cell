@@ -123,3 +123,15 @@ T13 uses Florence-2 plus SAM v1 (`transformers.SamModel` and
 `facebook/sam-vit-huge`) instead of SAM 2; do not install `sam2` because it
 requires Torch >= 2.5.1. Workers must source `~/.avatar_forge_env` and confirm
 `which python` is `/opt/venv-af/bin/python` before running commands.
+
+## E-008 — T14 — Mesh slice levels and model asset approval   status: open
+Trigger: §4 task card ambiguity and model / asset choice requires licence resolution.
+What I tried:
+1. Read T14's mesh contract -> it requests bust, underbust, waist, and hip planes "at the same relative heights as above", but the mesh wrapper returns only vertices and faces; no shoulder/hip landmarks or mapping to the image is defined.
+2. Read the body-measurement candidates in `config/models.yaml` -> SAM 3D Body and SMPLer-X have unverified licences; SMPL-X assets require owner registration. No model files were accessed or used.
+3. Added the requested in-house fallback configuration and implementation scaffolding, and saved the owner-provided reference measurements -> mesh trials, report wiring, and verification are not complete.
+Error / evidence: T14 does not specify how to identify anatomical slice heights from vertices/faces alone. Choosing fractions would introduce unapproved measurement assumptions. Model assets remain unapproved/unregistered.
+Files involved: `tasks/M1/T14_trials_body_measure.md`, `config/models.yaml`, `config/pipeline.yaml`, `src/avatar_forge/body/keypoint_ratio.py`, `tests/test_keypoint_ratio.py`, `samples/reference.yaml`
+My best guess: Opus should define the mesh slice-level convention and resolve candidate asset/licence availability, then return T14 to `todo` for completion and verification.
+
+Resolution (Opus):
