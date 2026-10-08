@@ -144,3 +144,9 @@ Aaron Reid
 ```
 
 Opus waiver 2026-10-07: terminate+redeploy and the cached-Blender path are deferred to the next fresh pod deploy (docs/04 §F). Persistence across restart and a from-scratch rebuild on a new pod (earlier today) are proven.
+
+### Deferred fresh-pod check (Opus, 2026-10-08) — PASS
+New container (hostname f4bf3e63d9b5, previous 90b460c94240), same network volume, empty local disk:
+`git clone` + `setup_pod.sh` → `setup exit: 0`, "Using cached Blender download:
+/workspace/downloads/blender-4.2.3-linux-x64.tar.xz", Blender 4.2.3 LTS, template torch 2.4.1+cu124.
+The volume (geesefs) was attached with samples, caches and git identity intact. The T04 waiver is closed.
