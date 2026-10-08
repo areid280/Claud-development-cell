@@ -49,3 +49,9 @@ Compare ways to get body measurements (cm) from an image, including our own lice
 - `pytest -q` green (new keypoint_ratio tests) · REPORT.md includes body_measure with error %.
 
 ## Log
+
+- Owner references are saved in `samples/reference.yaml`; these are prompt estimates, not measured ground truth.
+- Implemented the in-house keypoint-ratio measurements, hair allowance, configurable depth ratios, and trial adapter. The adapter uses the existing T12 RTMLib `keypoints.json` outputs when available and falls back to the wrapper otherwise. The first trial attempt found `rtmlib` absent from the current venv; using the validated T12 outputs allowed all six body trials to complete without installing or changing model dependencies.
+- Trial: `source ~/.avatar_forge_env && python scripts/trial_model.py --role body_measure --name keypoint-ratio --images 'samples/*.png'` -> summary `6 / 6`, `0` failed.
+- Report: `python scripts/trials_report.py` -> `jobs/_model_trials/REPORT.md` includes body_measure error percentages against the owner references.
+- Verify: `ruff check src tests` -> `All checks passed!`; `pytest -q` -> `41 passed in 5.93s`.

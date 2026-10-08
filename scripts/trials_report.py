@@ -6,14 +6,50 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+from avatar_forge.core.config import load_yaml
+from avatar_forge.core.paths import REPO_ROOT
+
+REFERENCE_PATH = REPO_ROOT / "samples" / "reference.yaml"
+
 
 def _markdown_path(path: Path, report_dir: Path) -> str:
     return path.relative_to(report_dir).as_posix()
 
 
-def build_report(out_root: Path) -> str:
+def _measurement_error_lines(out_root: Path, references: dict[str, Any]) -> list[str]:
+    lines: list[str] = []
+    for trial_path in sorted(out_root.glob("body_measure/*/*/trial.json")):
+        with trial_path.open(encoding="utf-8") as trial_file:
+            trial = json.load(trial_file)
+        sample_name = Path(str(trial["image"])).stem
+        reference = references.get(sample_name)
+        measurements_path = trial_path.parent / "measurements.json"
+        if not reference or not measurements_path.is_file():
+            continue
+        with measurements_path.open(encoding="utf-8") as measurements_file:
+            output = json.load(measurements_file)
+        measurements = output.get("measurements", output)
+        for measurement, expected in reference.items():
+            predicted = measurements.get(measurement)
+            if predicted is None or float(expected) == 0:
+                continue
+            error_percent = abs(float(predicted) - float(expected)) / abs(
+                float(expected)
+            ) * 100
+            lines.append(
+                f"| `{sample_name}` | {measurement} | {float(expected):.2f} | "
+                f"{float(predicted):.2f} | {error_percent:.2f}% |"
+            )
+    return lines
+
+
+def build_report(out_root: Path, reference_path: Path | None = None) -> str:
     by_role: dict[str, list[dict[str, Any]]] = defaultdict(list)
     image_outputs: dict[tuple[str, str, str], list[Path]] = defaultdict(list)
+
+    if reference_path is None:
+        reference_path = REFERENCE_PATH
+    references = load_yaml(reference_path) if reference_path.is_file() else {}
 
     for summary_path in sorted(out_root.glob("*/*/summary.json")):
         with summary_path.open(encoding="utf-8") as summary_file:
@@ -43,6 +79,21 @@ def build_report(out_root: Path) -> str:
                 f"| {summary['name']} | {summary['ok']} / {summary['total']} | "
                 f"{float(summary['mean_seconds']):.3f} | "
                 f"{float(summary['max_vram_gb']):.3f} |"
+            )
+
+        if role == "body_measure" and references:
+            errors = _measurement_error_lines(out_root, references)
+            lines.extend(
+                [
+                    "",
+                    "Measurement errors vs owner references:",
+                    "",
+                    "| Image | Measurement | Reference cm | Result cm | Error |",
+                    "|---|---|---:|---:|---:|",
+                ]
+            )
+            lines.extend(
+                errors or ["| No matching reference measurements | — | — | — | — |"]
             )
 
         lines.extend(["", "Output PNGs:", ""])

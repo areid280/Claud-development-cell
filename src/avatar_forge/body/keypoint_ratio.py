@@ -9,7 +9,11 @@ import numpy as np
 
 def _point(keypoints: Mapping[str, Any], name: str) -> tuple[float, float]:
     value = keypoints.get(name)
-    if not isinstance(value, Sequence) or isinstance(value, (str, bytes)) or len(value) < 2:
+    if (
+        not isinstance(value, Sequence)
+        or isinstance(value, (str, bytes))
+        or len(value) < 2
+    ):
         raise ValueError(f"Missing or invalid keypoint {name!r}")
     x, y = float(value[0]), float(value[1])
     if not isfinite(x) or not isfinite(y):
@@ -20,14 +24,21 @@ def _point(keypoints: Mapping[str, Any], name: str) -> tuple[float, float]:
 def _mask(alpha: np.ndarray) -> np.ndarray:
     silhouette = np.asarray(alpha)
     if silhouette.ndim == 3:
-        silhouette = silhouette[:, :, -1] if silhouette.shape[2] == 4 else silhouette.any(axis=2)
+        silhouette = (
+            silhouette[:, :, -1]
+            if silhouette.shape[2] == 4
+            else silhouette.any(axis=2)
+        )
     if silhouette.ndim != 2:
         raise ValueError("alpha must be a 2D mask or an image with 3 or 4 channels")
     return silhouette > 0
 
 
 def _mask_above_head(
-    keypoints: Mapping[str, Any], names: tuple[str, ...], head_y: float, shape: tuple[int, int]
+    keypoints: Mapping[str, Any],
+    names: tuple[str, ...],
+    head_y: float,
+    shape: tuple[int, int],
 ) -> bool:
     for name in names:
         raw_mask = keypoints.get(name)
@@ -134,7 +145,10 @@ def measure(
         if not 0 <= hair_allowance < 1:
             raise ValueError("hair_allowance_frac must be in [0, 1)")
         if _mask_above_head(
-            keypoints, ("hat_mask", "hair_mask"), head_y, silhouette.shape
+            keypoints,
+            ("hat", "hair", "hat_mask", "hair_mask"),
+            head_y,
+            silhouette.shape,
         ):
             pixel_height *= 1 - hair_allowance
 

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 import pytest
-from typing import Any
 
 from avatar_forge.body.keypoint_ratio import measure
 from avatar_forge.core.config import load_pipeline_config
@@ -63,11 +64,11 @@ def test_hair_mask_above_face_applies_height_allowance(
     alpha = _rectangle(60)
     hair_mask = np.zeros_like(alpha)
     hair_mask[10:18, 48:53] = 255
-    keypoints["hair_mask"] = hair_mask
+    keypoints["hair"] = hair_mask
 
     corrected = measure(keypoints, alpha, 168, load_pipeline_config())
     without_mask = measure(
-        {name: point for name, point in keypoints.items() if name != "hair_mask"},
+        {name: point for name, point in keypoints.items() if name != "hair"},
         alpha,
         168,
         load_pipeline_config(),
