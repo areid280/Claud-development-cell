@@ -31,6 +31,17 @@ Working wrappers + trial outputs for every `parsing` candidate.
 4. Run trials for every candidate; append installs to `docs/INSTALL_LOG.md`;
    rerun `scripts/trials_report.py`.
 
+## Sapiens notes (Opus, 2026-10-08)
+- Weights: `huggingface_hub.list_repo_files("facebook/sapiens-seg-1b-torchscript")`, download the one
+  `*.pt2` file with `hf_hub_download` (lands in `HF_HOME` on the volume), load with
+  `torch.jit.load(path).eval().cuda()`. Do not use `transformers` / `AutoModel` for Sapiens.
+- Pre/post-processing: follow `lite/demo/vis_seg.py` in github.com/facebookresearch/sapiens
+  (input resized to 1024×768 H×W, ImageNet mean/std in 0–255 scale, output logits upsampled to the
+  image size, argmax over the 28 Goliath classes). Map Goliath classes to canonical labels in the
+  wrapper's table (e.g. Upper_Clothing→upper_clothes, Lower_Clothing→lower_clothes, Hair→hair,
+  Face_Neck→face, *_Shoe→shoes, *_Sock→socks_stockings, Apparel→accessory, limbs/hands/feet→skin).
+- Licence is CC BY-NC 4.0, acceptable under D-008. The 30-minute rule still applies.
+
 ## Must not
 - Same as T12. If `sapiens-seg` setup takes > 30 minutes, record it as failed and move on.
 

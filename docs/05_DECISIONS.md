@@ -92,3 +92,15 @@ Addendum to D-006 (T16): Hugging Face `trust_remote_code` modules (e.g. BiRefNet
 that need normal permissions, so `HF_MODULES_CACHE` points at local disk (`~/.cache/hf_modules`);
 weights stay on the volume under `HF_HOME`.
 
+## D-008 — Personal / non-commercial use; NC licences acceptable  (2026-10-08, owner, T13)
+Context: Sapiens (T13 candidate) is CC BY-NC 4.0 (checked: github.com/facebookresearch/sapiens LICENSE).
+Several later candidates (e.g. SMPL-X-based body models) are also non-commercial.
+Decision (owner): avatar-forge and the characters it produces are for personal, non-commercial use.
+Models under non-commercial licences (CC BY-NC, research-only) may be trialled and selected.
+Alternatives: commercial-safe only (would exclude Sapiens and SMPL-X-family models).
+Consequences: At each gate, licence checks still verify: no territory exclusions that cover the owner
+(UK), attribution requirements are met (recorded in third-party notices, T53), and no licence forbids
+the use itself. `config/models.yaml` gains `licence_class: commercial | non_commercial` per selected
+model so a future switch to commercial use shows exactly what must be replaced. Revisit if the owner's
+plans change.
+
