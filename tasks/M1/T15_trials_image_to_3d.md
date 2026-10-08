@@ -1,5 +1,5 @@
 # T15 — Trials: image-to-3D
-milestone: M1 · effort: medium · depends: T14 (uses its render_previews.py)
+milestone: M1 · effort: medium · depends: T14 (render_previews.py written by Opus, E-012)
 owner input: none
 
 ## Goal
@@ -8,7 +8,7 @@ Textured 3D outputs from each `image_to_3d` candidate on (a) the whole figure an
 
 ## Read first
 - config/models.yaml → role `image_to_3d` (read every `licence_note`)
-- src/avatar_forge/blender/render_previews.py (from T14)
+- src/avatar_forge/blender/render_previews.py (exists; args `--in <glb> --out-dir <dir> [--size 768]`, writes front.png + back.png; call via `run_blender`)
 - docs/INSTALL_LOG.md
 
 ## Do

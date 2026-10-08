@@ -64,7 +64,7 @@ git config --global pull.rebase false
 # 3. System packages Blender needs headless
 if command -v apt-get >/dev/null; then
   NEED=""
-  for p in libxi6 libxxf86vm1 libxfixes3 libxrender1 libgl1 libxkbcommon0 libsm6 xz-utils git-lfs; do
+  for p in libxi6 libxxf86vm1 libxfixes3 libxrender1 libgl1 libegl1 libgl1-mesa-dri libxkbcommon0 libsm6 xz-utils git-lfs; do
     dpkg -s "$p" >/dev/null 2>&1 || NEED="$NEED $p"
   done
   if [ -n "$NEED" ]; then

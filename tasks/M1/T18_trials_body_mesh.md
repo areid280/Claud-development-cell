@@ -42,8 +42,8 @@ keypoint method. Opus split this out of T14 (E-008) and defined the slicing rule
      beside it still returns the central loop.
 2. Wrapper `src/avatar_forge/models/body_measure_sam3d_body.py` → `predict(image_rgba) -> (vertices, faces, joints|None)`.
 3. Extend `trial_adapters_body.py` with a trial per mesh candidate: `measurements.json`, `mesh.glb`,
-   and `front.png`/`back.png` via `run_blender` + `src/avatar_forge/blender/render_previews.py`
-   (imports GLB, frames it, Workbench render at 768 px; args `--in --out-dir`).
+   and `front.png`/`back.png` via `run_blender` + the existing `src/avatar_forge/blender/render_previews.py`
+   (args `--in <glb> --out-dir <dir> [--size 768]`; already written and tested by Opus, E-012).
 4. Run trials, append installs to `docs/INSTALL_LOG.md`, rerun `scripts/trials_report.py`.
 
 ## Must not
