@@ -78,7 +78,7 @@ roles:
       - name: sapiens-seg
         source: https://github.com/facebookresearch/sapiens
         install: torch only (TorchScript; no transformers model, no mmseg needed)
-        weights: HF repo facebook/sapiens-seg-1b-torchscript (single *.pt2 file; NOT facebook/sapiens-seg-1b, which has no config.json)
+        weights: facebook/sapiens-seg-1b-torchscript
         licence: CC BY-NC 4.0 (checked 2026-10-08); acceptable under D-008 (non-commercial)
         licence_note: Very high quality human parsing; check licence carefully.
         vram_gb_est: 10

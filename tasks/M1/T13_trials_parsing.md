@@ -52,3 +52,11 @@ Working wrappers + trial outputs for every `parsing` candidate.
 - [ ] Each candidate has summary.json; label images exist for successful ones
 
 ## Log
+
+- Inputs staged from all six `jobs/_model_trials/bg_remove/birefnet/<stem>/cutout.png` files.
+- Existing `segformer-clothes` summary: 6/6 trials successful; label images and `parts.json` were present.
+- Sapiens: corrected `config/models.yaml` to use the TorchScript repository ID directly; loaded its single `.pt2` via `huggingface_hub` and `torch.jit.load`. All six BiRefNet cut-outs passed (`ok=6`, `failed=0`, mean 6.79 s, peak VRAM 6.32 GB); label images and masks were written for every image.
+- Existing Florence/SAM2 summary before dependency setup: `ok=0`, `failed=1`; the recorded error was `KeyError: 'facebook/sam2.1-hiera-large'`.
+- Ran `/opt/venv-af/bin/python -m pip install sam2` as configured for the Florence/SAM2 candidate. Installation succeeded but replaced Torch 2.4.1+cu124 with Torch 2.14.1+cu130 and reported a `torchaudio==2.4.1` dependency conflict. A follow-up runtime check reported `torch.cuda.is_available() == False` and the driver-too-old warning (`found version 12080`). Stopped here and escalated under AGENTS.md §4; Florence and the full verification remain incomplete.
+- Focused wrapper tests: `/opt/venv-af/bin/python -m pytest -q tests/test_parsing_sapiens_seg.py` -> `2 passed in 2.71s`.
+- `ruff check src/avatar_forge/models/parsing_sapiens_seg.py tests/test_parsing_sapiens_seg.py` could not run because `ruff` is not installed. Full `pytest -q` was not run after the CUDA environment became incompatible.

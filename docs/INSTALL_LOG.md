@@ -73,3 +73,15 @@ missing. After installing `einops`, the rerun used a writable module cache:
 HF_MODULES_CACHE=/tmp/avatar-forge-hf-modules python scripts/trial_model.py --role bg_remove --name birefnet --images "samples/*.png"
 python scripts/trials_report.py
 ```
+
+## T13 — 2026-10-08
+
+```shell
+/opt/venv-af/bin/python -m pip install sam2
+```
+
+The install completed with `sam2 1.1.0`, but pip upgraded Torch from
+`2.4.1+cu124` to `2.14.1+cu130` and reported that installed `torchaudio 2.4.1`
+requires Torch `2.4.1`. A post-install check reported `torch.cuda.is_available()
+== False` with a driver-too-old warning (`found version 12080`). Florence/SAM2
+trials were stopped for Opus escalation; see T13's task log and `tasks/ESCALATIONS.md`.

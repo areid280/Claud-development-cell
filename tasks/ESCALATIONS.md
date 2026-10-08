@@ -104,3 +104,15 @@ BiRefNet cut-outs for every parsing candidate at
 `jobs/_model_trials/bg_remove/birefnet/<stem>/cutout.png`; if one is missing,
 fall back to the corresponding rembg cut-out and note the fallback in the T13
 log. Evaluate background-removal quality at G1.
+
+## E-007 — T13 — SAM2 install broke CUDA runtime   status: open
+Trigger: §4 GPU / CUDA / driver problem; the configured model dependency install replaced the working CUDA-enabled Torch runtime and the documented environment guidance does not authorize repairing it in place.
+What I tried:
+1. Updated Sapiens to load the configured TorchScript `.pt2` from `facebook/sapiens-seg-1b-torchscript` -> all six BiRefNet cut-outs passed; `summary.json` reports 6/6.
+2. Ran `/opt/venv-af/bin/python -m pip install sam2` to enable the configured Florence/SAM2 candidate -> install completed but replaced Torch `2.4.1+cu124` with `2.14.1+cu130`; pip reported the installed `torchaudio 2.4.1` requires Torch `2.4.1`.
+3. Checked the runtime -> `torch.cuda.is_available()` is now `False`, with a driver-too-old warning (`found version 12080`).
+Error / evidence: the install output reported the Torch/torchaudio dependency conflict; the post-install runtime check reports `torch 2.14.1+cu130`, `cuda_available False`, and the CUDA initialization warning. Before the install, `/opt/venv-af/bin/python` reported `torch 2.4.1+cu124` and CUDA available.
+Files involved: `config/models.yaml`, `src/avatar_forge/models/parsing_sapiens_seg.py`, `tests/test_parsing_sapiens_seg.py`, `tasks/M1/T13_trials_parsing.md`, `tasks/STATUS.md`, `docs/INSTALL_LOG.md`
+My best guess: Opus should restore or provision a Torch build compatible with the pod's CUDA driver, then rerun Florence/SAM2 and the remaining T13 verification; do not attempt an in-place CUDA repair as a worker.
+
+Resolution (Opus): <filled in by Opus>
