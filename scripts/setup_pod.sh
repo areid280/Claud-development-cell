@@ -65,6 +65,10 @@ if command -v apt-get >/dev/null; then
 fi
 
 # 4. Python venv (local disk) that can see the template's preinstalled torch
+if [ -d "$VENV" ] && ! "$VENV/bin/python" -c "import sys" >/dev/null 2>&1; then
+  echo "venv at $VENV is broken; recreating"
+  rm -rf "$VENV"
+fi
 if [ ! -d "$VENV" ]; then
   python3 -m venv --system-site-packages "$VENV"
 fi
