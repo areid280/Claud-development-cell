@@ -85,3 +85,20 @@ The install completed with `sam2 1.1.0`, but pip upgraded Torch from
 requires Torch `2.4.1`. A post-install check reported `torch.cuda.is_available()
 == False` with a driver-too-old warning (`found version 12080`). Florence/SAM2
 trials were stopped for Opus escalation; see T13's task log and `tasks/ESCALATIONS.md`.
+
+## T13 — resumed with SAM v1 — 2026-10-08
+
+After sourcing `~/.avatar_forge_env`, `which python` reported
+`/opt/venv-af/bin/python`; the environment check reported Torch `2.4.1+cu124`
+and CUDA available. Florence-2's remote model code required two missing
+dependencies, installed without changing the pinned Torch runtime:
+
+```shell
+python -m pip install timm einops
+```
+
+The first Florence trial found zero-byte entries in the existing model cache;
+those cache entries were restored from their existing Hugging Face blobs.
+Trials then used `florence2-plus-sam` (SAM v1) without installing `sam2`.
+Five BiRefNet inputs completed; `c_front` stalled with no output and was marked
+failed per the T13 30-minute rule. See `jobs/_model_trials/parsing/florence2-plus-sam/summary.json`.

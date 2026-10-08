@@ -105,7 +105,7 @@ BiRefNet cut-outs for every parsing candidate at
 fall back to the corresponding rembg cut-out and note the fallback in the T13
 log. Evaluate background-removal quality at G1.
 
-## E-007 — T13 — SAM2 install broke CUDA runtime   status: open
+## E-007 — T13 — SAM2 install broke CUDA runtime   status: resolved
 Trigger: §4 GPU / CUDA / driver problem; the configured model dependency install replaced the working CUDA-enabled Torch runtime and the documented environment guidance does not authorize repairing it in place.
 What I tried:
 1. Updated Sapiens to load the configured TorchScript `.pt2` from `facebook/sapiens-seg-1b-torchscript` -> all six BiRefNet cut-outs passed; `summary.json` reports 6/6.
@@ -115,4 +115,11 @@ Error / evidence: the install output reported the Torch/torchaudio dependency co
 Files involved: `config/models.yaml`, `src/avatar_forge/models/parsing_sapiens_seg.py`, `tests/test_parsing_sapiens_seg.py`, `tasks/M1/T13_trials_parsing.md`, `tasks/STATUS.md`, `docs/INSTALL_LOG.md`
 My best guess: Opus should restore or provision a Torch build compatible with the pod's CUDA driver, then rerun Florence/SAM2 and the remaining T13 verification; do not attempt an in-place CUDA repair as a worker.
 
-Resolution (Opus): <filled in by Opus>
+Resolution (Opus, commits 8d833b1 and 606777d): RunPod's `/etc/rp_environment`
+reset `PATH` in new terminals, so commands were using system Python rather than
+the project venv. `setup_pod.sh` now leaves the venv environment line last in
+`~/.bashrc`, and the Torch pin applies to every pip through `/etc/pip.conf`.
+T13 uses Florence-2 plus SAM v1 (`transformers.SamModel` and
+`facebook/sam-vit-huge`) instead of SAM 2; do not install `sam2` because it
+requires Torch >= 2.5.1. Workers must source `~/.avatar_forge_env` and confirm
+`which python` is `/opt/venv-af/bin/python` before running commands.

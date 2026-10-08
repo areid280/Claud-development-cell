@@ -8,7 +8,7 @@ import numpy as np
 from PIL import Image
 
 from avatar_forge.core.config import load_pipeline_config
-from avatar_forge.models.parsing_florence2_plus_sam2 import Florence2PlusSam2
+from avatar_forge.models.parsing_florence2_plus_sam import Florence2PlusSam
 from avatar_forge.models.parsing_sapiens_seg import SapiensSeg
 from avatar_forge.models.parsing_segformer_clothes import SegformerClothes
 from avatar_forge.models.trials import register
@@ -96,11 +96,11 @@ def trial_segformer_clothes(
     return _parsing_trial(SegformerClothes, entry, image_path, out_dir)
 
 
-@register("parsing", "florence2-plus-sam2")
-def trial_florence2_plus_sam2(
+@register("parsing", "florence2-plus-sam")
+def trial_florence2_plus_sam(
     entry: dict[str, Any], image_path: Path, out_dir: Path
 ) -> dict[str, Any]:
-    return _parsing_trial(Florence2PlusSam2, entry, image_path, out_dir)
+    return _parsing_trial(Florence2PlusSam, entry, image_path, out_dir)
 
 
 @register("parsing", "sapiens-seg")
