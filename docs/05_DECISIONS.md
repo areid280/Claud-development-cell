@@ -109,4 +109,7 @@ setup_pod.sh writes `/etc/pip.conf` so the constraints apply to every pip on the
 requires `source ~/.avatar_forge_env` in every terminal. The open-vocabulary trial uses SAM v1
 (`facebook/sam-vit-huge`, in transformers 4.x) instead of SAM 2; whether SAM 2 justifies moving the
 torch stack is a G1 question. A damaged system Python is repaired by restarting/redeploying the pod.
+Addendum to D-006 (E-010, 2026-10-08): a stale `HF_MODULES_CACHE` copy of Florence-2's remote code
+lacked `Florence2Processor` (AttributeError). Clearing `~/.cache/hf_modules` fixed it; setup_pod.sh now
+clears it on every run. If a remote-code model fails to import, clear that cache before escalating.
 

@@ -48,6 +48,10 @@ source "$PROFILE_SNIPPET"
 mkdir -p /etc
 printf '[global]\nconstraint = %s\n' "$REPO_DIR/config/pip-constraints.txt" > /etc/pip.conf
 
+# 1c. Hugging Face remote-code modules are regenerated on demand; a stale copy left by an
+#     interrupted or different-version run breaks loading (E-010), so start clean.
+rm -rf "$HOME/.cache/hf_modules"
+
 # 2. Git: settings in ~/.gitconfig (local disk), identity + saved token kept on the volume
 if [ -f "$WS/git/identity" ]; then
   # file format: two lines, "name=<Your Name>" and "email=<you@example.com>"
