@@ -50,9 +50,12 @@ Always `source ~/.avatar_forge_env` first; all installs go into the venv and hon
 - **triposr:** source on local disk; do **not** `pip install -r requirements.txt` (it pins old transformers/Pillow):
   ```bash
   git clone https://github.com/VAST-AI-Research/TripoSR.git /opt/src/TripoSR
-  pip install omegaconf xatlas git+https://github.com/tatsy/torchmcubes.git
+  pip install omegaconf xatlas PyMCubes
   ```
-  Wrapper: add `/opt/src/TripoSR` to `sys.path`; `from tsr.system import TSR`;
+  **Do not build torchmcubes** (E-016: it fails on CUDA 12.4). Use the drop-in
+  `src/avatar_forge/models/vendor_shims/torchmcubes.py` (PyMCubes-backed, same output order).
+  Wrapper: insert `str(Path(avatar_forge.models.vendor_shims.__file__).parent)` **and** `/opt/src/TripoSR`
+  at the front of `sys.path` before importing `tsr`; `from tsr.system import TSR`;
   `TSR.from_pretrained("stabilityai/TripoSR", config_name="config.yaml", weight_name="model.ckpt")`;
   input = the BiRefNet cut-out composited on #808080 at the face-forward crop (see the repo's `run.py`);
   `model.extract_mesh(scene_codes, True, resolution=256)` → export GLB.
