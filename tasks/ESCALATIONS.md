@@ -21,7 +21,7 @@ Resolution (Opus): <filled in by Opus>
 
 ---
 
-## E-009 — T17 — Missing Florence/SAM rerun command   status: open
+## E-009 — T17 — Missing Florence/SAM rerun command   status: resolved
 Trigger: The task card is ambiguous under AGENTS.md §4; it requires the exact T13 command and inputs, but the permitted T13 Log-only section does not record them.
 What I tried:
 1. Read the T17 card and only the T13 Log section it permits -> confirmed the six BiRefNet cut-out location and the prior result, but found no exact command or per-image input list.
@@ -30,7 +30,38 @@ Error / evidence: T17 says to rerun "exactly as T13 did (same inputs, same comma
 Files involved: tasks/STATUS.md; tasks/M1/T17_rerun_florence_sam.md; tasks/M1/T13_trials_parsing.md
 My best guess: Opus should specify the trial command and the six input identifiers, or permit reading the relevant T13 command/config section.
 
-Resolution (Opus): <filled in by Opus>
+Resolution (Opus, commit 66a971a): Updated the T17 card with exact staging,
+trial, and report commands, including the rembg fallback when a BiRefNet
+cut-out is missing. Continue T17 using that card.
+
+## E-010 — T17 — Florence processor load failure   status: resolved
+Trigger: T17 explicitly requires escalation if the rerun does not produce valid results; the model wrapper must not be changed.
+What I tried:
+1. Removed the old `florence2-plus-sam` outputs and staged all six BiRefNet cut-outs under `/tmp/af-t17-inputs`.
+2. Ran the exact T17 command with `timeout 2400s`, then regenerated `jobs/_model_trials/REPORT.md` -> all six inputs failed during processor loading.
+Error / evidence: Every input raises `AttributeError: module 'transformers_modules.microsoft.Florence_hyphen_2_hyphen_large.21a599d414c4d928c9032694c424fb94458e3594.processing_florence2' has no attribute 'Florence2Processor'`. `REPORT.md` reports 0/6 successful, mean 6.377 s/image, max VRAM 0.000 GB (about 38.3 s summed from the rounded per-image mean); no image outputs were produced.
+Files involved: `tasks/M1/T17_rerun_florence_sam.md`; `jobs/_model_trials/REPORT.md`; `jobs/_model_trials/parsing/florence2-plus-sam/`
+My best guess: Opus should determine whether the cached Florence-2 processor code or the configured Transformers/model combination needs repair; the trial wrapper was not changed.
+
+Resolution (Opus, commit 5efe269): The stale Hugging Face module cache
+(`~/.cache/hf_modules`) held a broken copy of Florence-2's remote code. It was
+cleared, and the processor now loads. No wrapper change is needed; rerun T17.
+
+## E-011 — T17 — Florence trial stalls on c_front   status: resolved
+Trigger: The T17 card says to record and escalate if the Florence/SAM rerun stalls.
+What I tried:
+1. Pulled Opus's E-010 resolution, cleared the old outputs, and staged all six BiRefNet cut-outs; no rembg fallback was needed.
+2. Ran the exact T17 trial command. Five images completed successfully, but the run remained stuck on `c_front` for more than 10 minutes with no `c_front` output.
+3. Checked `nvidia-smi` while it was stuck -> 0% GPU utilization and no listed process. Stopped the two identified trial processes (PIDs 10086 and 10085) after about 11m39s elapsed.
+Error / evidence: `a_back` 145.788s, `a_front` 136.071s, `b_front` 115.867s, `bad_cropped_feet` 122.709s, and `bad_crossed_arms` 120.322s all have `ok: true` trial records and outputs. `c_front` has no trial record or output. Total wall time was about 11m39s before stopping; `trials_report.py` did not run for this attempt.
+Files involved: `tasks/M1/T17_rerun_florence_sam.md`; `jobs/_model_trials/parsing/florence2-plus-sam/`
+My best guess: Opus should investigate why `c_front` stalls after the processor cache fix and decide how to rerun that input without changing the wrapper.
+
+Resolution (Opus): Accept the repeatable result as a model-quality finding:
+Florence-2 + SAM succeeds on 5/6 photo-style images and reproducibly stalls
+on the illustrated `c_front` input with the GPU idle (observed in T13 and
+T17). Record `c_front` as failed on stylised input; do not debug or rerun it.
+Include the finding in the G1 comparison.
 
 ## E-001 — T00 — Not running on the GPU pod   status: resolved
 Trigger: §4 GPU / CUDA / environment problems; task card requires the RunPod pod ("owner input").
