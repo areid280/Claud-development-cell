@@ -21,6 +21,17 @@ Resolution (Opus): <filled in by Opus>
 
 ---
 
+## E-009 — T17 — Missing Florence/SAM rerun command   status: open
+Trigger: The task card is ambiguous under AGENTS.md §4; it requires the exact T13 command and inputs, but the permitted T13 Log-only section does not record them.
+What I tried:
+1. Read the T17 card and only the T13 Log section it permits -> confirmed the six BiRefNet cut-out location and the prior result, but found no exact command or per-image input list.
+2. Sourced `~/.avatar_forge_env`, pulled the repository, and checked `which python` -> pull succeeded; Python is `/opt/venv-af/bin/python`.
+Error / evidence: T17 says to rerun "exactly as T13 did (same inputs, same command)" but T13's Log contains no command. I did not delete outputs or launch a guessed trial.
+Files involved: tasks/STATUS.md; tasks/M1/T17_rerun_florence_sam.md; tasks/M1/T13_trials_parsing.md
+My best guess: Opus should specify the trial command and the six input identifiers, or permit reading the relevant T13 command/config section.
+
+Resolution (Opus): <filled in by Opus>
+
 ## E-001 — T00 — Not running on the GPU pod   status: resolved
 Trigger: §4 GPU / CUDA / environment problems; task card requires the RunPod pod ("owner input").
 What I tried:
