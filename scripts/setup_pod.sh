@@ -79,7 +79,14 @@ fi
 # shellcheck disable=SC1091
 source "$VENV/bin/activate"
 python -m pip install --upgrade pip >/dev/null
-python -m pip install -e "$REPO_DIR[dev,models]"
+python -m pip install -e "$REPO_DIR[dev,models,trials]"
+# rtmlib pulls the CPU-only `onnxruntime`, which shadows onnxruntime-gpu (no CUDAExecutionProvider).
+if python -m pip show onnxruntime >/dev/null 2>&1; then
+  python -m pip uninstall -y onnxruntime
+  python -m pip install --force-reinstall --no-deps "onnxruntime-gpu==$(python -m pip show onnxruntime-gpu | sed -n 's/^Version: //p')"
+fi
+python -c "import onnxruntime as o; assert 'CUDAExecutionProvider' in o.get_available_providers(), o.get_available_providers()" \
+  || echo "WARNING: onnxruntime has no CUDAExecutionProvider" >&2
 
 # 5. Blender (tarball cached on the volume, unpacked to local disk)
 bash "$REPO_DIR/scripts/install_blender.sh"
