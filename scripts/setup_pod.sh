@@ -36,7 +36,11 @@ if [ -f $VENV/bin/activate ]; then source $VENV/bin/activate; fi
 EOF
 # jobs/ is git-ignored; link it so job outputs on the volume show in the VS Code Explorer
 [ -e "$REPO_DIR/jobs" ] || ln -s "$WS/jobs" "$REPO_DIR/jobs"
-grep -qxF "source $PROFILE_SNIPPET" "$HOME/.bashrc" || echo "source $PROFILE_SNIPPET" >> "$HOME/.bashrc"
+# RunPod appends `source /etc/rp_environment` (which resets PATH) to ~/.bashrc at container start,
+# so our line must come LAST: remove it wherever it is and re-append it on every run.
+touch "$HOME/.bashrc"
+sed -i "\#^source $PROFILE_SNIPPET\$#d" "$HOME/.bashrc"
+echo "source $PROFILE_SNIPPET" >> "$HOME/.bashrc"
 # shellcheck disable=SC1090
 source "$PROFILE_SNIPPET"
 
