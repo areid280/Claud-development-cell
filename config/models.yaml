@@ -66,11 +66,12 @@ roles:
         vram_gb_est: 2
         selected: false
         licence_ok: false
-      - name: florence2-plus-sam2
-        source: https://huggingface.co/microsoft/Florence-2-large ; https://github.com/facebookresearch/sam2
-        install: pip install transformers sam2
-        weights: microsoft/Florence-2-large ; facebook/sam2.1-hiera-large
-        licence: MIT (Florence-2) + Apache-2.0 (SAM 2) (claimed; VERIFY)
+      - name: florence2-plus-sam
+        source: https://huggingface.co/microsoft/Florence-2-large ; https://huggingface.co/facebook/sam-vit-huge
+        install: none beyond the models extra (transformers 4.x has SamModel; Florence-2 uses trust_remote_code)
+        weights: microsoft/Florence-2-large ; facebook/sam-vit-huge
+        licence: MIT (Florence-2) + Apache-2.0 (SAM v1) (claimed; VERIFY)
+        licence_note_e007: SAM 2 (`sam2` package) needs torch>=2.5.1 and broke the pinned stack (E-007); revisit at G1.
         licence_note: Open vocabulary - finds 'collar', 'gloves', 'harness' etc. by text, SAM makes masks.
         vram_gb_est: 8
         selected: false

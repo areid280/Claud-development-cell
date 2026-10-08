@@ -16,11 +16,11 @@ Working wrappers + trial outputs for every `parsing` candidate.
    `predict(image_rgba: PIL.Image) -> dict[str, np.ndarray]` mapping **canonical**
    label → boolean mask (H×W). Put the model-label → canonical-label table at
    the top of each wrapper as a dict constant. Unmappable labels go to `accessory`.
-2. For the open-vocabulary candidate (`florence2-plus-sam2`): text prompts come
+2. For the open-vocabulary candidate (`florence2-plus-sam`, renamed from `florence2-plus-sam2` by Opus, E-007): text prompts come
    from a new config key `stages.s03_parse.open_vocab_prompts`. Add it to
    `config/pipeline.yaml` with: `["hair", "face", "jacket", "bodysuit", "gloves",
    "belt", "collar", "boots", "shoes", "skirt", "dress", "hat", "stockings", "harness", "bra", "top"]`.
-   Each prompt → boxes → SAM 2 masks → canonical label (same name, or `upper_clothes`
+   Each prompt → boxes → SAM masks (`transformers.SamModel` + `SamProcessor`, `facebook/sam-vit-huge`; do **not** `pip install sam2`) → canonical label (same name, or `upper_clothes`
    for `top`, `socks_stockings` for `stockings`).
 3. Trial adapter module `trial_adapters_parsing.py`: per image write
    `masks/<label>.png`, `labels.png` (colour-coded, fixed colour per label),

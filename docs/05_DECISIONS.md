@@ -103,4 +103,10 @@ Consequences: At each gate, licence checks still verify: no territory exclusions
 the use itself. `config/models.yaml` gains `licence_class: commercial | non_commercial` per selected
 model so a future switch to commercial use shows exactly what must be replaced. Revisit if the owner's
 plans change.
+Addendum to D-007 (E-007, 2026-10-08): installing `sam2` in a terminal without the venv replaced the
+template's system torch (2.4.1+cu124) with a CUDA 13 build; CUDA became unavailable. Fixes:
+setup_pod.sh writes `/etc/pip.conf` so the constraints apply to every pip on the pod; AGENTS.md
+requires `source ~/.avatar_forge_env` in every terminal. The open-vocabulary trial uses SAM v1
+(`facebook/sam-vit-huge`, in transformers 4.x) instead of SAM 2; whether SAM 2 justifies moving the
+torch stack is a G1 question. A damaged system Python is repaired by restarting/redeploying the pod.
 
