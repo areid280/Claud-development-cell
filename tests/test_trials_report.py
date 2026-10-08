@@ -58,3 +58,18 @@ def test_report_omits_measurement_errors_without_reference_file(
     report = build_report(tmp_path, tmp_path / "missing-reference.yaml")
 
     assert "Measurement errors vs owner references:" not in report
+
+
+def test_report_rebuilds_summary_for_interrupted_candidate(tmp_path: Path) -> None:
+    out_root = tmp_path / "trials"
+    for stem, ok in (("a_front", True), ("c_front", False)):
+        trial_dir = out_root / "parsing" / "stalled" / stem
+        trial_dir.mkdir(parents=True)
+        (trial_dir / "trial.json").write_text(json.dumps({
+            "role": "parsing", "name": "stalled", "image": f"{stem}.png", "ok": ok,
+            "seconds": 2.0, "vram_peak_gb": 1.5, "error": None if ok else "incomplete", "extra": {},
+        }), encoding="utf-8")
+
+    report = build_report(out_root, reference_path=tmp_path / "missing.yaml")
+
+    assert "| stalled | 1 / 2 |" in report

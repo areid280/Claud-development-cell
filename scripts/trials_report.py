@@ -56,6 +56,27 @@ def build_report(out_root: Path, reference_path: Path | None = None) -> str:
             summary = json.load(summary_file)
         by_role[str(summary["role"])].append(summary)
 
+    # A run killed before writing summary.json (E-011): rebuild the summary from trial.json files.
+    for candidate_dir in sorted({path.parent.parent for path in out_root.glob("*/*/*/trial.json")}):
+        if (candidate_dir / "summary.json").exists():
+            continue
+        trials = [
+            json.loads(path.read_text(encoding="utf-8"))
+            for path in sorted(candidate_dir.glob("*/trial.json"))
+        ]
+        durations = [float(trial.get("seconds", 0.0)) for trial in trials]
+        by_role[candidate_dir.parent.name].append({
+            "role": candidate_dir.parent.name,
+            "name": candidate_dir.name,
+            "total": len(trials),
+            "ok": sum(bool(trial.get("ok")) for trial in trials),
+            "failed": sum(not bool(trial.get("ok")) for trial in trials),
+            "mean_seconds": sum(durations) / len(durations) if durations else 0.0,
+            "max_vram_gb": max(
+                (float(trial.get("vram_peak_gb", 0.0)) for trial in trials), default=0.0
+            ),
+        })
+
     for trial_path in sorted(out_root.glob("*/*/*/trial.json")):
         with trial_path.open(encoding="utf-8") as trial_file:
             trial = json.load(trial_file)

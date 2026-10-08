@@ -54,6 +54,17 @@ def _run_trial(
     out_dir.mkdir(parents=True, exist_ok=True)
     trial_fn = REGISTRY[(role, name)]
 
+    # Written first so a stalled or killed run still leaves an explicit failure record (E-011).
+    _write_json(out_dir / "trial.json", {
+        "role": role,
+        "name": name,
+        "image": str(image_path),
+        "ok": False,
+        "seconds": 0.0,
+        "vram_peak_gb": 0.0,
+        "error": "incomplete: process ended before this image finished (stall or kill)",
+        "extra": {},
+    })
     reset_vram_peak()
     started_at = time.perf_counter()
     error: str | None = None
@@ -77,10 +88,14 @@ def _run_trial(
         "error": error,
         "extra": extra,
     }
-    with (out_dir / "trial.json").open("w", encoding="utf-8") as trial_file:
-        json.dump(result, trial_file, indent=2)
-        trial_file.write("\n")
+    _write_json(out_dir / "trial.json", result)
     return result
+
+
+def _write_json(path: Path, data: dict[str, Any]) -> None:
+    with path.open("w", encoding="utf-8") as json_file:
+        json.dump(data, json_file, indent=2)
+        json_file.write("\n")
 
 
 def _write_summary(
@@ -134,11 +149,11 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("no input images matched --images")
 
     for role, name in selections:
-        results = [
-            _run_trial(role, name, image_path, args.out_root)
-            for image_path in images
-        ]
-        _write_summary(role, name, results, args.out_root)
+        results: list[dict[str, Any]] = []
+        for image_path in images:
+            results.append(_run_trial(role, name, image_path, args.out_root))
+            # Updated after every image so an interrupted run still appears in the report.
+            _write_summary(role, name, results, args.out_root)
 
     return 0
 
