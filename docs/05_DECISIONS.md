@@ -113,3 +113,17 @@ Addendum to D-006 (E-010, 2026-10-08): a stale `HF_MODULES_CACHE` copy of Floren
 lacked `Florence2Processor` (AttributeError). Clearing `~/.cache/hf_modules` fixed it; setup_pod.sh now
 clears it on every run. If a remote-code model fails to import, clear that cache before escalating.
 
+## D-009 — Image-to-3D candidates: drop Hunyuan3D-2, add TripoSR, SF3D optional  (2026-10-08, E-013–E-015)
+Context: T15 blocked on three candidates.
+Decision:
+- Hunyuan3D-2 is **excluded**: its licence "does not apply in the European Union, United Kingdom and
+  South Korea" (LICENSE, Tencent/Hunyuan3D-2, checked 2026-10-08). The owner is in the UK. This holds
+  for non-commercial use too, so D-008 does not help.
+- TRELLIS stays: NVIDIA publishes `kaolin==0.17.0` wheels for torch-2.4.1_cu124 / cp311, so it fits the
+  pinned stack (D-007). nvdiffrast's NVIDIA licence is non-commercial, acceptable under D-008.
+- TripoSR (MIT, ungated) is added as a reliable baseline.
+- Stable Fast 3D is optional: its weights are gated behind the Stability Community Licence. It is trialled
+  only if the owner accepts that licence on Hugging Face and logs in on the pod (`huggingface-cli login`).
+Consequences: G1 compares TRELLIS and TripoSR (plus SF3D if enabled). Hunyuan3D models stay out unless
+the licence territory changes.
+

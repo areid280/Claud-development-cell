@@ -122,7 +122,7 @@ roles:
     candidates:
       - name: trellis
         source: https://github.com/microsoft/TRELLIS
-        install: see repo (needs custom CUDA ops; use their setup script)
+        install: see T15 card "Opus notes" (kaolin 0.17.0 wheel for torch-2.4.1_cu124; xformers backend)
         weights: microsoft/TRELLIS-image-large
         licence: MIT (claimed; VERIFY incl. any dependency with NVIDIA source licence)
         licence_note: Check for a newer TRELLIS release and compare at G1.
@@ -133,16 +133,25 @@ roles:
         source: https://github.com/Tencent-Hunyuan/Hunyuan3D-2
         install: see repo
         weights: tencent/Hunyuan3D-2 (or newer)
-        licence: VERIFY - Tencent Hunyuan community licence has had territory exclusions (reportedly incl. UK/EU)
-        licence_note: Strong textured output; may be unusable from the UK. Check first, before installing.
+        licence: EXCLUDED (D-009) - Tencent Hunyuan 3D 2.0 Community Licence "does not apply in the European Union, United Kingdom and South Korea" (checked 2026-10-08); owner is in the UK
+        licence_note: Do not install or trial.
         vram_gb_est: 16
         selected: false
         licence_ok: false
       - name: stable-fast-3d
         source: https://github.com/Stability-AI/stable-fast-3d
         install: see repo
-        weights: stabilityai/stable-fast-3d (gated)
+        weights: stabilityai/stable-fast-3d (gated: owner must accept the licence on Hugging Face; optional, D-009)
         licence: VERIFY - Stability community licence (revenue thresholds)
         vram_gb_est: 8
+        selected: false
+        licence_ok: false
+      - name: triposr
+        source: https://github.com/VAST-AI-Research/TripoSR
+        install: see T15 card "Opus notes" (clone to /opt/src/TripoSR; do NOT install its requirements.txt pins)
+        weights: stabilityai/TripoSR
+        licence: MIT (code + weights, Tripo AI & Stability AI; checked 2026-10-08)
+        licence_note: Added by Opus (D-009) as an ungated, permissive baseline. Untextured vertex-colour mesh.
+        vram_gb_est: 6
         selected: false
         licence_ok: false
