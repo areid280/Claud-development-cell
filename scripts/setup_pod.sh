@@ -40,6 +40,10 @@ grep -qxF "source $PROFILE_SNIPPET" "$HOME/.bashrc" || echo "source $PROFILE_SNI
 # shellcheck disable=SC1090
 source "$PROFILE_SNIPPET"
 
+# 1b. Make the torch pin apply to EVERY pip on the pod, venv or not (D-007, E-007)
+mkdir -p /etc
+printf '[global]\nconstraint = %s\n' "$REPO_DIR/config/pip-constraints.txt" > /etc/pip.conf
+
 # 2. Git: settings in ~/.gitconfig (local disk), identity + saved token kept on the volume
 if [ -f "$WS/git/identity" ]; then
   # file format: two lines, "name=<Your Name>" and "email=<you@example.com>"

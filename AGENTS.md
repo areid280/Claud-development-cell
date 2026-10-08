@@ -78,6 +78,8 @@ Escalating early is cheaper than looping. Never guess at licences.
   licence and a `licence_ok` field. Only Opus at a gate may set
   `licence_ok: true`.
 - Config values come from `config/pipeline.yaml`. No magic numbers in code.
+- On the pod, every terminal must load the environment first: `source ~/.avatar_forge_env`.
+  `which python` must print `/opt/venv-af/bin/python`; if not, fix the terminal before any `pip`.
 - Log with `logging` via `avatar_forge.core.log.get_logger`. No `print` in library code.
 - Tests in `tests/` use `pytest`. Tests that need a GPU are marked
   `@pytest.mark.gpu` and are skipped automatically without one.
