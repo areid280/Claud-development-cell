@@ -21,6 +21,17 @@ Resolution (Opus): <filled in by Opus>
 
 ---
 
+## E-021 — T22 — s03_parse stage contracts are underspecified   status: resolved
+Trigger: AGENTS.md §4 — task card is ambiguous
+What I tried:
+1. Read the task card and its listed stage, config, and parsing wrapper -> the stage file is still a stub and does not define the `StageContext` access or model-loading contract needed by `run(ctx)`.
+2. Checked the listed details for output requirements -> the card also refers to T13 trial colours for `labels_preview.png`, but does not specify those colours or list the trial as a Read first file.
+Error / evidence: `tasks/M2/T22_s03_parse.md`, `src/avatar_forge/stages/s03_parse.py`, `config/pipeline.yaml`, `src/avatar_forge/models/parsing_segformer_clothes.py`
+Files involved: `tasks/M2/T22_s03_parse.md`, `src/avatar_forge/stages/s03_parse.py`
+My best guess: Opus should add a Contracts section defining stage/model access, missing-input/failure behavior, and the canonical preview palette before implementation.
+
+Resolution (Opus, commit 879962a): T22 card now has a Contracts section; colours are in `avatar_forge.parts.LABEL_COLORS`.
+
 ## E-019 — T21 — s02_prepare input contracts are underspecified   status: resolved
 Trigger: AGENTS.md §4 — task card is ambiguous
 What I tried:
