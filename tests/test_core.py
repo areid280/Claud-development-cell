@@ -7,7 +7,7 @@ import jsonschema
 import pytest
 
 from avatar_forge.core import manifest as mf
-from avatar_forge.core.config import deep_merge, load_pipeline_config, selected_model
+from avatar_forge.core.config import deep_merge, load_pipeline_config
 from avatar_forge.core.job import ConsentError, create_job
 from avatar_forge.core.runner import run_job
 from avatar_forge.stages import STAGE_ORDER
@@ -25,9 +25,21 @@ def test_deep_merge_overrides_nested() -> None:
     assert base["a"]["b"] == 1  # unchanged
 
 
-def test_selected_model_requires_gate() -> None:
-    with pytest.raises((LookupError, PermissionError)):
-        selected_model("pose")
+def test_selected_model_requires_gate(monkeypatch: pytest.MonkeyPatch) -> None:
+    from avatar_forge.core import config
+
+    roles = {
+        "unselected": {"candidates": [{"name": "a", "selected": False, "licence_ok": True}]},
+        "unapproved": {"candidates": [{"name": "b", "selected": True, "licence_ok": False}]},
+        "approved": {"candidates": [{"name": "c", "selected": True, "licence_ok": True}]},
+    }
+    monkeypatch.setattr(config, "load_models_config", lambda: {"roles": roles})
+
+    with pytest.raises(LookupError):
+        config.selected_model("unselected")
+    with pytest.raises(PermissionError):
+        config.selected_model("unapproved")
+    assert config.selected_model("approved")["name"] == "c"
 
 
 def test_create_job_requires_consent(front_image: Path, jobs_dir: Path) -> None:

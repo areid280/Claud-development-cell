@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import numpy as np
-import trimesh
+import pytest
 
-from avatar_forge.body.mesh_measure import measure_mesh
+trimesh = pytest.importorskip("trimesh")  # models extra; CI installs only [dev]
+pytest.importorskip("scipy")  # trimesh's mesh sections need scipy
+
+from avatar_forge.body.mesh_measure import measure_mesh  # noqa: E402 (after the skips)
 
 
 def _config() -> dict:
