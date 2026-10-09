@@ -50,3 +50,10 @@ Canonical part masks per view, ready for body fitting and (later) garment separa
 - `pytest -q` · run `--to s03_parse` on two samples, list parts.json labels in Log.
 
 ## Log
+
+- `source ~/.avatar_forge_env && ruff check src tests` → `All checks passed!`
+- `source ~/.avatar_forge_env && pytest -q` → `80 passed, 3 warnings in 44.96s`.
+- `pytest -q tests/test_s03_parse.py` → `1 passed in 2.09s`.
+- `avatar-forge run samples/a_front.png --confirm-adult-consent --to s03_parse` → `s00_ingest ok`, `s01_validate ok`, `s02_prepare ok`, `s03_parse ok`; job `/workspace/jobs/20261009-212621-2658e9`. `parts.json` labels: `hair, face, skin, upper_clothes, lower_clothes, shoes`.
+- `avatar-forge run samples/b_front.png --confirm-adult-consent --to s03_parse` → `s00_ingest ok`, `s01_validate ok`, `s02_prepare ok`, `s03_parse ok`; job `/workspace/jobs/20261009-212657-7bf227`. `parts.json` labels: `hair, face, skin, dress, belt, shoes`.
+- Initial sample attempt found zero-byte cached SegFormer config, processor config, and weights. Removed those exact corrupt cache entries; subsequent sample runs downloaded/loaded the model and passed. No model assets were added to the repository.
