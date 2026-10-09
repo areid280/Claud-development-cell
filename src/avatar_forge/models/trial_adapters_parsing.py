@@ -12,28 +12,7 @@ from avatar_forge.models.parsing_florence2_plus_sam import Florence2PlusSam
 from avatar_forge.models.parsing_sapiens_seg import SapiensSeg
 from avatar_forge.models.parsing_segformer_clothes import SegformerClothes
 from avatar_forge.models.trials import register
-
-LABEL_COLORS = {
-    "background": (0, 0, 0),
-    "hair": (80, 40, 20),
-    "face": (255, 200, 170),
-    "skin": (240, 160, 120),
-    "neck": (220, 140, 110),
-    "upper_clothes": (40, 110, 220),
-    "lower_clothes": (30, 70, 180),
-    "dress": (200, 40, 150),
-    "bodysuit": (160, 30, 120),
-    "jacket": (30, 160, 220),
-    "gloves": (240, 220, 30),
-    "belt": (130, 80, 40),
-    "collar": (80, 220, 220),
-    "hat": (180, 120, 40),
-    "shoes": (80, 80, 80),
-    "boots": (50, 50, 50),
-    "socks_stockings": (220, 100, 170),
-    "bag": (100, 180, 70),
-    "accessory": (250, 100, 30),
-}
+from avatar_forge.parts import LABEL_COLORS
 
 
 def write_parsing_outputs(
