@@ -161,4 +161,11 @@ Addendum to D-012 / D-014 (owner, 2026-10-09):
   so `licence_ok: true`. A switch to commercial use would require replacing it (fallback Sapiens is also NC).
 - nvdiffrast: the owner confirms this project is within NVIDIA's "research or evaluation" scope, so TRELLIS may load
   it. This, too, must be revisited if the project ever becomes commercial.
+Addendum to D-007 (E-020, 2026-10-09): onnxruntime-gpu 1.31 targets CUDA 13 and fell back to CPU silently (pose has
+been running on CPU since the fresh pod). Pinned `onnxruntime-gpu>=1.20,<1.23` (CUDA 12 + cuDNN 9);
+`models/ort_cuda.prepare_onnxruntime_cuda()` loads PyTorch's bundled CUDA 12 libraries first; setup_pod.sh and a
+GPU test now run a real session (`cuda_session_works`) instead of only listing providers.
+Addendum to D-006 (E-020): a 0-byte `config.json` in the BiRefNet cache on the volume (interrupted write) broke
+loading. If a Hugging Face model fails with "not a valid JSON file", delete that model's folder under
+`/workspace/cache/hf/hub/` and let it download again.
 

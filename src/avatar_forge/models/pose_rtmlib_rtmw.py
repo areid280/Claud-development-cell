@@ -41,6 +41,10 @@ class RTMLibRTMW(ModelWrapper):
     def load(self) -> None:
         from rtmlib import Wholebody
 
+        from avatar_forge.models.ort_cuda import prepare_onnxruntime_cuda
+
+        prepare_onnxruntime_cuda()  # else ONNX Runtime silently runs on CPU (E-020)
+
         device = "cuda" if self.device.startswith("cuda") else "cpu"
         self.model = Wholebody(mode="balanced", backend="onnxruntime", device=device)
 

@@ -18,7 +18,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.2", "ruff>=0.5"]
-models = ["huggingface_hub>=0.24", "onnxruntime-gpu>=1.18", "transformers>=4.48,<5", "trimesh>=4.4"]
+models = ["huggingface_hub>=0.24", "onnxruntime-gpu>=1.20,<1.23", "transformers>=4.48,<5", "trimesh>=4.4"]
 # Packages the M1 candidate trials need (from docs/INSTALL_LOG.md); G1 prunes this to the selected models.
 trials = ["rtmlib", "rembg[gpu]", "timm", "einops", "kornia", "PyMCubes", "omegaconf", "xatlas"]
 

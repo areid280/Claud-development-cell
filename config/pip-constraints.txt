@@ -9,3 +9,6 @@ torchvision==0.19.1
 torchaudio==2.4.1
 # transformers 5.x requires torch>=2.5 and silently disables torch on 2.4.1 (T12: ViTPose, BiRefNet failed).
 transformers>=4.48,<5
+# onnxruntime-gpu 1.31 targets CUDA 13 (fails on our 12.x stack, silently runs on CPU). 1.20-1.22 are CUDA 12 + cuDNN 9 (E-020).
+onnxruntime-gpu>=1.20,<1.23
+

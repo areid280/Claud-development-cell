@@ -89,8 +89,9 @@ if python -m pip show onnxruntime >/dev/null 2>&1; then
   python -m pip uninstall -y onnxruntime
   python -m pip install --force-reinstall --no-deps "onnxruntime-gpu==$(python -m pip show onnxruntime-gpu | sed -n 's/^Version: //p')"
 fi
-python -c "import onnxruntime as o; assert 'CUDAExecutionProvider' in o.get_available_providers(), o.get_available_providers()" \
-  || echo "WARNING: onnxruntime has no CUDAExecutionProvider" >&2
+# A real session on the GPU, not just a provider list: ONNX Runtime falls back to CPU silently (E-020).
+python -c "from avatar_forge.models.ort_cuda import cuda_session_works as ok; import sys; sys.exit(0 if ok() else 1)" \
+  || echo "WARNING: onnxruntime cannot run on the GPU (pose would fall back to CPU)" >&2
 
 # 5. Blender (tarball cached on the volume, unpacked to local disk)
 bash "$REPO_DIR/scripts/install_blender.sh"
