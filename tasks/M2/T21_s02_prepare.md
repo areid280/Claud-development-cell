@@ -1,7 +1,9 @@
 # T21 — Stage s02_prepare
 milestone: M2 · effort: low · depends: T20
 
-> Opus refines this card at G1 (selected bg_remove model).
+> **G1 (Opus, 2026-10-09, D-011):** bg_remove = **birefnet**, wrapper `src/avatar_forge/models/bg_remove_birefnet.py`,
+> class `BiRefNet`, `predict(image: PIL.Image) -> PIL.Image` (RGBA). Entry via `selected_model("bg_remove")`.
+> Needs `timm einops kornia` (in the `trials` extra) and `HF_MODULES_CACHE` on local disk (setup does this).
 
 ## Goal
 Person cut out on transparent background, cropped and resized consistently.

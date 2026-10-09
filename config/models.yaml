@@ -19,11 +19,13 @@ roles:
         source: https://github.com/Tau-J/rtmlib
         install: pip install rtmlib onnxruntime-gpu
         weights: downloaded automatically by rtmlib
-        licence: Apache-2.0 (claimed; VERIFY code and weights)
+        licence: 'Apache-2.0 (rtmlib LICENSE and mmpose LICENSE read 2026-10-09); RTMW trained on mixed public datasets incl. research-only ones - acceptable under D-008'
         licence_note: Lightweight ONNX; no mmcv needed.
         vram_gb_est: 2
-        selected: false
-        licence_ok: false
+        selected: true
+        licence_ok: true
+        role_in_pipeline: primary (D-010)
+        licence_class: non_commercial
       - name: vitpose-hf
         source: https://huggingface.co/docs/transformers/model_doc/vitpose
         install: pip install transformers
@@ -33,6 +35,7 @@ roles:
         vram_gb_est: 3
         selected: false
         licence_ok: false
+        role_in_pipeline: fallback (D-010)
 
   bg_remove:
     purpose: Person cut-out on transparent background.
@@ -41,10 +44,12 @@ roles:
         source: https://github.com/ZhengPeng7/BiRefNet
         install: pip install transformers timm kornia
         weights: ZhengPeng7/BiRefNet
-        licence: MIT (claimed; VERIFY)
+        licence: 'MIT (BiRefNet LICENSE read 2026-10-09)'
         vram_gb_est: 4
-        selected: false
-        licence_ok: false
+        selected: true
+        licence_ok: true
+        role_in_pipeline: primary (D-011)
+        licence_class: commercial
       - name: rembg
         source: https://github.com/danielgatis/rembg
         install: pip install "rembg[gpu]"
@@ -53,6 +58,7 @@ roles:
         vram_gb_est: 2
         selected: false
         licence_ok: false
+        role_in_pipeline: fallback (D-011)
 
   parsing:
     purpose: Per-part masks (hair, face, skin, each garment).
@@ -61,11 +67,13 @@ roles:
         source: https://huggingface.co/mattmdjaga/segformer_b2_clothes
         install: pip install transformers
         weights: mattmdjaga/segformer_b2_clothes
-        licence: VERIFY (model card; trained on ATR dataset, check dataset terms)
+        licence: 'MIT per model card (claimed; Hugging Face unreachable from the gate environment - T22 must paste the card''s licence line); trained on ATR (academic dataset), acceptable under D-008'
         licence_note: Simple, fixed label set incl. hat, upper/lower clothes, shoes, belt, bag.
         vram_gb_est: 2
-        selected: false
+        selected: true
         licence_ok: false
+        role_in_pipeline: primary (D-012); licence_ok pending model-card check in T22
+        licence_class: non_commercial
       - name: florence2-plus-sam
         source: https://huggingface.co/microsoft/Florence-2-large ; https://huggingface.co/facebook/sam-vit-huge
         install: none beyond the models extra (transformers 4.x has SamModel; Florence-2 uses trust_remote_code)
@@ -76,6 +84,7 @@ roles:
         vram_gb_est: 8
         selected: false
         licence_ok: false
+        role_in_pipeline: not selected; reconsider at G3 for open-vocabulary garment parts (D-012)
       - name: sapiens-seg
         source: https://github.com/facebookresearch/sapiens
         install: torch only (TorchScript; no transformers model, no mmseg needed)
@@ -84,7 +93,9 @@ roles:
         licence_note: Very high quality human parsing; check licence carefully.
         vram_gb_est: 10
         selected: false
-        licence_ok: false
+        licence_ok: true
+        role_in_pipeline: fallback (D-012)
+        licence_class: non_commercial
 
   body_measure:
     purpose: Body shape -> measurements in cm (D-001). Body-model params never leave the wrapper.
@@ -93,11 +104,13 @@ roles:
         source: in-house (src/avatar_forge/body/keypoint_ratio.py, written in T14)
         install: none
         weights: none
-        licence: ours
+        licence: 'ours (no third-party weights)'
         licence_note: Fallback. Uses pose keypoints + silhouette widths + user height. Lower accuracy, no licence risk.
         vram_gb_est: 0
-        selected: false
-        licence_ok: false
+        selected: true
+        licence_ok: true
+        role_in_pipeline: primary (D-013)
+        licence_class: commercial
       - name: sam-3d-body
         source: https://github.com/facebookresearch/sam-3d-body
         install: see repo
@@ -126,11 +139,13 @@ roles:
         source: https://github.com/microsoft/TRELLIS
         install: see T15 card "Opus notes" (kaolin 0.17.0 wheel for torch-2.4.1_cu124; xformers backend)
         weights: microsoft/TRELLIS-image-large
-        licence: MIT (claimed; VERIFY incl. any dependency with NVIDIA source licence)
+        licence: 'MIT code + weights (TRELLIS LICENSE read 2026-10-09); deps kaolin Apache-2.0, spconv Apache-2.0, xformers BSD; nvdiffrast NVIDIA Source Code Licence = research/evaluation only, must not be used at runtime (D-014)'
         licence_note: Check for a newer TRELLIS release and compare at G1.
         vram_gb_est: 16
-        selected: false
-        licence_ok: false
+        selected: true
+        licence_ok: true
+        role_in_pipeline: primary (D-014)
+        licence_class: commercial
         trial: "completed: 6/6; mesh-only vertex-color GLBs and front/back previews written"
       - name: hunyuan3d-2
         source: https://github.com/Tencent-Hunyuan/Hunyuan3D-2
@@ -159,5 +174,7 @@ roles:
         licence_note: Added by Opus (D-009) as an ungated, permissive baseline. Untextured vertex-colour mesh.
         vram_gb_est: 6
         selected: false
-        licence_ok: false
+        licence_ok: true
+        role_in_pipeline: fallback (D-014)
+        licence_class: commercial
         trial: "completed: 6/6 samples; full and garment GLBs plus front/back previews written"

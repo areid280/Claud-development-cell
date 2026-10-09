@@ -19,7 +19,7 @@ Single source of truth. Workers take the **first** `todo` whose dependencies are
 | T14 | Trials: body measurements | M1 | T12 | done |
 | T15 | Trials: image-to-3D | M1 | T14 | done |
 | T18 | Trials: mesh-based body measurement | M1 | T14 | done |
-| **G1** | **Gate: model choice and licences (Opus)** | M1 | T10–T18 | todo |
+| **G1** | **Gate: model choice and licences (Opus)** | M1 | T10–T18 | done (PASS WITH FIXES) |
 | T20 | Stage s01_validate | M2 | G1 | todo |
 | T21 | Stage s02_prepare | M2 | T20 | todo |
 | T22 | Stage s03_parse | M2 | T21 | todo |

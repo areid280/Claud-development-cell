@@ -2,7 +2,10 @@
 milestone: M2 · effort: low · depends: G1
 owner input: `samples/bad_cropped_feet.png` and `samples/bad_crossed_arms.png` exist
 
-> Opus refines this card at G1 (selected pose model name, any threshold changes).
+> **G1 (Opus, 2026-10-09, D-010):** pose = **rtmlib-rtmw**, wrapper `src/avatar_forge/models/pose_rtmlib_rtmw.py`,
+> class `RTMLibRTMW`, `predict(image: PIL.Image) -> list[Person]` (COCO-17 names + whole-body foot keypoints
+> such as `left_heel`/`left_big_toe`). Get the entry with `avatar_forge.core.config.selected_model("pose")`.
+> Install: `pip install -e ".[dev,models,trials]"` (rtmlib is in the `trials` extra). No threshold changes.
 
 ## Goal
 Reject unusable inputs with a clear reason; warn on weak ones.

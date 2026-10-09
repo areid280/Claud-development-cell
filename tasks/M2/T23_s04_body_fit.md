@@ -1,7 +1,9 @@
 # T23 — Stage s04_body_fit
 milestone: M2 · effort: medium · depends: T22
 
-> Opus refines this card at G1 (selected body_measure method).
+> **G1 (Opus, 2026-10-09, D-013):** body_measure = **keypoint-ratio** (in-house), `src/avatar_forge/body/keypoint_ratio.py`
+> `measure(keypoints, alpha, height_cm, cfg)`. Keypoints from `s01_validate/<view>_keypoints.json`, alpha from
+> `s02_prepare/<view>_rgba.png`. Ignore `mesh_measure.py` in M2. `confidence` = 0.5 for every value.
 
 ## Goal
 `body_fit.json` with measurements (cm) and colours that validates against the schema.

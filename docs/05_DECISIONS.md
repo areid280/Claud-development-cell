@@ -127,3 +127,33 @@ Decision:
 Consequences: G1 compares TRELLIS and TripoSR (plus SF3D if enabled). Hunyuan3D models stay out unless
 the licence territory changes.
 
+## D-010 — Pose: RTMW via rtmlib  (2026-10-09, G1)
+Context: T12/T16 trials, 6 samples. rtmlib-rtmw 6/6, vitpose-hf 6/6; skeletons near-identical on contact sheets.
+Decision: rtmlib-rtmw primary (whole-body: heel/toe keypoints feed height and measurements; ONNX, light).
+vitpose-hf fallback. Licence: Apache-2.0 (rtmlib, mmpose); training data includes research-only sets, fine under D-008.
+
+## D-011 — Background removal: BiRefNet  (2026-10-09, G1)
+Context: T12/T16; birefnet 6/6, rembg (u2net_human_seg) 6/6; both clean at review resolution.
+Decision: birefnet primary (MIT, state-of-the-art edges on hair); rembg fallback (not licence-approved yet).
+
+## D-012 — Parsing: SegFormer clothes  (2026-10-09, G1)
+Context: T13/T17. segformer-clothes 6/6, sapiens-seg 6/6, florence2-plus-sam 5/6. SegFormer gives the most useful
+garment classes (dress, belt, shoes; cloak partly), Sapiens is comparable but left holes on c_front, Florence+SAM
+mislabelled parts and stalls on stylised art.
+Decision: segformer-clothes primary (single model in M2); sapiens-seg fallback (CC BY-NC, D-008);
+Florence+SAM reconsidered at G3 for open-vocabulary parts. Licence_ok for SegFormer is pending a read of its
+Hugging Face model card (unreachable from the gate environment).
+Risk: no model separates a jacket from the bodysuit beneath it (both "upper clothes"); M3 must handle layers.
+
+## D-013 — Body measurement: in-house keypoint ratio  (2026-10-09, G1)
+Context: T14 keypoint-ratio 6/6 against owner reference estimates; T18 sam-3d-body skipped (gated, HTTP 401),
+smpler-x skipped (needs SMPL-X registration).
+Decision: keypoint-ratio for M2 (no third-party licence). Revisit mesh-based measurement at G3 if accuracy is short.
+
+## D-014 — Image-to-3D: TRELLIS  (2026-10-09, G1)
+Context: T15 trellis vs triposr on 6 samples (front/back renders after E-018). TRELLIS gives clean faces, garment
+detail and a coherent cloak; TripoSR is noisy and blobby.
+Decision: trellis primary, triposr fallback (MIT, simpler install). Licence: TRELLIS code and weights MIT. Its
+optional dependency nvdiffrast is NVIDIA research/evaluation-only, which personal use may not fit, so it must not be
+used at runtime; our export path builds the GLB from the raw mesh and should not need it (verified in T25).
+
