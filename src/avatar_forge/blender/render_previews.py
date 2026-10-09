@@ -5,9 +5,9 @@ Usage (via avatar_forge.blender_runner.run_blender):
         --in mesh.glb --out-dir previews/ [--size 768]
 
 Writes <out-dir>/front.png and <out-dir>/back.png. Must not import avatar_forge.
-Models do not agree on "up" (TripoSR writes Z-up meshes into a Y-up format), so the figure is
-stood upright from the file convention and turned to face the camera axis (see _auto_orient).
-Front and back may come out swapped for some models; both views are always rendered.
+The GLB is trusted to be glTF Y-up (+Z forward); Blender's importer turns that into +Z up with the
+model facing -Y, so the "front" camera sits on -Y. Wrappers convert their meshes to Y-up before
+export (avatar_forge.models.mesh_axes, E-018); this script never guesses orientation.
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 import bpy
-from mathutils import Matrix, Vector
+from mathutils import Vector
 
 MARGIN = 1.1  # frame the mesh with 10% padding
 
@@ -43,35 +43,6 @@ def _mesh_bounds() -> tuple[Vector, Vector]:
     low = Vector((min(c.x for c in corners), min(c.y for c in corners), min(c.z for c in corners)))
     high = Vector((max(c.x for c in corners), max(c.y for c in corners), max(c.z for c in corners)))
     return low, high
-
-
-def _auto_orient() -> None:
-    """Stand the figure along +Z and turn it to face the Y axis.
-
-    If the figure lies along Blender Y, the file was written Z-up (e.g. TripoSR); rotating -90°
-    about X exactly undoes the importer's Y-up conversion. Shape alone cannot tell head from
-    feet, so the sign comes from that file convention rather than a guess.
-    """
-    low, high = _mesh_bounds()
-    extent = high - low
-    height_axis = max(range(3), key=lambda axis: extent[axis])
-    rotations = {
-        0: Matrix.Rotation(math.radians(-90.0), 4, "Y"),  # X-up file: +X -> +Z
-        1: Matrix.Rotation(math.radians(-90.0), 4, "X"),  # Z-up file: undo the glTF import turn
-        2: Matrix.Identity(4),
-    }
-    _apply(rotations[height_axis])
-    low, high = _mesh_bounds()
-    extent = high - low
-    if extent.x < extent.y:  # narrow along X: the figure faces sideways; turn it to face Y
-        _apply(Matrix.Rotation(math.radians(90.0), 4, "Z"))
-
-
-def _apply(transform: Matrix) -> None:
-    for obj in bpy.context.scene.objects:
-        if obj.parent is None:
-            obj.matrix_world = transform @ obj.matrix_world
-    bpy.context.view_layer.update()
 
 
 def _setup_scene(size: int) -> None:
@@ -109,7 +80,6 @@ def main() -> None:
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=str(options.input))
     options.out_dir.mkdir(parents=True, exist_ok=True)
-    _auto_orient()
     _setup_scene(options.size)
 
     low, high = _mesh_bounds()

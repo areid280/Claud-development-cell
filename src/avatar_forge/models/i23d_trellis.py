@@ -10,6 +10,7 @@ import trimesh
 from PIL import Image
 
 from avatar_forge.models.base import ModelWrapper
+from avatar_forge.models.mesh_axes import z_up_to_y_up
 
 TRELLIS_SOURCE = Path("/opt/src/TRELLIS")
 
@@ -25,7 +26,7 @@ def _export_mesh_glb(mesh: object, mesh_path: Path) -> None:
         raise ValueError(f"Unexpected TRELLIS vertex color shape: {colors.shape}")
     colors = np.clip(colors[:, :3] * 255.0, 0, 255).astype(np.uint8)
     colored_mesh = trimesh.Trimesh(
-        vertices=vertices,
+        vertices=z_up_to_y_up(vertices),  # TRELLIS is Z-up; GLB is Y-up (E-018)
         faces=faces,
         visual=trimesh.visual.ColorVisuals(vertex_colors=colors),
         process=False,
