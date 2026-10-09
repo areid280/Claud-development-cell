@@ -129,6 +129,7 @@ roles:
         vram_gb_est: 16
         selected: false
         licence_ok: false
+        trial: "completed: 6/6; mesh-only vertex-color GLBs and front/back previews written"
       - name: hunyuan3d-2
         source: https://github.com/Tencent-Hunyuan/Hunyuan3D-2
         install: see repo

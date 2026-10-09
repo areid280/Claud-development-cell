@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
+from avatar_forge.models.i23d_trellis import _export_mesh_glb
 from avatar_forge.models.i23d_triposr import prepare_model_input
 from avatar_forge.models.trial_adapters_i23d import _garment_crop
 
@@ -43,3 +44,31 @@ def test_garment_crop_uses_valid_mask_and_makes_other_pixels_transparent(
     assert np.count_nonzero(alpha) == 16
     assert alpha[1, 1] == 255
     assert alpha[0, 0] == 0
+
+
+def test_trellis_mesh_export_preserves_vertex_colors(tmp_path: Path) -> None:
+    from types import SimpleNamespace
+
+    import torch
+    import trimesh
+
+    source_mesh = SimpleNamespace(
+        vertices=torch.tensor(
+            [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]
+        ),
+        faces=torch.tensor([[0, 1, 2]]),
+        vertex_attrs=torch.tensor(
+            [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+        ),
+    )
+    output_path = tmp_path / "mesh.glb"
+
+    _export_mesh_glb(source_mesh, output_path)
+
+    exported = trimesh.load(output_path, force="mesh")
+    assert len(exported.faces) == 1
+    assert np.asarray(exported.visual.vertex_colors)[:, :3].tolist() == [
+        [255, 0, 0],
+        [0, 255, 0],
+        [0, 0, 255],
+    ]

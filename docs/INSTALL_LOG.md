@@ -116,6 +116,11 @@ python -m pip install omegaconf xatlas PyMCubes
 All three packages were already installed in `/opt/venv-af` (`omegaconf 2.4.0`,
 `xatlas 0.0.11`, `PyMCubes 0.1.6`).
 
+The TripoSR source checkout is at `/opt/src/TripoSR`. Trials ran with
+`/opt/venv-af/bin/python`, CUDA available, and the PyMCubes-backed shim. The
+Hugging Face cache emitted permission warnings for incomplete download files
+but continued successfully.
+
 ## T15 — TRELLIS dependencies — 2026-10-09
 
 After `source ~/.avatar_forge_env`, the task-card commands installed Kaolin
@@ -129,3 +134,25 @@ python -m pip install git+https://github.com/NVlabs/nvdiffrast.git
 failed during build requirement discovery because its CUDA extension could not
 see PyTorch under build isolation. Per the T15 restriction against compiling
 extra CUDA ops, it was not retried with `--no-build-isolation`; see E-017.
+
+After E-017 resolution (`b0875de`), installed the allowed CUDA extension using:
+
+```shell
+python -m pip install ninja
+python -m pip install --no-build-isolation git+https://github.com/NVlabs/nvdiffrast.git
+```
+
+The extension compiled successfully. The import smoke test printed
+`2.4.1+cu124 True 0.17.0`. TRELLIS runtime imports also required:
+
+```shell
+python -m pip install open3d pyvista pymeshfix igraph
+apt-get install -y libusb-1.0-0
+```
+
+The T15 TRELLIS trials initially reached `to_glb` but failed because its
+texture-baking renderer imports the explicitly excluded
+`diff_gaussian_rasterization`. No Gaussian rasterizer was built. Instead, the
+wrapper requests mesh-only output and exports TRELLIS's decoded per-vertex
+RGB attributes into a GLB with vertex colors; this avoids the prohibited
+Gaussian-splat path and does not produce a texture atlas.

@@ -11,6 +11,7 @@ from PIL import Image
 from avatar_forge.blender_runner import run_blender
 from avatar_forge.core.config import load_pipeline_config
 from avatar_forge.core.paths import REPO_ROOT
+from avatar_forge.models.i23d_trellis import Trellis
 from avatar_forge.models.i23d_triposr import TripoSR
 from avatar_forge.models.trials import register
 
@@ -96,6 +97,22 @@ def _render_previews(glb_path: Path, out_dir: Path) -> dict[str, str]:
 def trial_triposr(
     entry: dict[str, Any], image_path: Path, out_dir: Path
 ) -> dict[str, Any]:
+    return _trial_image_to_3d(TripoSR, entry, image_path, out_dir)
+
+
+@register("image_to_3d", "trellis")
+def trial_trellis(
+    entry: dict[str, Any], image_path: Path, out_dir: Path
+) -> dict[str, Any]:
+    return _trial_image_to_3d(Trellis, entry, image_path, out_dir)
+
+
+def _trial_image_to_3d(
+    wrapper_type: type[Any],
+    entry: dict[str, Any],
+    image_path: Path,
+    out_dir: Path,
+) -> dict[str, Any]:
     trial_root = out_dir.parents[2]
     cutout_path = trial_root / "bg_remove" / "birefnet" / image_path.stem / "cutout.png"
     if not cutout_path.is_file():
@@ -105,7 +122,7 @@ def trial_triposr(
         cutout = source.convert("RGBA")
     garment, mask_source = _garment_crop(cutout, trial_root, image_path.stem)
 
-    with TripoSR(entry) as model:
+    with wrapper_type(entry) as model:
         full_path = model.predict(cutout, out_dir, seed=0)
         garment_path = model.predict(
             garment, out_dir, seed=0, output_name="garment.glb"

@@ -131,3 +131,52 @@ quality assessment was made.
 
 Hunyuan3D-2: excluded for licence territory (D-009). Stable Fast 3D: skipped
 because the candidate is gated and the owner has not enabled it.
+
+TRELLIS resumed after E-017:
+
+```text
+$ python -m pip install ninja
+$ python -m pip install --no-build-isolation git+https://github.com/NVlabs/nvdiffrast.git
+Successfully built and installed nvdiffrast 0.4.0.
+$ python -c "import torch, kaolin, xformers, spconv, nvdiffrast; ..."
+2.4.1+cu124 True 0.17.0
+```
+
+TRELLIS import setup additionally needed `open3d`, `pyvista`, `pymeshfix`,
+`igraph`, and system package `libusb-1.0-0`. The first runtime pass failed with
+`AttributeError: module 'xformers.ops.fmha' has no attribute
+'BlockDiagonalMask'`; the wrapper imports the symbol from
+`xformers.ops.fmha.attn_bias` and exposes it on `fmha`.
+
+The following pass reached GLB texture baking but failed on
+`ModuleNotFoundError: No module named 'diff_gaussian_rasterization'`. This is
+the Gaussian-splat rasterizer explicitly excluded by the card. It was not
+installed. The wrapper now requests `formats=["mesh"]` and writes a colored
+mesh GLB from TRELLIS's vertex RGB attributes directly. This preserves mesh
+vertex colors but does not bake a texture atlas; `postprocessing_utils.to_glb`
+cannot be used without the excluded rasterizer.
+
+Final mesh-only trial:
+
+```text
+$ python scripts/trial_model.py --role image_to_3d --name trellis --images 'samples/*.png'
+6/6 samples succeeded; mean 142.904 s; peak allocated VRAM 10.898 GB.
+Full meshes: 171,312–401,448 triangles; 4/6 watertight.
+Garment meshes: 143,972–534,136 triangles; 4/6 watertight.
+All six samples wrote full.glb, garment.glb, and front/back previews for both.
+```
+
+The available Florence-2 + SAM trial supplied boots masks for five samples.
+For `c_front`, the adapter used the successful Sapiens T13 shoes mask. The
+outputs are under `jobs/_model_trials/image_to_3d/trellis/`; the report was
+rebuilt and includes its preview paths. No visual quality assessment was made.
+
+Final verification:
+
+```text
+$ ruff check src tests
+All checks passed!
+$ pytest -q
+................................................                         [100%]
+48 passed, 2 warnings in 9.17s
+```
