@@ -49,3 +49,7 @@ Reject unusable inputs with a clear reason; warn on weak ones.
   shows `ok` · `bad_cropped_feet` shows the feet message.
 
 ## Log
+- `ruff check src tests` → `All checks passed!`
+- `pytest -q` → `67 passed, 2 warnings in 15.56s`
+- `avatar-forge run samples/a_front.png --confirm-adult-consent --to s01_validate` → `s00_ingest ok`, `s01_validate ok`, `Job folder: ...`
+- `avatar-forge run samples/bad_cropped_feet.png --confirm-adult-consent --to s01_validate` → `FAILED: s01_validate failed: front: Feet may be cut off at the bottom edge.`
