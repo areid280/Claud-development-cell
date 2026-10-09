@@ -8,7 +8,7 @@ import numpy as np
 from PIL import Image
 
 from avatar_forge.models.base import ModelWrapper
-from avatar_forge.models.mesh_axes import Z_UP_TO_Y_UP
+from avatar_forge.models.mesh_axes import TRIPOSR_TO_GLTF
 
 TRIPOSR_SOURCE = Path("/opt/src/TripoSR")
 FOREGROUND_RATIO = 0.85
@@ -90,7 +90,7 @@ class TripoSR(ModelWrapper):
         out_dir.mkdir(parents=True, exist_ok=True)
         mesh_path = out_dir / output_name
         mesh = meshes[0]
-        mesh.apply_transform(Z_UP_TO_Y_UP)  # TripoSR is Z-up; GLB is Y-up (E-018)
+        mesh.apply_transform(TRIPOSR_TO_GLTF)  # Z-up, faces X -> glTF Y-up, faces +Z (E-018)
         mesh.export(str(mesh_path), file_type="glb")
         if not mesh_path.is_file():
             raise RuntimeError(f"TripoSR did not create its GLB output: {mesh_path}")
