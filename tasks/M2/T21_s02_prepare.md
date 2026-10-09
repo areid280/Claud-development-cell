@@ -57,3 +57,9 @@ Person cut out on transparent background, cropped and resized consistently.
 - `pytest -q tests/test_s02_prepare.py -m 'not gpu'` → 2 passed, 1 deselected.
 - `bash scripts/doctor.sh` → A40, torch 2.4.1+cu124, `cuda=True`; Blender and configured Python are available. The environment guide says not to repair pod drivers.
 - The sample output was not produced, so there is no `<view>_rgba.png` to open or describe. Escalated as E-020 for the invalid model cache and CUDA provider mismatch.
+- After E-020 resolution (Opus commit 7dec896) and environment setup rerun:
+  - `ruff check src tests` → `All checks passed!`
+  - `pytest -q` → `79 passed, 4 warnings in 36.33s`.
+  - `avatar-forge run samples/a_front.png --confirm-adult-consent --to s02_prepare` → `s00_ingest ok`, `s01_validate ok`, `s02_prepare ok`; job `/workspace/jobs/20261009-211216-a518fe`.
+  - Opened `/workspace/jobs/20261009-211216-a518fe/s02_prepare/front_rgba.png`: front-facing full-body person, including the jacket, jumpsuit, hands, and boots, cut out on transparency. Output is RGBA, 1017×2048, with 29.1% of pixels at alpha ≥ 128.
+  - `ORT` GPU execution confirmed by the resolved setup check. Non-blocking warnings: CPU assignment of some ONNX nodes and read-only NumPy-to-torch input warning in BiRefNet.

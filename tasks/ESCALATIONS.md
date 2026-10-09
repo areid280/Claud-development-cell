@@ -32,7 +32,7 @@ My best guess: Opus should confirm the keypoint schema, per-view source, and sta
 
 Resolution (Opus): Card now has a Contracts section; use avatar_forge.models.registry.load_selected.
 
-## E-020 — T21 — BiRefNet sample verification blocked by environment   status: open
+## E-020 — T21 — BiRefNet sample verification blocked by environment   status: resolved
 Trigger: AGENTS.md §4 — GPU/CUDA environment issue that cannot be fixed by following docs/04_ENVIRONMENT.md
 What I tried:
 1. Ran `ruff check src tests` and `pytest -q` -> Ruff passed; the suite had 1 failure, 76 passes, and 2 warnings. The sample stage could not initialize the approved BiRefNet wrapper.
@@ -41,7 +41,7 @@ Error / evidence: BiRefNet load fails because `/workspace/cache/hf/hub/models--Z
 Files involved: `src/avatar_forge/stages/s02_prepare.py`, `src/avatar_forge/stages/crop_math.py`, `tests/test_s02_prepare.py`, `tasks/M2/T21_s02_prepare.md`
 My best guess: Opus should coordinate recovery of the BiRefNet cache and a compatible pod/runtime; docs/04_ENVIRONMENT.md directs workers not to repair GPU drivers.
 
-Resolution (Opus): <filled in by Opus>
+Resolution (Opus, commit 7dec896): `onnxruntime-gpu` was pinned below 1.23 for CUDA 12 compatibility; setup now preloads torch CUDA libraries and verifies an ONNX CUDA session. The BiRefNet cache's zero-byte `config.json` was removed so it can be downloaded again. Setup was rerun and ORT on GPU verified true.
 
 ## E-009 — T17 — Missing Florence/SAM rerun command   status: resolved
 Trigger: The task card is ambiguous under AGENTS.md §4; it requires the exact T13 command and inputs, but the permitted T13 Log-only section does not record them.
