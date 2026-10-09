@@ -166,3 +166,17 @@ def test_valid_person_is_ok() -> None:
     status, messages = evaluate([_person()], (1024, 1536), cfg)
     assert status == "ok"
     assert messages == []
+
+
+def test_faint_extra_detection_is_not_a_second_person() -> None:
+    faint = _person(bbox=(0.0, 0.0, 50.0, 80.0), score=0.1)
+    status, messages = evaluate([_person(), faint], (1024, 1536), _base_cfg())
+    assert status == "ok", messages
+
+
+def test_low_confidence_wrists_do_not_warn() -> None:
+    person = _person()
+    person["keypoints"]["left_wrist"] = [520.0, 600.0, 0.1]   # guessed, inside the torso
+    person["keypoints"]["right_wrist"] = [500.0, 600.0, 0.1]
+    status, messages = evaluate([person], (1024, 1536), _base_cfg())
+    assert status == "ok", messages

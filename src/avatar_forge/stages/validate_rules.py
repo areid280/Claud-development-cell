@@ -16,6 +16,13 @@ def _keypoint_score(person: dict, name: str) -> float:
     return float(values[2])
 
 
+def _confident_point(person: dict, name: str, min_score: float) -> list[float] | None:
+    values = person.get("keypoints", {}).get(name)
+    if not values or len(values) < 3 or float(values[2]) < min_score:
+        return None
+    return values
+
+
 def _bbox_height(bbox: list[float]) -> float:
     return float(max(0.0, bbox[3] - bbox[1]))
 
@@ -35,12 +42,11 @@ def evaluate(
             f"({width}x{height}). Use at least {min_long_side} px on the long side."
         )
 
-    person_scores = [
-        _person_score(person) for person in persons
-    ]
-    if not persons or max(person_scores, default=0.0) < float(
-        cfg.get("keypoint_min_score", 0.0)
-    ):
+    # Only confident detections count as people; faint detections of background clutter must
+    # not trigger "more than one person" or the edge checks (Opus review of T20).
+    min_score = float(cfg.get("keypoint_min_score", 0.0))
+    persons = [person for person in persons if _person_score(person) >= min_score]
+    if not persons:
         fails.append("No person found.")
 
     max_people = int(cfg.get("max_people", 1))
@@ -52,7 +58,7 @@ def evaluate(
         missing = [
             key
             for key in required_keypoints
-            if _keypoint_score(person, key) < float(cfg.get("keypoint_min_score", 0.0))
+            if _keypoint_score(person, key) < min_score
         ]
         if missing:
             fails.append(
@@ -75,13 +81,12 @@ def evaluate(
 
     if cfg.get("warn_crossed_arms", False):
         for person in persons:
-            keypoints = person.get("keypoints", {})
-            left_wrist = keypoints.get("left_wrist")
-            right_wrist = keypoints.get("right_wrist")
-            left_shoulder = keypoints.get("left_shoulder")
-            right_shoulder = keypoints.get("right_shoulder")
-            left_hip = keypoints.get("left_hip")
-            right_hip = keypoints.get("right_hip")
+            left_wrist = _confident_point(person, "left_wrist", min_score)
+            right_wrist = _confident_point(person, "right_wrist", min_score)
+            left_shoulder = _confident_point(person, "left_shoulder", min_score)
+            right_shoulder = _confident_point(person, "right_shoulder", min_score)
+            left_hip = _confident_point(person, "left_hip", min_score)
+            right_hip = _confident_point(person, "right_hip", min_score)
             if not all(
                 (
                     left_wrist,
@@ -108,15 +113,15 @@ def evaluate(
 
     if cfg.get("warn_wrists_inside_torso", False):
         for person in persons:
-            keypoints = person.get("keypoints", {})
-            wrists = [keypoints.get("left_wrist"), keypoints.get("right_wrist")]
-            torso_points = [
-                keypoints.get("left_shoulder"),
-                keypoints.get("right_shoulder"),
-                keypoints.get("left_hip"),
-                keypoints.get("right_hip"),
+            wrists = [
+                _confident_point(person, "left_wrist", min_score),
+                _confident_point(person, "right_wrist", min_score),
             ]
-            if not all(wrists) or not all(torso_points):
+            torso_points = [
+                _confident_point(person, name, min_score)
+                for name in ("left_shoulder", "right_shoulder", "left_hip", "right_hip")
+            ]
+            if not any(wrists) or not all(torso_points):
                 continue
             xs = [p[0] for p in torso_points if p is not None]
             ys = [p[1] for p in torso_points if p is not None]

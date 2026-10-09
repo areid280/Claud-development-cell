@@ -2,6 +2,10 @@
 milestone: M5 · effort: medium · depends: G4
 owner input: back (and ideally side) views of at least two sample characters
 
+> **Opus note (T20 review, 2026-10-09):** `s01_validate` requires `nose` for every view, so back views would fail
+> "Not visible: nose". Make `required_keypoints` per view (e.g. `required_keypoints_back` without face points)
+> in `stages.s01_validate` and use it for `back` views.
+
 > Planning-time draft. **Opus rewrites this card at G4.**
 
 ## Goal
