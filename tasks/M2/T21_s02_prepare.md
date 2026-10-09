@@ -49,3 +49,11 @@ Person cut out on transparent background, cropped and resized consistently.
 - `pytest -q` · run to `--to s02_prepare` on a sample; open `<view>_rgba.png` and describe it in Log.
 
 ## Log
+
+- `ruff check src tests` → `All checks passed!`
+- `pytest -q` → 1 failed, 76 passed, 2 warnings in 24.32s. The GPU sample test reached s02 but BiRefNet failed to load because its cached `config.json` is invalid:
+  `/workspace/cache/hf/hub/models--ZhengPeng7--BiRefNet/snapshots/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/config.json`.
+  ONNX Runtime also reported that its CUDA provider could not load `libcublasLt.so.13`.
+- `pytest -q tests/test_s02_prepare.py -m 'not gpu'` → 2 passed, 1 deselected.
+- `bash scripts/doctor.sh` → A40, torch 2.4.1+cu124, `cuda=True`; Blender and configured Python are available. The environment guide says not to repair pod drivers.
+- The sample output was not produced, so there is no `<view>_rgba.png` to open or describe. Escalated as E-020 for the invalid model cache and CUDA provider mismatch.
