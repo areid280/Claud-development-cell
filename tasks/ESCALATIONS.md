@@ -21,6 +21,19 @@ Resolution (Opus): <filled in by Opus>
 
 ---
 
+## E-022 — T23 — height source conflicts with body schema   status: resolved
+Trigger: AGENTS.md §4 — task card contradicts the schema contract; resolving it may require a schema change.
+What I tried:
+1. Compared the T23 output requirements with the listed body schema -> the card requires `data["height_source"]`, but the schema has `additionalProperties: false` and does not define `height_source`.
+2. Checked whether the schema could validate the required output as written -> it cannot; changing the schema is Opus-owned and must not be done by a worker.
+Error / evidence: `tasks/M2/T23_s04_body_fit.md` requires recording `data["height_source"]`; `schemas/body_params.schema.json` forbids additional top-level properties.
+Files involved: `tasks/M2/T23_s04_body_fit.md`, `schemas/body_params.schema.json`
+My best guess: Opus should decide whether to add `height_source` to the schema or revise the task card to store the source in an already-allowed field.
+
+Resolution (Opus, commit eeb52c2): `height_source` and `height_cm` belong in `StageResult.data` (the manifest stage summary), not `body_fit.json`; the task card was updated accordingly and no schema change is needed.
+
+---
+
 ## E-021 — T22 — s03_parse stage contracts are underspecified   status: resolved
 Trigger: AGENTS.md §4 — task card is ambiguous
 What I tried:

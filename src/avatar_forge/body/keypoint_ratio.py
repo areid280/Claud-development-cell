@@ -140,7 +140,7 @@ def measure(
     ]
     if face_rows:
         head_y = min(face_rows)
-        s04_cfg = cfg.get("stages", {}).get("s04_body_fit", {})
+        s04_cfg = cfg.get("stages", {}).get("s04_body_fit", cfg)
         hair_allowance = float(s04_cfg.get("hair_allowance_frac", 0.02))
         if not 0 <= hair_allowance < 1:
             raise ValueError("hair_allowance_frac must be in [0, 1)")
@@ -190,7 +190,8 @@ def measure(
         if np.any(silhouette[row])
     )
 
-    depth_ratios = cfg.get("stages", {}).get("s04_body_fit", {}).get("depth_ratio", {})
+    s04_cfg = cfg.get("stages", {}).get("s04_body_fit", cfg)
+    depth_ratios = s04_cfg.get("depth_ratio", {})
     widths = {
         "bust": bust_width,
         "underbust": underbust_width,

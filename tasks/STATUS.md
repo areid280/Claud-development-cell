@@ -23,7 +23,7 @@ Single source of truth. Workers take the **first** `todo` whose dependencies are
 | T20 | Stage s01_validate | M2 | G1 | done |
 | T21 | Stage s02_prepare | M2 | T20 | done |
 | T22 | Stage s03_parse | M2 | T21 | done |
-| T23 | Stage s04_body_fit | M2 | T22 | todo |
+| T23 | Stage s04_body_fit | M2 | T22 | done |
 | T24 | Stage s05_body_params (overrides) | M2 | T23 | todo |
 | T25 | Stage s06_garments (MVP fused mesh) | M2 | T24 | todo |
 | T26 | Stage s09_export + UE5 import script | M2 | T25 | todo |
