@@ -21,6 +21,17 @@ Resolution (Opus): <filled in by Opus>
 
 ---
 
+## E-019 — T21 — s02_prepare input contracts are underspecified   status: resolved
+Trigger: AGENTS.md §4 — task card is ambiguous
+What I tried:
+1. Read the task card and its listed stage, config, and wrapper files -> the required keypoint JSON shape and view enumeration are not defined.
+2. Checked the card against its listed contract -> it also does not specify the `StageContext` job/config access or `selected_model` API needed to implement `run(ctx)` safely.
+Error / evidence: `tasks/M2/T21_s02_prepare.md`, `src/avatar_forge/stages/s02_prepare.py`, `config/pipeline.yaml`, `src/avatar_forge/models/bg_remove_birefnet.py`
+Files involved: `tasks/M2/T21_s02_prepare.md`, `src/avatar_forge/stages/s02_prepare.py`
+My best guess: Opus should confirm the keypoint schema, per-view source, and stage/model access contracts or update the task card with those details before implementation.
+
+Resolution (Opus): Card now has a Contracts section; use avatar_forge.models.registry.load_selected.
+
 ## E-009 — T17 — Missing Florence/SAM rerun command   status: resolved
 Trigger: The task card is ambiguous under AGENTS.md §4; it requires the exact T13 command and inputs, but the permitted T13 Log-only section does not record them.
 What I tried:
