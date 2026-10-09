@@ -14,6 +14,21 @@ milestone: M2 · effort: medium · depends: T22
 - config/pipeline.yaml → `stages.s04_body_fit`
 - src/avatar_forge/body/keypoint_ratio.py and/or mesh_measure.py (whichever G1 selected)
 
+## Contracts (Opus, 2026-10-09 — follow `s02_prepare.py` / `s03_parse.py` as the pattern)
+- **Front view only:** inputs `s02_prepare/front_rgba.png`, `s02_prepare/front_keypoints.json`,
+  `s03_parse/parts.json` and the `front` masks it lists. If there is no `front` input → `status="fail"`.
+- **Keypoints:** `front_keypoints.json` is a list of persons in **s02 image coordinates**; use the highest-`score`
+  person and pass its `keypoints` dict (`{name: [x, y, score]}`) to
+  `keypoint_ratio.measure(keypoints, alpha, height_cm, cfg)`; `alpha = np.asarray(rgba.getchannel("A")) > 0`;
+  `cfg = ctx.stage_config()`. It returns cm values for the schema's measurement keys.
+- **Masks:** `Image.open(job_dir / part["mask"])` → `np.asarray(...) > 127`. Union of `skin` and `face` for skin colour.
+- **Output** `s04_body_fit/body_fit.json`: `{"units": "cm", "source": "s04_body_fit", "measurements": {...},
+  "confidence": {key: 0.5}, "colors": {"skin": "#rrggbb", "hair": "#rrggbb", "eyes": "#rrggbb"},
+  "body_type_hint": ...}` (only keys the schema allows). Validate with
+  `jsonschema.validate(data, json.load(open("schemas/body_params.schema.json")))` — resolve the schema path from
+  `avatar_forge.core.paths` / repo root, not the working directory.
+- **No model is loaded in this stage.**
+
 ## Do
 1. Height reference: if `ctx.overrides.get("set", {}).get("height")` is a plain
    number use it; else `default_height_cm`. Record which in `data["height_source"]`.

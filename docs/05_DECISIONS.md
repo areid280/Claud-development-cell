@@ -169,3 +169,10 @@ Addendum to D-006 (E-020): a 0-byte `config.json` in the BiRefNet cache on the v
 loading. If a Hugging Face model fails with "not a valid JSON file", delete that model's folder under
 `/workspace/cache/hf/hub/` and let it download again.
 
+## D-015 — MVP colour = vertex colours (no textures until M3)  (2026-10-09, M2 pre-review)
+Context: TRELLIS output (D-014) carries per-vertex colour, not UV textures; T26's UE material expected textures.
+Decision: the MVP fused mesh keeps vertex colours end to end (cleanup, FBX export). UE gets a second parent
+material `M_AF_VertexColor` (VertexColor → Base Color) used when a manifest mesh has no `material.basecolor`.
+Alternatives: UV-unwrap + bake in M2 (heavier, belongs to T36 texture projection in M3).
+Consequences: no schema change (import_manifest `material` is optional). M3 replaces this with PBR textures per garment.
+

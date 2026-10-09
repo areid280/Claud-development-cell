@@ -11,6 +11,15 @@ An export folder UE5 can import with one script.
 - docs/03_UE5_INTEGRATION.md
 - unreal/import_character.py
 
+## Contracts (Opus, 2026-10-09, D-015)
+- **Fused MVP mesh has vertex colours and no textures.** `export_fbx.py` exports vertex colours
+  (`colors_type="SRGB"` in Blender 4.2's FBX exporter); `--tex-dir` stays empty for it.
+- **import_manifest.json:** one mesh `{"id": "character_fused", "kind": "fused", "path": "fused/character_fused.fbx"}`
+  with **no `material` object** (the schema allows that). Validate against `schemas/import_manifest.schema.json`.
+- **UE script:** besides `M_AF_Garment`, create `/Game/AvatarForge/M_AF_VertexColor` if missing
+  (a `VertexColor` node → Base Color; Roughness constant 0.6). Use it for any mesh whose manifest entry has
+  no `material.basecolor`. Import the FBX with vertex colours set to **Replace** (`FbxStaticMeshImportData.vertex_color_import_option`).
+
 ## Do
 1. Blender script `src/avatar_forge/blender/export_fbx.py` (args `--in --out-fbx --tex-dir`):
    import GLB, unpack/save its images as PNG into `--tex-dir`

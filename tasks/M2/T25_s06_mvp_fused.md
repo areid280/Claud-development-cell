@@ -18,8 +18,20 @@ A clean, correctly scaled single mesh of the whole character, as proof the 3D pa
 - src/avatar_forge/blender/render_previews.py
 - the selected image_to_3d wrapper
 
+## Contracts (Opus, 2026-10-09, D-015)
+- **Model:** `from avatar_forge.models.registry import load_selected`;
+  `with load_selected("image_to_3d") as model: raw = model.predict(rgba, out_dir=stage_dir/"fused", output_name="raw.glb")`
+  where `rgba = Image.open(job_dir/"s02_prepare"/"front_rgba.png")`. `predict` returns the GLB path.
+- **Orientation:** the GLB is already glTF Y-up facing +Z (E-018), which Blender imports as **Z-up facing −Y**.
+  `cleanup_mesh.py` must **not rotate** it; only scale and move.
+- **Colour:** TRELLIS gives **vertex colours, no texture** (D-015). Keep the colour attribute through join,
+  merge-by-distance and decimate (Collapse keeps attributes) and export with it (`export_vertex_color="ACTIVE"`
+  or Blender 4.2's default colour export). Do not invent UVs or bake textures in M2.
+- **Triangle budget:** `stages.s06_garments.mvp_max_triangles: 150000` (not 200000; matches G1).
+- **Blender:** call scripts with `avatar_forge.blender_runner.run_blender(script, args, ctx.config, log_path=...)`.
+
 ## Do
-1. Add config key `stages.s06_garments.mvp_max_triangles: 200000`.
+1. Add config key `stages.s06_garments.mvp_max_triangles: 150000`.
 2. When `mode == "mvp_fused"`: run the selected model on
    `s02_prepare/front_rgba.png` → `s06_garments/fused/raw.glb`.
 3. Blender script `src/avatar_forge/blender/cleanup_mesh.py`
@@ -30,7 +42,7 @@ A clean, correctly scaled single mesh of the whole character, as proof the 3D pa
    - decimate (collapse) if triangles > `--max-tris`;
    - scale uniformly so the bounding-box height = `--height-m`; move so the
      lowest point is at z = 0 and centred on x/y = 0; face −Y (Blender front);
-   - keep the material and texture; export GLB with textures embedded to `--out`.
+   - keep the vertex colours (see Contracts); export GLB to `--out`.
    Call it with `--in s06_garments/fused/raw.glb --out s06_garments/fused/character_fused.glb`.
 4. Height comes from `s05_body_params/body_params.json` (`height` cm / 100).
 5. Render previews (front/back) with render_previews.py into `s06_garments/fused/`.
