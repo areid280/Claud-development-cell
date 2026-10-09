@@ -8,10 +8,11 @@ any session, and `cuda_session_works()` to verify (used by setup_pod.sh and test
 
 from __future__ import annotations
 
+import base64
 import contextlib
-from pathlib import Path
 
-PROBE_MODEL = Path(__file__).parent / "data" / "probe_relu.onnx"
+# A 65-byte ONNX model (y = Relu(x), opset 13), embedded because *.onnx files are git-ignored.
+PROBE_MODEL = base64.b64decode("CAg6NwoMCgF4EgF5IgRSZWx1EgVwcm9iZVoPCgF4EgoKCAgBEgQKAggBYg8KAXkSCgoICAESBAoCCAFCBAoAEA0=")
 
 
 def prepare_onnxruntime_cuda() -> None:
@@ -32,6 +33,6 @@ def cuda_session_works() -> bool:
     import onnxruntime
 
     session = onnxruntime.InferenceSession(
-        str(PROBE_MODEL), providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
+        PROBE_MODEL, providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
     )
     return session.get_providers()[0] == "CUDAExecutionProvider"

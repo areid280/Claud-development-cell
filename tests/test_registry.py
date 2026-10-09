@@ -31,7 +31,7 @@ def test_onnxruntime_probe_model_runs() -> None:
 
     from avatar_forge.models.ort_cuda import PROBE_MODEL
 
-    session = ort.InferenceSession(str(PROBE_MODEL), providers=["CPUExecutionProvider"])
+    session = ort.InferenceSession(PROBE_MODEL, providers=["CPUExecutionProvider"])
     (out,) = session.run(None, {"x": np.array([-1.0], dtype=np.float32)})
     assert out.tolist() == [0.0]
 
