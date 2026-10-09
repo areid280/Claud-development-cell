@@ -5,6 +5,7 @@ import pytest
 
 trimesh = pytest.importorskip("trimesh")  # models extra; CI installs only [dev]
 pytest.importorskip("scipy")  # trimesh's mesh sections need scipy
+pytest.importorskip("networkx")  # ... and networkx
 
 from avatar_forge.body.mesh_measure import measure_mesh  # noqa: E402 (after the skips)
 

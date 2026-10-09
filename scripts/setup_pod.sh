@@ -93,6 +93,18 @@ fi
 python -c "from avatar_forge.models.ort_cuda import cuda_session_works as ok; import sys; sys.exit(0 if ok() else 1)" \
   || echo "WARNING: onnxruntime cannot run on the GPU (pose would fall back to CPU)" >&2
 
+# 4b. Hugging Face downloads to the network volume sometimes leave 0-byte files (geesefs; E-020, T22),
+#     which later fail as "not a valid JSON file" or empty weights. No real model file is empty, so delete
+#     them; the next load re-downloads just those files.
+if [ -d "$WS/cache/hf/hub" ]; then
+  EMPTY=$(find "$WS/cache/hf/hub" -type f -size 0 ! -name "*.lock" ! -path "*/.locks/*" 2>/dev/null)
+  if [ -n "$EMPTY" ]; then
+    echo "Removing $(echo "$EMPTY" | wc -l) empty file(s) from the Hugging Face cache:"
+    echo "$EMPTY"
+    echo "$EMPTY" | while IFS= read -r f; do rm -f "$f"; done
+  fi
+fi
+
 # 5. Blender (tarball cached on the volume, unpacked to local disk)
 bash "$REPO_DIR/scripts/install_blender.sh"
 
