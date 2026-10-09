@@ -30,6 +30,7 @@ Textured 3D outputs from each `image_to_3d` candidate on (a) the whole figure an
    "Gate G1 is due. Switch to Opus and run /gate G1."
 
 ## Opus notes (2026-10-08, E-013/E-014/E-015, D-009)
+**Order (E-017): do TripoSR first (wrapper → trial → commit + push), then TRELLIS.**
 Always `source ~/.avatar_forge_env` first; all installs go into the venv and honour the torch pin.
 - **hunyuan3d-2: do not install or trial** (UK excluded by its licence). Record "excluded: licence territory (D-009)".
 - **stable-fast-3d:** trial only if the owner says they accepted the licence on Hugging Face and ran
@@ -40,13 +41,15 @@ Always `source ~/.avatar_forge_env` first; all installs go into the venv and hon
   pip install kaolin==0.17.0 -f https://nvidia-kaolin.s3.us-east-2.amazonaws.com/torch-2.4.1_cu124.html
   pip install xformers==0.0.28.post1 --index-url https://download.pytorch.org/whl/cu124
   pip install spconv-cu120 easydict plyfile utils3d@git+https://github.com/EasternJournalist/utils3d.git@9a4eb15e4021b67b12c460c7057d642626897ec8
-  pip install git+https://github.com/NVlabs/nvdiffrast.git
+  pip install ninja
+  pip install --no-build-isolation git+https://github.com/NVlabs/nvdiffrast.git   # E-017: must see the venv torch
   python -c "import torch, kaolin, xformers, spconv, nvdiffrast; print(torch.__version__, torch.cuda.is_available(), kaolin.__version__)"
   ```
   The check must print `2.4.1+cu124 True 0.17.0`. In the wrapper set `ATTN_BACKEND=xformers` and
   `SPCONV_ALGO=native` before importing `trellis`, add `/opt/src/TRELLIS` to `sys.path`, and export only
   the mesh (`postprocessing_utils.to_glb`). Skip Gaussian-splat outputs (no diff-gaussian-rasterization).
-  If any of these fails, follow the 30-minute rule and record it; do not compile extra CUDA ops.
+  nvdiffrast **is** expected to compile (needs `--no-build-isolation`, E-017). Do not compile any *other*
+  CUDA ops (e.g. diff-gaussian-rasterization). If any of these fails, follow the 30-minute rule and record it.
 - **triposr:** source on local disk; do **not** `pip install -r requirements.txt` (it pins old transformers/Pillow):
   ```bash
   git clone https://github.com/VAST-AI-Research/TripoSR.git /opt/src/TripoSR
