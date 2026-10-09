@@ -5,8 +5,7 @@ milestone: M2 · effort: medium · depends: T24
 > class `Trellis`, `predict(image_rgba, out_dir, seed=0, output_name="full.glb") -> Path` (glTF Y-up GLB with
 > vertex colours, E-018). Install per the T15 card "Opus notes" (/opt/src/TRELLIS, kaolin 0.17.0 wheel, xformers,
 > spconv; nvdiffrast only if the import fails without it). Fallback: triposr (`i23d_triposr.py`).
-> **Licence check:** nvdiffrast is research/evaluation-only. After `predict`, assert
-> `"nvdiffrast" not in sys.modules`; if it is loaded, stop and escalate (Opus will rework the export path).
+> nvdiffrast (research/evaluation licence) may be loaded; the owner confirmed the project is in scope (D-014 addendum).
 > Triangle budget for the MVP mesh: decimate to ≤ 150k triangles before export (Blender Decimate, ratio
 > from the face count).
 

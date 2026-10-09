@@ -4,8 +4,7 @@ milestone: M2 · effort: low · depends: T21
 > **G1 (Opus, 2026-10-09, D-012):** parsing = **segformer-clothes** (single model, no combining in M2), wrapper
 > `src/avatar_forge/models/parsing_segformer_clothes.py`, class `SegformerClothes`,
 > `predict(image: PIL.Image) -> dict[str, np.ndarray]` (canonical label -> bool mask). Fallback: sapiens-seg.
-> **Licence gate:** `selected_model("parsing")` raises PermissionError until Opus approves the model-card
-> licence. If it raises, stop and escalate; do not switch models yourself.
+> Licence approved by Opus 2026-10-09 (personal use / non-profit, D-008); `selected_model("parsing")` returns it.
 
 ## Goal
 Canonical part masks per view, ready for body fitting and (later) garment separation.

@@ -67,12 +67,12 @@ roles:
         source: https://huggingface.co/mattmdjaga/segformer_b2_clothes
         install: pip install transformers
         weights: mattmdjaga/segformer_b2_clothes
-        licence: 'MIT per model card (claimed; Hugging Face unreachable from the gate environment - T22 must paste the card''s licence line); trained on ATR (academic dataset), acceptable under D-008'
+        licence: 'Personal use / non-profit (model card licence field, read by the owner 2026-10-09); trained on ATR; fits D-008'
         licence_note: Simple, fixed label set incl. hat, upper/lower clothes, shoes, belt, bag.
         vram_gb_est: 2
         selected: true
-        licence_ok: false
-        role_in_pipeline: primary (D-012); licence_ok pending model-card check in T22
+        licence_ok: true
+        role_in_pipeline: primary (D-012)
         licence_class: non_commercial
       - name: florence2-plus-sam
         source: https://huggingface.co/microsoft/Florence-2-large ; https://huggingface.co/facebook/sam-vit-huge
@@ -139,7 +139,7 @@ roles:
         source: https://github.com/microsoft/TRELLIS
         install: see T15 card "Opus notes" (kaolin 0.17.0 wheel for torch-2.4.1_cu124; xformers backend)
         weights: microsoft/TRELLIS-image-large
-        licence: 'MIT code + weights (TRELLIS LICENSE read 2026-10-09); deps kaolin Apache-2.0, spconv Apache-2.0, xformers BSD; nvdiffrast NVIDIA Source Code Licence = research/evaluation only, must not be used at runtime (D-014)'
+        licence: 'MIT code + weights (TRELLIS LICENSE read 2026-10-09); deps kaolin Apache-2.0, spconv Apache-2.0, xformers BSD; nvdiffrast NVIDIA Source Code Licence = research/evaluation only; owner confirms this project is within that scope (D-014 addendum)'
         licence_note: Check for a newer TRELLIS release and compare at G1.
         vram_gb_est: 16
         selected: true

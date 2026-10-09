@@ -156,4 +156,9 @@ detail and a coherent cloak; TripoSR is noisy and blobby.
 Decision: trellis primary, triposr fallback (MIT, simpler install). Licence: TRELLIS code and weights MIT. Its
 optional dependency nvdiffrast is NVIDIA research/evaluation-only, which personal use may not fit, so it must not be
 used at runtime; our export path builds the GLB from the raw mesh and should not need it (verified in T25).
+Addendum to D-012 / D-014 (owner, 2026-10-09):
+- SegFormer clothes: the model card licence is "personal use / non-profit" (read by the owner). This fits D-008,
+  so `licence_ok: true`. A switch to commercial use would require replacing it (fallback Sapiens is also NC).
+- nvdiffrast: the owner confirms this project is within NVIDIA's "research or evaluation" scope, so TRELLIS may load
+  it. This, too, must be revisited if the project ever becomes commercial.
 
