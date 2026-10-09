@@ -44,6 +44,12 @@ stages:
       underbust: 0.70
       waist: 0.70
       hips: 0.72
+    mesh_slice:
+      bust: 0.72
+      underbust: 0.68
+      waist_range: [0.58, 0.66]
+      hips_range: [0.46, 0.54]
+      range_steps: 9
 
   s05_body_params:
     normalise: true

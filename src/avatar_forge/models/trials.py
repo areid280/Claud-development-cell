@@ -8,6 +8,11 @@ TrialFn = Callable[[dict[str, Any], Path, Path], dict[str, Any]]
 REGISTRY: dict[tuple[str, str], TrialFn] = {}
 
 
+class TrialSkippedError(Exception):
+    def __init__(self, reason: str) -> None:
+        super().__init__(reason)
+
+
 def register(role: str, name: str) -> Callable[[TrialFn], TrialFn]:
     def decorator(trial_fn: TrialFn) -> TrialFn:
         key = (role, name)

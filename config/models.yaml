@@ -107,6 +107,7 @@ roles:
         vram_gb_est: 12
         selected: false
         licence_ok: false
+        trial: "skipped: needs owner HF access request (unauthenticated checkpoint request returned HTTP 401)"
       - name: smpler-x
         source: https://github.com/caizhongang/SMPLer-X
         install: see repo
@@ -116,6 +117,7 @@ roles:
         vram_gb_est: 8
         selected: false
         licence_ok: false
+        trial: "skipped: needs owner SMPL-X registration"
 
   image_to_3d:
     purpose: M2 fused mesh of the whole figure; M3 'generated' garments from masked crops.

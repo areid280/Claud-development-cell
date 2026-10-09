@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from avatar_forge.models.base import model_entry, reset_vram_peak, vram_peak_gb
-from avatar_forge.models.trials import REGISTRY
+from avatar_forge.models.trials import REGISTRY, TrialSkippedError
 
 LOGGER = logging.getLogger(__name__)
 
@@ -63,16 +63,21 @@ def _run_trial(
         "seconds": 0.0,
         "vram_peak_gb": 0.0,
         "error": "incomplete: process ended before this image finished (stall or kill)",
+        "skipped": False,
         "extra": {},
     })
     reset_vram_peak()
     started_at = time.perf_counter()
     error: str | None = None
+    skipped = False
     extra: dict[str, Any] = {}
     try:
         extra = trial_fn(model_entry(role, name), image_path, out_dir)
         if not isinstance(extra, dict):
             raise TypeError("TrialFn must return a dict")
+    except TrialSkippedError as exc:
+        error = str(exc)
+        skipped = True
     except Exception as exc:
         error = f"{type(exc).__name__}: {exc}"
         LOGGER.exception("Trial failed for %s/%s on %s", role, name, image_path)
@@ -83,6 +88,7 @@ def _run_trial(
         "name": name,
         "image": str(image_path),
         "ok": error is None,
+        "skipped": skipped,
         "seconds": seconds,
         "vram_peak_gb": vram_peak_gb(),
         "error": error,
@@ -110,7 +116,11 @@ def _write_summary(
         "name": name,
         "total": len(results),
         "ok": sum(bool(result["ok"]) for result in results),
-        "failed": sum(not bool(result["ok"]) for result in results),
+        "failed": sum(
+            not bool(result["ok"]) and not bool(result.get("skipped"))
+            for result in results
+        ),
+        "skipped": sum(bool(result.get("skipped")) for result in results),
         "mean_seconds": sum(durations) / len(durations) if durations else 0.0,
         "max_vram_gb": max(
             (float(result["vram_peak_gb"]) for result in results), default=0.0

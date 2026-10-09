@@ -73,3 +73,25 @@ def test_report_rebuilds_summary_for_interrupted_candidate(tmp_path: Path) -> No
     report = build_report(out_root, reference_path=tmp_path / "missing.yaml")
 
     assert "| stalled | 1 / 2 |" in report
+
+
+def test_report_includes_skipped_candidate_reason(tmp_path: Path) -> None:
+    out_root = tmp_path / "trials"
+    trial_dir = out_root / "body_measure" / "smpler-x" / "a_front"
+    trial_dir.mkdir(parents=True)
+    (trial_dir / "trial.json").write_text(json.dumps({
+        "role": "body_measure",
+        "name": "smpler-x",
+        "image": "a_front.png",
+        "ok": False,
+        "skipped": True,
+        "error": "needs owner SMPL-X registration",
+        "seconds": 0.0,
+        "vram_peak_gb": 0.0,
+        "extra": {},
+    }), encoding="utf-8")
+
+    report = build_report(out_root, reference_path=tmp_path / "missing.yaml")
+
+    assert "smpler-x" in report
+    assert "skipped: needs owner SMPL-X registration" in report

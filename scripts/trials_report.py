@@ -43,6 +43,24 @@ def _measurement_error_lines(out_root: Path, references: dict[str, Any]) -> list
     return lines
 
 
+def _candidate_result(out_root: Path, role: str, name: str, summary: dict[str, Any]) -> str:
+    trials = [
+        json.loads(path.read_text(encoding="utf-8"))
+        for path in sorted((out_root / role / name).glob("*/trial.json"))
+    ]
+    skipped = [trial for trial in trials if trial.get("skipped")]
+    failed = [trial for trial in trials if not trial.get("ok") and not trial.get("skipped")]
+    if skipped and not failed and not summary.get("ok"):
+        return f"skipped: {skipped[0].get('error', 'no reason provided')}"
+    if failed:
+        return f"failed: {failed[0].get('error', 'unknown error')}"
+    if summary.get("failed"):
+        return "failed: no trial details recorded"
+    if summary.get("ok"):
+        return "ok"
+    return "not run"
+
+
 def build_report(out_root: Path, reference_path: Path | None = None) -> str:
     by_role: dict[str, list[dict[str, Any]]] = defaultdict(list)
     image_outputs: dict[tuple[str, str, str], list[Path]] = defaultdict(list)
@@ -70,7 +88,11 @@ def build_report(out_root: Path, reference_path: Path | None = None) -> str:
             "name": candidate_dir.name,
             "total": len(trials),
             "ok": sum(bool(trial.get("ok")) for trial in trials),
-            "failed": sum(not bool(trial.get("ok")) for trial in trials),
+            "failed": sum(
+                not bool(trial.get("ok")) and not bool(trial.get("skipped"))
+                for trial in trials
+            ),
+            "skipped": sum(bool(trial.get("skipped")) for trial in trials),
             "mean_seconds": sum(durations) / len(durations) if durations else 0.0,
             "max_vram_gb": max(
                 (float(trial.get("vram_peak_gb", 0.0)) for trial in trials), default=0.0
@@ -90,8 +112,8 @@ def build_report(out_root: Path, reference_path: Path | None = None) -> str:
             [
                 f"## {role}",
                 "",
-                "| Name | OK / total | Mean s | Max VRAM GB |",
-                "|---|---:|---:|---:|",
+                "| Name | OK / total | Mean s | Max VRAM GB | Result |",
+                "|---|---:|---:|---:|---|",
             ]
         )
         role_summaries = sorted(by_role[role], key=lambda summary: str(summary["name"]))
@@ -99,7 +121,8 @@ def build_report(out_root: Path, reference_path: Path | None = None) -> str:
             lines.append(
                 f"| {summary['name']} | {summary['ok']} / {summary['total']} | "
                 f"{float(summary['mean_seconds']):.3f} | "
-                f"{float(summary['max_vram_gb']):.3f} |"
+                f"{float(summary['max_vram_gb']):.3f} | "
+                f"{_candidate_result(out_root, role, str(summary['name']), summary)} |"
             )
 
         if role == "body_measure" and references:

@@ -18,7 +18,7 @@ Single source of truth. Workers take the **first** `todo` whose dependencies are
 | T17 | Re-run Florence-2 + SAM after box fix | M1 | T13 | done |
 | T14 | Trials: body measurements | M1 | T12 | done |
 | T15 | Trials: image-to-3D | M1 | T14 | done |
-| T18 | Trials: mesh-based body measurement | M1 | T14 | todo |
+| T18 | Trials: mesh-based body measurement | M1 | T14 | done |
 | **G1** | **Gate: model choice and licences (Opus)** | M1 | T10–T18 | todo |
 | T20 | Stage s01_validate | M2 | G1 | todo |
 | T21 | Stage s02_prepare | M2 | T20 | todo |

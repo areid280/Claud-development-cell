@@ -156,3 +156,18 @@ texture-baking renderer imports the explicitly excluded
 wrapper requests mesh-only output and exports TRELLIS's decoded per-vertex
 RGB attributes into a GLB with vertex colors; this avoids the prohibited
 Gaussian-splat path and does not produce a texture atlas.
+
+## T18 — mesh-based body measurement — 2026-10-09
+
+No packages were installed. The SAM 3D Body checkpoint was checked without
+credentials using:
+
+```shell
+curl --disable --max-time 30 -sS -o /dev/null -w '%{http_code}\n' \
+  'https://huggingface.co/facebook/sam-3d-body-dinov3/resolve/main/model.ckpt'
+```
+
+The request returned HTTP 401, so the candidate was stopped per T18 and marked
+`skipped: needs owner HF access request`. SMPLer-X was skipped because owner
+SMPL-X registration was not provided. Both outcomes are recorded in
+`jobs/_model_trials/REPORT.md`.

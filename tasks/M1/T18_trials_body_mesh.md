@@ -55,3 +55,16 @@ keypoint method. Opus split this out of T14 (E-008) and defined the slicing rule
 - REPORT.md body_measure lists keypoint-ratio and each mesh candidate (ok, failed or skipped with reason).
 
 ## Log
+
+- Mesh measurement uses the mesh's largest-extent axis as up, scales stature to the requested height, selects the torso loop at each configured slice, and computes bust/underbust, minimum waist, and maximum hip circumference.
+- `sam-3d-body` wrapper and trial adapter were added, with Y-up GLB export and Blender front/back previews. An unauthenticated checkpoint request returned HTTP 401, so the candidate was stopped and recorded as `skipped: needs owner HF access request`; no SAM dependencies were installed.
+- `smpler-x` was registered as a trial and skipped because owner SMPL-X registration was not provided.
+- Trials: keypoint-ratio `6 ok / 6`; sam-3d-body `6 skipped / 6`; smpler-x `6 skipped / 6`. `jobs/_model_trials/REPORT.md` lists each candidate and skip reason.
+- Verify: `ruff check src tests` ->
+  ```
+  All checks passed!
+  ```
+  `pytest -q` ->
+  ```
+  56 passed, 2 warnings in 10.30s
+  ```
