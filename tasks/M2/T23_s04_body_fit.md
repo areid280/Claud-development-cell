@@ -24,14 +24,17 @@ milestone: M2 · effort: medium · depends: T22
 - **Masks:** `Image.open(job_dir / part["mask"])` → `np.asarray(...) > 127`. Union of `skin` and `face` for skin colour.
 - **Output** `s04_body_fit/body_fit.json`: `{"units": "cm", "source": "s04_body_fit", "measurements": {...},
   "confidence": {key: 0.5}, "colors": {"skin": "#rrggbb", "hair": "#rrggbb", "eyes": "#rrggbb"},
-  "body_type_hint": ...}` (only keys the schema allows). Validate with
+  "body_type_hint": ...}` (only keys the schema allows: units, source, measurements, confidence, colors,
+  body_type_hint, normalise; nothing else). Validate with
   `jsonschema.validate(data, json.load(open("schemas/body_params.schema.json")))` — resolve the schema path from
   `avatar_forge.core.paths` / repo root, not the working directory.
 - **No model is loaded in this stage.**
 
 ## Do
 1. Height reference: if `ctx.overrides.get("set", {}).get("height")` is a plain
-   number use it; else `default_height_cm`. Record which in `data["height_source"]`.
+   number use it; else `default_height_cm`. Record which in the **StageResult**:
+   `StageResult(..., data={"height_source": "override" | "default", "height_cm": h})` (E-022).
+   This goes into the manifest's stage summary — **not** into `body_fit.json`, whose schema forbids extra keys.
 2. Measurements via the selected method on the **front** view. Fill every
    required key; optional keys only if the method provides them.
    `confidence`: 0.5 for keypoint-ratio values, model-provided otherwise.
