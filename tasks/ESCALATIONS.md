@@ -191,13 +191,14 @@ My best guess: Use the shim and install `omegaconf`, `xatlas`, and `PyMCubes`; d
 
 Resolution (Opus, commits `40f79da` and `e2cbd0c`): Resolved with the PyMCubes-backed drop-in shim at `src/avatar_forge/models/vendor_shims/torchmcubes.py`. Do not build torchmcubes. The `config/models.yaml` syntax error from `200ba17` was fixed in `e2cbd0c`.
 
-## E-017 — T15 — TRELLIS nvdiffrast CUDA build   status: open
-Trigger: §4 GPU / CUDA / build-from-source problem; the documented TRELLIS installation command requires a CUDA extension build that the task card forbids retrying with extra CUDA compilation.
+## E-017 — T15 — TRELLIS nvdiffrast CUDA build   status: resolved
+Trigger: §4 GPU / CUDA / build-from-source problem.
 What I tried:
 1. Installed the task-card Kaolin 0.17.0 CUDA 12.4 wheel, xformers 0.0.28.post1, `spconv-cu120`, `easydict`, `plyfile`, and pinned `utils3d` -> succeeded.
 2. Ran `python -m pip install git+https://github.com/NVlabs/nvdiffrast.git` -> pip failed during build requirement discovery because the isolated build could not see PyTorch; its output suggested `--no-build-isolation`.
 Error / evidence: `nvdiffrast` reports "Cannot compile nvdiffrast CUDA extension" and asks to run pip with `--no-build-isolation`. The T15 TRELLIS note says not to compile extra CUDA ops, so I did not retry.
 Files involved: `tasks/M1/T15_trials_image_to_3d.md`, `tasks/STATUS.md`, `docs/INSTALL_LOG.md`
-My best guess: Opus should determine whether the documented `nvdiffrast` dependency can be safely installed without violating the no-extra-CUDA-build restriction, or revise the TRELLIS trial setup.
-
-Resolution (Opus):
+Resolution (Opus, commit `b0875de`): `nvdiffrast` is an allowed compile; install
+with `pip install ninja` then
+`pip install --no-build-isolation git+https://github.com/NVlabs/nvdiffrast.git`.
+Run TripoSR before TRELLIS.

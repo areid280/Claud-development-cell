@@ -109,6 +109,7 @@ After `source ~/.avatar_forge_env`, installed the TripoSR runtime dependencies
 without building `torchmcubes`:
 
 ```shell
+git clone https://github.com/VAST-AI-Research/TripoSR.git /opt/src/TripoSR
 python -m pip install omegaconf xatlas PyMCubes
 ```
 

@@ -107,3 +107,27 @@ ERROR: Failed to build 'git+https://github.com/NVlabs/nvdiffrast.git'
 
 Stopped without retrying because the TRELLIS note says not to compile extra
 CUDA ops. See E-017; no wrappers or model trials were run.
+
+Resumed after Opus resolution E-017 (`b0875de`): `nvdiffrast` is an allowed
+compile when installed after `ninja` using `--no-build-isolation`. Candidate
+order is TripoSR first, then TRELLIS. T15 set back to `doing`.
+
+TripoSR trial:
+
+```text
+$ python scripts/trial_model.py --role image_to_3d --name triposr --images 'samples/*.png'
+6/6 samples succeeded; mean 39.996 s; peak allocated VRAM 18.939 GB.
+Full meshes: 31,348–86,428 triangles; 4/6 watertight.
+Garment meshes: 14,680–137,860 triangles; 4/6 watertight.
+All six samples wrote full.glb, garment.glb, and front/back previews for both.
+```
+
+The available Florence-2 + SAM trial supplied boots masks for five samples.
+For `c_front`, the T17 Florence trial did not produce a mask; the adapter used
+the successful Sapiens T13 shoes mask. Outputs are under
+`jobs/_model_trials/image_to_3d/triposr/`; `scripts/trials_report.py` was run
+and `jobs/_model_trials/REPORT.md` includes the preview paths. No visual
+quality assessment was made.
+
+Hunyuan3D-2: excluded for licence territory (D-009). Stable Fast 3D: skipped
+because the candidate is gated and the owner has not enabled it.

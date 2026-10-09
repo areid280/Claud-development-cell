@@ -138,6 +138,7 @@ roles:
         vram_gb_est: 16
         selected: false
         licence_ok: false
+        trial: "excluded: licence territory (D-009)"
       - name: stable-fast-3d
         source: https://github.com/Stability-AI/stable-fast-3d
         install: see repo
@@ -146,6 +147,7 @@ roles:
         vram_gb_est: 8
         selected: false
         licence_ok: false
+        trial: "skipped: gated, owner has not enabled (optional)"
       - name: triposr
         source: https://github.com/VAST-AI-Research/TripoSR
         install: see T15 card "Opus notes" (clone to /opt/src/TripoSR; do NOT install its requirements.txt pins)
@@ -155,3 +157,4 @@ roles:
         vram_gb_est: 6
         selected: false
         licence_ok: false
+        trial: "completed: 6/6 samples; full and garment GLBs plus front/back previews written"
