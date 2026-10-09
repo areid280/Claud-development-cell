@@ -40,7 +40,8 @@ keypoint method. Opus split this out of T14 (E-008) and defined the slicing rule
    - Tests `tests/test_mesh_measure.py` with `trimesh.creation.cylinder` (radius r, height h):
      every circumference ≈ 2πr after scaling (±2%), and a cylinder with two thin "arm" cylinders
      beside it still returns the central loop.
-2. Wrapper `src/avatar_forge/models/body_measure_sam3d_body.py` → `predict(image_rgba) -> (vertices, faces, joints|None)`.
+2. Every GLB must be glTF **Y-up**; if the model is Z-up, convert with `avatar_forge.models.mesh_axes` before export (E-018).
+   Wrapper `src/avatar_forge/models/body_measure_sam3d_body.py` → `predict(image_rgba) -> (vertices, faces, joints|None)`.
 3. Extend `trial_adapters_body.py` with a trial per mesh candidate: `measurements.json`, `mesh.glb`,
    and `front.png`/`back.png` via `run_blender` + the existing `src/avatar_forge/blender/render_previews.py`
    (args `--in <glb> --out-dir <dir> [--size 768]`; already written and tested by Opus, E-012).
