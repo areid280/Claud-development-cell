@@ -11,32 +11,13 @@ Config:  config/pipeline.yaml -> stages.s01_validate
 
 from __future__ import annotations
 
-import importlib
 import json
 
 from PIL import Image
 
-from avatar_forge.core.config import selected_model
 from avatar_forge.core.stage import StageContext, StageResult
-from avatar_forge.models.base import ModelWrapper
+from avatar_forge.models.registry import load_selected
 from avatar_forge.stages.validate_rules import evaluate
-
-
-def _wrapper_for_entry(entry: dict) -> type[ModelWrapper]:
-    role = "pose"
-    module_name = (
-        f"avatar_forge.models.{role}_"
-        f"{entry['name'].replace('-', '_').replace('.', '_')}"
-    )
-    module = importlib.import_module(module_name)
-    for attr in vars(module).values():
-        if (
-            isinstance(attr, type)
-            and issubclass(attr, ModelWrapper)
-            and getattr(attr, "role", None) == role
-        ):
-            return attr
-    raise LookupError(f"No pose wrapper found for {entry['name']!r}")
 
 
 def run(ctx: StageContext) -> StageResult:
@@ -47,10 +28,7 @@ def run(ctx: StageContext) -> StageResult:
     messages: list[str] = []
 
     ctx.stage_dir.mkdir(parents=True, exist_ok=True)
-    entry = selected_model("pose")
-    wrapper_class = _wrapper_for_entry(entry)
-
-    with wrapper_class(entry) as model:
+    with load_selected("pose") as model:
         for item in ctx.manifest.get("inputs", []):
             view = str(item["view"])
             source = ctx.job_dir / "s00_ingest" / f"{view}.png"
