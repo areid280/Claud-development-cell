@@ -12,7 +12,9 @@ import base64
 import contextlib
 
 # A 65-byte ONNX model (y = Relu(x), opset 13), embedded because *.onnx files are git-ignored.
-PROBE_MODEL = base64.b64decode("CAg6NwoMCgF4EgF5IgRSZWx1EgVwcm9iZVoPCgF4EgoKCAgBEgQKAggBYg8KAXkSCgoICAESBAoCCAFCBAoAEA0=")
+PROBE_MODEL = base64.b64decode(
+    "CAg6NwoMCgF4EgF5IgRSZWx1EgVwcm9iZVoPCgF4EgoKCAgBEgQKAggBYg8KAXkSCgoICAESBAoCCAFCBAoAEA0="
+)
 
 
 def prepare_onnxruntime_cuda() -> None:
