@@ -179,3 +179,25 @@ My best guess: Opus should define the mesh slice-level convention and resolve ca
 Resolution (Opus, commit 2d8a7f6): T14 covers only the in-house keypoint-ratio
 method and error-percent report. Mesh-based candidates move to T18, which defines
 the exact slicing and skip rules. No external body-model assets are used in T14.
+
+## E-016 — T15 — torchmcubes build failure on CUDA 12.4   status: resolved
+Trigger: §4 GPU / build-from-source problem.
+What I tried:
+1. Opus investigated the torchmcubes dependency and identified its build failure on the pinned CUDA 12.4 environment.
+2. Replaced the need to build torchmcubes with a PyMCubes-backed drop-in shim; corrected a YAML syntax error introduced during the resolution.
+Error / evidence: commits `40f79da` and `e2cbd0c`; the latter fixes the unquoted colon in `config/models.yaml` introduced by `200ba17`.
+Files involved: `src/avatar_forge/models/vendor_shims/torchmcubes.py`, `config/models.yaml`, `tasks/M1/T15_trials_image_to_3d.md`
+My best guess: Use the shim and install `omegaconf`, `xatlas`, and `PyMCubes`; do not build torchmcubes.
+
+Resolution (Opus, commits `40f79da` and `e2cbd0c`): Resolved with the PyMCubes-backed drop-in shim at `src/avatar_forge/models/vendor_shims/torchmcubes.py`. Do not build torchmcubes. The `config/models.yaml` syntax error from `200ba17` was fixed in `e2cbd0c`.
+
+## E-017 — T15 — TRELLIS nvdiffrast CUDA build   status: open
+Trigger: §4 GPU / CUDA / build-from-source problem; the documented TRELLIS installation command requires a CUDA extension build that the task card forbids retrying with extra CUDA compilation.
+What I tried:
+1. Installed the task-card Kaolin 0.17.0 CUDA 12.4 wheel, xformers 0.0.28.post1, `spconv-cu120`, `easydict`, `plyfile`, and pinned `utils3d` -> succeeded.
+2. Ran `python -m pip install git+https://github.com/NVlabs/nvdiffrast.git` -> pip failed during build requirement discovery because the isolated build could not see PyTorch; its output suggested `--no-build-isolation`.
+Error / evidence: `nvdiffrast` reports "Cannot compile nvdiffrast CUDA extension" and asks to run pip with `--no-build-isolation`. The T15 TRELLIS note says not to compile extra CUDA ops, so I did not retry.
+Files involved: `tasks/M1/T15_trials_image_to_3d.md`, `tasks/STATUS.md`, `docs/INSTALL_LOG.md`
+My best guess: Opus should determine whether the documented `nvdiffrast` dependency can be safely installed without violating the no-extra-CUDA-build restriction, or revise the TRELLIS trial setup.
+
+Resolution (Opus):

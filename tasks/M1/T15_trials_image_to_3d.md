@@ -73,3 +73,37 @@ Always `source ~/.avatar_forge_env` first; all installs go into the venv and hon
 GATE: G1
 
 ## Log
+
+E-016 resolution: commits `40f79da` and `e2cbd0c` provide the PyMCubes-backed
+`torchmcubes` shim and fix the `config/models.yaml` syntax error. Do not build
+`torchmcubes`.
+
+Environment: `source ~/.avatar_forge_env`; `which python` ->
+`/opt/venv-af/bin/python`.
+
+TripoSR dependencies: `python -m pip install omegaconf xatlas PyMCubes` ->
+already satisfied (`omegaconf 2.4.0`, `xatlas 0.0.11`, `PyMCubes 0.1.6`).
+
+Initial verification after marking T15 `doing` and resolving E-016:
+
+```text
+$ pytest -q
+.............................................                            [100%]
+45 passed, 2 warnings in 8.24s
+```
+
+TRELLIS installation: the pinned Kaolin 0.17.0 CUDA 12.4 wheel, xformers
+0.0.28.post1, `spconv-cu120`, `easydict`, `plyfile`, pinned `utils3d`, and
+`nvdiffrast` installation commands were attempted. The first six installed
+successfully. `pip install git+https://github.com/NVlabs/nvdiffrast.git` failed
+while getting build requirements:
+
+```text
+ERROR! Cannot compile nvdiffrast CUDA extension. Please ensure that:
+1. You have PyTorch installed
+2. You run 'pip install' with --no-build-isolation flag
+ERROR: Failed to build 'git+https://github.com/NVlabs/nvdiffrast.git'
+```
+
+Stopped without retrying because the TRELLIS note says not to compile extra
+CUDA ops. See E-017; no wrappers or model trials were run.

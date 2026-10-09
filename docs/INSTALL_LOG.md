@@ -102,3 +102,29 @@ those cache entries were restored from their existing Hugging Face blobs.
 Trials then used `florence2-plus-sam` (SAM v1) without installing `sam2`.
 Five BiRefNet inputs completed; `c_front` stalled with no output and was marked
 failed per the T13 30-minute rule. See `jobs/_model_trials/parsing/florence2-plus-sam/summary.json`.
+
+## T15 — TripoSR dependencies — 2026-10-09
+
+After `source ~/.avatar_forge_env`, installed the TripoSR runtime dependencies
+without building `torchmcubes`:
+
+```shell
+python -m pip install omegaconf xatlas PyMCubes
+```
+
+All three packages were already installed in `/opt/venv-af` (`omegaconf 2.4.0`,
+`xatlas 0.0.11`, `PyMCubes 0.1.6`).
+
+## T15 — TRELLIS dependencies — 2026-10-09
+
+After `source ~/.avatar_forge_env`, the task-card commands installed Kaolin
+`0.17.0`, xformers `0.0.28.post1`, `spconv-cu120`, `easydict`, `plyfile`, and
+the pinned `utils3d` revision. The documented `nvdiffrast` install command:
+
+```shell
+python -m pip install git+https://github.com/NVlabs/nvdiffrast.git
+```
+
+failed during build requirement discovery because its CUDA extension could not
+see PyTorch under build isolation. Per the T15 restriction against compiling
+extra CUDA ops, it was not retried with `--no-build-isolation`; see E-017.
