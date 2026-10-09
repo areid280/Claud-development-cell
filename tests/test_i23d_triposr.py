@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import numpy as np
+import pytest
 from PIL import Image
 
 from avatar_forge.models.i23d_trellis import _export_mesh_glb
@@ -49,8 +50,8 @@ def test_garment_crop_uses_valid_mask_and_makes_other_pixels_transparent(
 def test_trellis_mesh_export_preserves_vertex_colors(tmp_path: Path) -> None:
     from types import SimpleNamespace
 
-    import torch
-    import trimesh
+    torch = pytest.importorskip("torch")  # CI has no torch
+    trimesh = pytest.importorskip("trimesh")
 
     source_mesh = SimpleNamespace(
         vertices=torch.tensor(
