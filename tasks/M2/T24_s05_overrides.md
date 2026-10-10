@@ -134,3 +134,10 @@ bust 90.0 -> 99.0
 hair #2b1d14
 {'status': 'ok', 'started_at': '2026-10-10T10:15:10+00:00', 'finished_at': '2026-10-10T10:15:10+00:00', 'outputs': ['s05_body_params/body_params.json'], 'messages': [], 'data': {'normalised': False, 'changes': {}, 'overrides': {'bust': {'from': 90.0, 'to': 99.0}, 'hair': {'from': '#2b2420', 'to': '#2b1d14'}}}}
 ```
+
+### Opus review (2026-10-10)
+PASS. Matches the contract; tests cover every listed case; the `test_core` change is correct
+(s05 now really runs, so the fixture must provide s04's output). Tidy-ups: colour values are
+trimmed like measurements (test added), `MAX_CM` cites the schema, docstring lists `data`.
+The CLI check used a synthetic job because `$AF_JOBS_DIR` held no T23 job; see the owner note
+in the review reply about checking the network volume.

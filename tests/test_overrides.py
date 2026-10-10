@@ -154,3 +154,10 @@ def test_messages_are_in_sorted_key_order(body: dict[str, Any]) -> None:
         "Unknown setting 'a_unknown' ignored.",
         "Unknown setting 'z_unknown' ignored.",
     ]
+
+
+def test_color_value_whitespace_is_trimmed(body: dict[str, Any]) -> None:
+    updated, messages = apply_overrides(body, {"hair_color": " #2B1D14 "})
+
+    assert messages == []
+    assert updated["colors"]["hair"] == "#2b1d14"

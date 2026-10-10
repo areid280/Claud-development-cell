@@ -20,7 +20,7 @@ MEASUREMENT_KEYS = (
 )
 COLOR_KEYS = {"hair_color": "hair", "skin_color": "skin", "eye_color": "eyes"}
 RESERVED_KEYS = frozenset({"normalise"})
-MAX_CM = 300.0
+MAX_CM = 300.0  # schemas/body_params.schema.json $defs.cm
 
 _MEASUREMENT_VALUE = re.compile(r"^([+-])?(\d+(?:\.\d+)?)(%)?$")
 _HEX_COLOR = re.compile(r"^#[0-9a-fA-F]{6}$")
@@ -76,12 +76,12 @@ def apply_overrides(
             continue
 
         if key in COLOR_KEYS:
-            if not _HEX_COLOR.fullmatch(value):
+            if not _HEX_COLOR.fullmatch(value.strip()):
                 messages.append(
                     f"Invalid colour '{value}' for '{key}' (use #rrggbb); ignored."
                 )
                 continue
-            body["colors"][COLOR_KEYS[key]] = value.lower()
+            body["colors"][COLOR_KEYS[key]] = value.strip().lower()
             continue
 
         messages.append(f"Unknown setting '{key}' ignored.")

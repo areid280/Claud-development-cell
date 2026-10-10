@@ -4,6 +4,7 @@ Normalisation is added later in T40.
 
 Reads:   s04_body_fit/body_fit.json, ctx.overrides (from manifest "overrides")
 Writes:  s05_body_params/body_params.json   validates against schemas/body_params.schema.json
+Data:    {"normalised": bool, "changes": {...}, "overrides": {key: {"from", "to"}}}
 """
 
 from __future__ import annotations
@@ -50,7 +51,7 @@ def run(ctx: StageContext) -> StageResult:
             }
     old_colors = body["colors"]
     new_colors = new_body["colors"]
-    for _, color_name in COLOR_KEYS.items():
+    for color_name in COLOR_KEYS.values():
         if new_colors[color_name] != old_colors[color_name]:
             applied[color_name] = {
                 "from": old_colors[color_name],
