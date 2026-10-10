@@ -2,6 +2,10 @@
 
 Put test images here **on the pod only**. They are never committed.
 
+The real files live on the network volume in `/workspace/samples/`; `scripts/setup_pod.sh`
+links them in here on every pod, and moves any new file you drop here (e.g. `reference.yaml`)
+onto the volume, so samples survive a fresh container. Re-run setup after adding files.
+
 Rules:
 - Adults only. Original characters, or real people who agreed.
 - Full body, head to toe, feet visible. Long side ≥ 1024 px.

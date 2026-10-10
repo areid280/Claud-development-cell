@@ -10,6 +10,7 @@ Note:    Output measurements, not body-model parameters (docs/05_DECISIONS.md D-
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -21,6 +22,8 @@ from avatar_forge.body.colours import median_color_hex
 from avatar_forge.body.keypoint_ratio import measure
 from avatar_forge.core.paths import SCHEMA_DIR
 from avatar_forge.core.stage import StageContext, StageResult
+
+_ABSOLUTE_NUMBER = re.compile(r"\d+(\.\d+)?")
 
 
 def _color_mask(
@@ -43,6 +46,23 @@ def _color_mask(
     return combined
 
 
+def _absolute_height(value: Any) -> float | None:
+    """An absolute height override in cm, or None.
+
+    CLI ``--set`` values arrive as strings (``"175"``), so plain unsigned numbers are accepted in
+    either form. Relative forms (``"+5"``, ``"-3%"``) return None: s05_body_params applies them.
+    """
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        number = float(value)
+    elif isinstance(value, str) and _ABSOLUTE_NUMBER.fullmatch(value.strip()):
+        number = float(value.strip())
+    else:
+        return None
+    return number if number > 0 else None
+
+
 def run(ctx: StageContext) -> StageResult:
     inputs = ctx.manifest.get("inputs", [])
     front_input = next(
@@ -55,11 +75,9 @@ def run(ctx: StageContext) -> StageResult:
         )
 
     cfg = ctx.stage_config()
-    override_height = ctx.overrides.get("set", {}).get("height")
-    if isinstance(override_height, (int, float)) and not isinstance(
-        override_height, bool
-    ):
-        height_cm = float(override_height)
+    override_height = _absolute_height(ctx.overrides.get("set", {}).get("height"))
+    if override_height is not None:
+        height_cm = override_height
         height_source = "override"
     else:
         height_cm = float(cfg["default_height_cm"])

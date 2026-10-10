@@ -68,6 +68,8 @@ Escalating early is cheaper than looping. Never guess at licences.
 - Every pipeline stage is a module in `src/avatar_forge/stages/` with one
   public function `run(ctx: StageContext) -> StageResult`. Do not change this
   signature (see `src/avatar_forge/core/stage.py`).
+- Implementing a stage? Also read `docs/06_STAGE_CONTRACTS.md` (what `ctx` and
+  `StageResult` provide). It answers the usual "how do I read/write/warn" questions.
 - Stages communicate **only** through files in the job folder and the
   `manifest.json` described by `schemas/character_manifest.schema.json`.
   Never pass data between stages in memory globals.

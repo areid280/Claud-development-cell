@@ -72,3 +72,10 @@ milestone: M2 · effort: medium · depends: T22
 
   `samples/reference.yaml` is absent from the provided samples, so percentage error against reference values could not be assessed.
 - Confirmed the successful `a_front.png` manifest stage summary contains `height_source: default` and `height_cm: 168.0`; a unit test covers the override summary and schema-exact JSON output.
+
+### Opus review (2026-10-10, E-023)
+- Fixed: `--set height=175` was ignored because CLI override values are strings (manifest schema);
+  the card said "plain number" and the unit test passed an int. `_absolute_height()` now accepts
+  `"175"`/`"162.5"` and leaves relative forms to s05. Test added.
+- `samples/reference.yaml` was lost with the container; `setup_pod.sh` now keeps samples on the
+  volume. The owner should re-create it so G2 can check measurement error.

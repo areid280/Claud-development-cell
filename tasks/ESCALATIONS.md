@@ -21,6 +21,24 @@ Resolution (Opus): <filled in by Opus>
 
 ---
 
+## E-023 — T24 — s05_body_params stage contracts are underspecified   status: resolved
+Trigger: AGENTS.md §4 — task card is ambiguous
+What I tried:
+1. Read the T24 card and its listed files -> they do not define the `StageContext` file/path
+   attributes or how a stage reports warnings, so `run(ctx)` could not be written safely.
+Error / evidence: `tasks/M2/T24_s05_overrides.md`, `src/avatar_forge/stages/s05_body_params.py`
+Files involved: `tasks/M2/T24_s05_overrides.md`
+My best guess: Opus should add a Contracts section (context fields, warning API).
+(Entry reconstructed by Opus from the worker's report; the worker's local copy was not pushed.)
+
+Resolution (Opus, 2026-10-10): T24 card now has a full Contracts section (exact grammar,
+messages, `data`, tests) and a concrete Verify. There is no warning API: a warning is a message
+plus `status="warn"`. New `docs/06_STAGE_CONTRACTS.md` documents `StageContext`/`StageResult`/
+overrides for every stage, and AGENTS.md §5 points to it (same gap as E-019 and E-021).
+Review fixes found on the way: s04 ignored `--set height=175` because CLI values are strings
+(now parsed, with tests); `setup_pod.sh` keeps `samples/` on the volume (T23 lost
+`samples/reference.yaml` with the container).
+
 ## E-022 — T23 — height source conflicts with body schema   status: resolved
 Trigger: AGENTS.md §4 — task card contradicts the schema contract; resolving it may require a schema change.
 What I tried:

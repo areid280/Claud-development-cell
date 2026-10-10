@@ -76,7 +76,7 @@ def test_body_fit_writes_schema_data_and_height_summary(
             }
         },
         manifest={"inputs": [{"view": "front"}]},
-        overrides={"set": {"height": 175}},
+        overrides={"set": {"height": "175"}},  # CLI values are strings (manifest schema)
         logger=logging.getLogger(__name__),
     )
 
@@ -109,3 +109,25 @@ def test_body_fit_fails_without_front_input(tmp_path: Path) -> None:
 
     assert result.status == "fail"
     assert result.messages == ["s04_body_fit requires a front input"]
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        ("175", 175.0),
+        (" 162.5 ", 162.5),
+        (175, 175.0),
+        (170.5, 170.5),
+        ("+5", None),
+        ("-3", None),
+        ("+10%", None),
+        ("0", None),
+        ("tall", None),
+        (True, None),
+        (None, None),
+    ],
+)
+def test_absolute_height_accepts_cli_strings_and_skips_relative_forms(
+    value: object, expected: float | None
+) -> None:
+    assert s04_body_fit._absolute_height(value) == expected

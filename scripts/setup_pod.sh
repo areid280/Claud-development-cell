@@ -36,6 +36,23 @@ if [ -f $VENV/bin/activate ]; then source $VENV/bin/activate; fi
 EOF
 # jobs/ is git-ignored; link it so job outputs on the volume show in the VS Code Explorer
 [ -e "$REPO_DIR/jobs" ] || ln -s "$WS/jobs" "$REPO_DIR/jobs"
+# samples/ (git-ignored except README.md) lives on local disk and vanished with each fresh
+# container (T23 lost samples/reference.yaml). Keep the real files on the volume: move any new
+# local file there, then link every volume file back into samples/.
+mkdir -p "$WS/samples" "$REPO_DIR/samples"
+for f in "$REPO_DIR"/samples/*; do
+  [ -f "$f" ] && [ ! -L "$f" ] && [ "$(basename "$f")" != "README.md" ] || continue
+  if [ -e "$WS/samples/$(basename "$f")" ]; then
+    echo "samples: kept volume copy of $(basename "$f"); local copy left as $f.local"
+    mv "$f" "$f.local"
+  else
+    cp -p "$f" "$WS/samples/" && rm "$f"
+  fi
+done
+for f in "$WS"/samples/*; do
+  [ -f "$f" ] && [ -s "$f" ] || continue   # skip 0-byte geesefs leftovers
+  [ -e "$REPO_DIR/samples/$(basename "$f")" ] || ln -s "$f" "$REPO_DIR/samples/$(basename "$f")"
+done
 # RunPod appends `source /etc/rp_environment` (which resets PATH) to ~/.bashrc at container start,
 # so our line must come LAST: remove it wherever it is and re-append it on every run.
 touch "$HOME/.bashrc"
