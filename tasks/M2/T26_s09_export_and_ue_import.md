@@ -134,3 +134,9 @@ Keep `import unreal` **inside functions** so tests can import the file without U
   `-rw-rw-rw- 1 nobody nogroup 5832876 Oct 10 11:16 .../character_fused.fbx`.
 - Manifest stage result: `status=ok`, `fbx_mb=5.83`, `textures=0`; outputs include the FBX, import manifest, body parameters, and both previews.
 - Awaiting owner validation in UE5.
+
+### Opus review (2026-10-10)
+Code PASS (lint clean; full suite incl. real-Blender tests passes off-pod). Export layout matches docs/03 §1;
+5.8 MB FBX for a 148k-triangle mesh is as expected. Follow-up for T38 (not M2): `plan_import` turns every
+`material` key into a texture path, so a future `tint` (a hex colour) must be skipped there.
+Paused 2026-10-10 awaiting the owner's UE run.
