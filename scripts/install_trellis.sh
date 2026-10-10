@@ -6,7 +6,7 @@
 set -euo pipefail
 
 SRC=/opt/src/TRELLIS
-WHEELS=/workspace/downloads/wheels
+WHEELS="${AF_WHEELS_DIR:-/workspace/downloads/wheels}"   # cache only; see E-025
 # shellcheck disable=SC1090
 source "$HOME/.avatar_forge_env"
 
@@ -43,11 +43,31 @@ python -m pip install xformers==0.0.28.post1 --index-url https://download.pytorc
 python -m pip install spconv-cu120 easydict plyfile ninja open3d pyvista pymeshfix igraph \
   "utils3d@git+https://github.com/EasternJournalist/utils3d.git@9a4eb15e4021b67b12c460c7057d642626897ec8"
 
-# nvdiffrast must build against the venv torch (E-017). geesefs can leave 0-byte files: drop them.
-find "$WHEELS" -name 'nvdiffrast-*.whl' -size 0 -delete
-if ! ls "$WHEELS"/nvdiffrast-*.whl >/dev/null 2>&1; then
-  python -m pip wheel --no-build-isolation --no-deps -w "$WHEELS" git+https://github.com/NVlabs/nvdiffrast.git
+# nvdiffrast must build against the venv torch (E-017). pip cannot write to the volume: it copies
+# files with their permissions and geesefs refuses chmod (E-025). So build on local disk, copy plain
+# bytes to the volume as a cache, and always install from a local, zip-checked copy.
+LOCAL_WHEELS="$HOME/.cache/af-wheels"
+mkdir -p "$LOCAL_WHEELS"
+rm -f "$LOCAL_WHEELS"/nvdiffrast-*.whl
+find "$WHEELS" -name 'nvdiffrast-*.whl*' -size 0 -delete 2>/dev/null || true
+cached=$(ls -t "$WHEELS"/nvdiffrast-*.whl 2>/dev/null | head -1 || true)
+if [ -n "$cached" ] && cat "$cached" > "$LOCAL_WHEELS/$(basename "$cached")" \
+    && python -m zipfile -t "$LOCAL_WHEELS/$(basename "$cached")" >/dev/null 2>&1; then
+  echo "nvdiffrast: using cached wheel $cached"
+else
+  rm -f "$LOCAL_WHEELS"/nvdiffrast-*.whl
+  python -m pip wheel --no-build-isolation --no-deps -w "$LOCAL_WHEELS" \
+    git+https://github.com/NVlabs/nvdiffrast.git
+  built=$(ls -t "$LOCAL_WHEELS"/nvdiffrast-*.whl | head -1)
+  name=$(basename "$built")
+  # plain byte copy (no chmod/utime); write to .part then rename so a cut-off copy is never used
+  if cat "$built" > "$WHEELS/$name.part" && mv -f "$WHEELS/$name.part" "$WHEELS/$name"; then
+    echo "nvdiffrast: cached $name on the volume"
+  else
+    rm -f "$WHEELS/$name.part" 2>/dev/null || true
+    echo "WARNING: could not cache the nvdiffrast wheel on the volume; next pod rebuilds it" >&2
+  fi
 fi
-python -m pip install --no-deps "$(ls -t "$WHEELS"/nvdiffrast-*.whl | head -1)"
+python -m pip install --no-deps --force-reinstall "$(ls -t "$LOCAL_WHEELS"/nvdiffrast-*.whl | head -1)"
 
 import_check

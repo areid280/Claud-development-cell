@@ -21,6 +21,22 @@ Resolution (Opus): <filled in by Opus>
 
 ---
 
+## E-025 — T25 — TRELLIS installer cannot write the nvdiffrast wheel to the volume   status: resolved
+Trigger: AGENTS.md §4 — GPU / build problem; T25 card says stop if "TRELLIS ready" is not printed
+What I tried:
+1. `git pull` (7f27488), `bash scripts/setup_pod.sh` -> exit 0, nvdiffrast wheel built, but copying it
+   to `/workspace/downloads/wheels` failed with "Operation not permitted"; setup printed the TRELLIS WARNING.
+Error / evidence: no `TRELLIS ready` line.
+Files involved: `scripts/install_trellis.sh`
+My best guess: the network volume rejects the wheel copy.
+(Entry reconstructed by Opus from the worker's report; the worker's local copy was not pushed.)
+
+Resolution (Opus, 2026-10-10): `pip wheel -w` copies with file permissions and geesefs refuses chmod
+(the same D-006 limit as before). The installer now builds into `~/.cache/af-wheels` (local disk), caches
+the wheel on the volume with a plain byte copy (`cat` to `.part`, then rename; a failure only warns), and
+always installs from a local copy that passed `python -m zipfile -t`, so a cut-off or 0-byte cache is
+rebuilt. Simulated fresh / cached / corrupt-cache / already-installed runs all reach the import check.
+
 ## E-024 — T25 — read scope and files for config/tests not listed   status: resolved
 Trigger: AGENTS.md §4 — task card is ambiguous
 What I tried:

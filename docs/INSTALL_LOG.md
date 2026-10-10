@@ -178,3 +178,6 @@ SMPL-X registration was not provided. Both outcomes are recorded in
 commands above on every new pod, adds `open3d pyvista pymeshfix igraph` and `libusb-1.0-0`, and keeps the
 compiled nvdiffrast wheel in `/workspace/downloads/wheels` so it is built only once. It ends with an
 import check that prints `TRELLIS ready: <torch> kaolin <version>`.
+E-025 (2026-10-10): pip cannot write into `/workspace` (geesefs refuses chmod), so the nvdiffrast wheel is
+built in `~/.cache/af-wheels` and copied to `/workspace/downloads/wheels` as plain bytes. Rule for any
+future cache on the volume: write with `cat`/`curl -o`, never `pip -w`, `cp -p` or `shutil.copy`.
