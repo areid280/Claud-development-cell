@@ -140,3 +140,15 @@ Warp, pulled in by kaolin, falls back for its own kernels; TRELLIS does not depe
 expected for the MVP. **Visual review pending:** owner runs
 `python scripts/preview_sheet.py /workspace/jobs/20261010-104423-71096a /workspace/jobs/20261010-105049-4e1f93 /workspace/jobs/20261010-110015-135a05`
 and sends `jobs/_review/s06_previews.png` to Opus. T26 may start meanwhile (it does not depend on the verdict).
+
+### Opus visual review (2026-10-10, sample a, owner screenshots)
+- **Correct:** upright, front faces the camera, true height, believable proportions and pose, garments
+  readable (jacket, bodysuit, boots), back view plausible (ponytail, jacket back), colours no longer washed
+  out (D-015 addendum works). The 3D path is proven: PASS for the MVP's purpose.
+- **Weak (expected for this method):** blurry colour everywhere; the face is a smear (no eyes, lips or brows); hands
+  are rough; boot soles grey. Causes: TRELLIS sees the face at only ~50–70 px (518 px input of a full-body
+  shot), and colour is stored per vertex (~74k vertices for the whole body, roughly a 26×26-pixel "image" for the
+  face). Unreal cannot add detail that is not in the mesh.
+- **Direction (owner to choose, see chat):** do not rely on the fused mesh's face. Front-photo texture projection
+  (T36 brought forward) for sharp front detail; MetaHuman for the face (already the brief's plan); optionally
+  trial a higher-resolution image-to-3D model at a gate (licence + VRAM check).
