@@ -117,3 +117,20 @@ Keep `import unreal` **inside functions** so tests can import the file without U
 4. When the owner pastes the log: fix only errors it shows, then set `done`.
 
 ## Log
+
+- `ruff check src tests unreal` -> `All checks passed!`
+- `pytest -q` -> `145 passed, 3 warnings in 52.75s`.
+- `avatar-forge rerun /workspace/jobs/20261010-104423-71096a --from s09_export --to s09_export`:
+  `s09_export ok`; job folder `/workspace/jobs/20261010-104423-71096a`.
+- `find /workspace/jobs/20261010-104423-71096a/s09_export -type f | sort`:
+  ```
+  /workspace/jobs/20261010-104423-71096a/s09_export/20261010-104423-71096a/body/body_params.json
+  /workspace/jobs/20261010-104423-71096a/s09_export/20261010-104423-71096a/fused/character_fused.fbx
+  /workspace/jobs/20261010-104423-71096a/s09_export/20261010-104423-71096a/import_manifest.json
+  /workspace/jobs/20261010-104423-71096a/s09_export/20261010-104423-71096a/previews/back.png
+  /workspace/jobs/20261010-104423-71096a/s09_export/20261010-104423-71096a/previews/front.png
+  ```
+- `ls -la /workspace/jobs/20261010-104423-71096a/s09_export/20261010-104423-71096a/fused/character_fused.fbx`:
+  `-rw-rw-rw- 1 nobody nogroup 5832876 Oct 10 11:16 .../character_fused.fbx`.
+- Manifest stage result: `status=ok`, `fbx_mb=5.83`, `textures=0`; outputs include the FBX, import manifest, body parameters, and both previews.
+- Awaiting owner validation in UE5.
