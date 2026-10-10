@@ -176,3 +176,10 @@ material `M_AF_VertexColor` (VertexColor → Base Color) used when a manifest me
 Alternatives: UV-unwrap + bake in M2 (heavier, belongs to T36 texture projection in M3).
 Consequences: no schema change (import_manifest `material` is optional). M3 replaces this with PBR textures per garment.
 
+Addendum to D-015 (E-024, 2026-10-10) — vertex colour space: image-to-3D models (TRELLIS, TripoSR) output
+display (sRGB) colours, which trimesh writes unchanged into glTF `COLOR_0`, defined as **linear**; Blender and UE
+then show them washed out (sRGB 0.5 → 0.73). Rule: wrapper GLBs (`raw.glb`) stay as they are; `cleanup_mesh.py
+--color-space srgb` (config `mvp_color_space`) re-stores the values as sRGB, so `character_fused.glb` carries
+correct linear `COLOR_0` and T26's FBX `colors_type="SRGB"` writes the original display colours. Previews use
+Workbench VERTEX colour with the Standard view transform. Note: trimesh mis-reads Blender's uint16 colours, so
+tests read `COLOR_0` from the GLB directly (`tests/test_cleanup_mesh.py`).

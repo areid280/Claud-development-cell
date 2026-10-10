@@ -125,6 +125,13 @@ fi
 # 5. Blender (tarball cached on the volume, unpacked to local disk)
 bash "$REPO_DIR/scripts/install_blender.sh"
 
+# 6. TRELLIS, the selected image_to_3d model (G1). Local disk, so it is redone on each new pod.
+#    Skip with AF_SKIP_TRELLIS=1 (e.g. a CPU-only pod).
+if [ "${AF_SKIP_TRELLIS:-0}" != "1" ]; then
+  bash "$REPO_DIR/scripts/install_trellis.sh" \
+    || echo "WARNING: TRELLIS install failed; s06_garments cannot run (see output above)" >&2
+fi
+
 echo
 echo "== done. Open a NEW terminal (or run: source $PROFILE_SNIPPET), then: =="
 echo "   bash scripts/doctor.sh"

@@ -70,6 +70,13 @@ stages:
 
   s06_garments:
     mode: mvp_fused                 # mvp_fused (M2) | separate (M3+)
+    # mvp_fused (T25, D-015): one image-to-3D mesh of the whole figure, cleaned in Blender
+    mvp_max_triangles: 150000       # G1 budget; decimate (collapse) above this
+    mvp_merge_distance_m: 0.0005    # merge distance in the raw model units (TRELLIS: about 1 unit tall)
+    mvp_min_part_fraction: 0.01     # delete loose parts with fewer than 1% of all vertices
+    mvp_color_space: srgb           # what the model's vertex colours really are (cleanup_mesh.py)
+    mvp_seed: 0                     # image-to-3D sampling seed (reproducible runs)
+    mvp_preview_px: 768             # front/back preview size
     default_strategy:               # category -> strategy; T30 refines
       bodysuit: skin_layer
       leggings: skin_layer

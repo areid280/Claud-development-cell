@@ -45,6 +45,19 @@ def _mesh_bounds() -> tuple[Vector, Vector]:
     return low, high
 
 
+def _uses_vertex_colors() -> bool:
+    """True when every mesh has a colour attribute and none has an image texture."""
+    meshes = [obj.data for obj in bpy.context.scene.objects if obj.type == "MESH"]
+    has_texture = any(
+        node.type == "TEX_IMAGE"
+        for mesh in meshes
+        for material in mesh.materials
+        if material is not None and material.node_tree is not None
+        for node in material.node_tree.nodes
+    )
+    return bool(meshes) and all(mesh.color_attributes for mesh in meshes) and not has_texture
+
+
 def _setup_scene(size: int) -> None:
     scene = bpy.context.scene
     scene.render.engine = "BLENDER_WORKBENCH"
@@ -53,9 +66,11 @@ def _setup_scene(size: int) -> None:
     scene.render.resolution_percentage = 100
     scene.render.film_transparent = False
     scene.render.image_settings.file_format = "PNG"
+    scene.view_settings.view_transform = "Standard"  # show colours as stored (AgX shifts them)
     shading = scene.display.shading
     shading.light = "STUDIO"
-    shading.color_type = "TEXTURE"  # falls back to material colour when a mesh has no texture
+    # Vertex-coloured meshes (image-to-3D output, D-015) need VERTEX; TEXTURE ignores them.
+    shading.color_type = "VERTEX" if _uses_vertex_colors() else "TEXTURE"
     shading.show_cavity = True
 
 

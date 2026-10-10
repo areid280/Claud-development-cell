@@ -30,8 +30,9 @@ The human owner switches models in the chat model picker. **Workers never
 
 1. Open `tasks/STATUS.md`. Pick the **first** task with status `todo` whose
    dependencies are all `done`. Do not skip ahead.
-2. Read **only**: that task card, the files it lists under "Read first", and
-   this file. Do not scan the whole repo (it wastes budget).
+2. Read **only**: that task card, the files it lists under "Read first", this
+   file, and any file this file tells you to read (e.g. `docs/06_STAGE_CONTRACTS.md`
+   for a stage). Do not scan the whole repo (it wastes budget).
 3. Set the task's status to `doing` in `tasks/STATUS.md`.
 4. Implement exactly what the card asks. Nothing extra. No refactors of
    other files unless the card says so.

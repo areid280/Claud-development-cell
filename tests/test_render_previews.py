@@ -49,4 +49,4 @@ def test_render_previews_stands_y_up_figure_upright(tmp_path: Path) -> None:
     pixels = np.asarray(Image.open(out_dir / "front.png").convert("L")).astype(int)
     background = pixels[0, 0]
     rows, cols = np.nonzero(abs(pixels - background) > 8)
-    assert rows.ptp() > 2 * cols.ptp()  # standing: much taller than wide in the front view
+    assert np.ptp(rows) > 2 * np.ptp(cols)  # standing: much taller than wide in the front view

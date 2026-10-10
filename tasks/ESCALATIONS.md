@@ -21,6 +21,23 @@ Resolution (Opus): <filled in by Opus>
 
 ---
 
+## E-024 — T25 — read scope and files for config/tests not listed   status: resolved
+Trigger: AGENTS.md §4 — task card is ambiguous
+What I tried:
+1. Read the T25 card -> its "Read first" list omits `docs/06_STAGE_CONTRACTS.md`, which AGENTS.md §5
+   requires for stage work; the card also asks for config changes and tested behaviour without listing
+   the related files.
+Error / evidence: `tasks/M2/T25_s06_mvp_fused.md`, `AGENTS.md`
+Files involved: `tasks/M2/T25_s06_mvp_fused.md`
+My best guess: Opus should align the card's read scope with AGENTS.md and list the config/test files.
+(Entry reconstructed by Opus from the worker's report; the worker's local copy was not pushed.)
+
+Resolution (Opus, 2026-10-10): AGENTS.md §3 step 2 now says files AGENTS.md itself names are always in
+scope. T25 card rewritten: full "Read first", exact `run(ctx)` steps, exact tests and Verify. Opus wrote and
+tested the risky parts: `blender/cleanup_mesh.py` + `tests/test_cleanup_mesh.py`, the `mvp_*` config keys, and
+`scripts/install_trellis.sh` (run by `setup_pod.sh`). Found on the way and fixed: vertex colours were
+interpreted as linear (washed out) and previews ignored vertex colours (D-015 addendum).
+
 ## E-023 — T24 — s05_body_params stage contracts are underspecified   status: resolved
 Trigger: AGENTS.md §4 — task card is ambiguous
 What I tried:

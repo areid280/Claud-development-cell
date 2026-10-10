@@ -171,3 +171,10 @@ The request returned HTTP 401, so the candidate was stopped per T18 and marked
 `skipped: needs owner HF access request`. SMPLer-X was skipped because owner
 SMPL-X registration was not provided. Both outcomes are recorded in
 `jobs/_model_trials/REPORT.md`.
+
+## E-024 — TRELLIS install automated — 2026-10-10
+
+`scripts/install_trellis.sh` (run by `setup_pod.sh`; skip with `AF_SKIP_TRELLIS=1`) repeats the T15
+commands above on every new pod, adds `open3d pyvista pymeshfix igraph` and `libusb-1.0-0`, and keeps the
+compiled nvdiffrast wheel in `/workspace/downloads/wheels` so it is built only once. It ends with an
+import check that prints `TRELLIS ready: <torch> kaolin <version>`.
