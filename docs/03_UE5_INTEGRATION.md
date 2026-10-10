@@ -22,9 +22,11 @@ used to prove the pipeline works.
 
 1. Enable plugins: **MetaHuman**, **Python Editor Script Plugin**.
 2. Copy `unreal/` from this repo into your UE project as `Content/Python/avatar_forge/`.
-3. In the UE editor: **Tools → Execute Python Script** →
-   `Content/Python/avatar_forge/import_character.py`, and choose the job's
-   `import_manifest.json` when prompted.
+3. Download the job's `s09_export/<job_id>/` folder from the pod (VS Code Explorer → right-click →
+   Download). Put the full Windows path of its `import_manifest.json` on the first line of
+   `Content/Python/avatar_forge/import_manifest_path.txt` (or set env `AF_IMPORT_MANIFEST`).
+   Then in the UE editor: **Tools → Execute Python Script** →
+   `Content/Python/avatar_forge/import_character.py`.
 4. The script imports garments into `/Game/AvatarForge/<job_id>/`, creates
    material instances from `M_AF_Garment` and prints the body parameters.
 5. In MetaHuman Creator, create a MetaHuman and set body parameters to the

@@ -54,12 +54,14 @@ StageResult(
 - Read only files that earlier stages wrote, through `ctx.previous_output(...)`.
 - Write only inside `ctx.stage_dir`. Write JSON as
   `json.dumps(data, indent=2) + "\n"` with `encoding="utf-8"`.
-- If an output has a schema in `schemas/`, validate before writing and return `fail` on error:
+- If an output has a schema in `schemas/`, validate before writing and return `fail` on error.
+  Use the shared helper; it also resolves `$ref`s between schema files (e.g. import_manifest → body_params):
   ```python
-  from avatar_forge.core.paths import SCHEMA_DIR
-  schema = json.loads((SCHEMA_DIR / "body_params.schema.json").read_text(encoding="utf-8"))
-  jsonschema.validate(data, schema)
+  from avatar_forge.core import schemas
+  schemas.validate(data, "import_manifest.schema.json")   # raises jsonschema.ValidationError
   ```
+- Copy files with `shutil.copyfile` only. Jobs live on the network volume, which refuses chmod, so
+  `shutil.copy`, `copy2` and `copytree` fail there with "Operation not permitted" (E-025).
 - The runner copies these fixed-name files into the manifest after the stage returns.
   Stages never do it themselves:
   - `s05_body_params/body_params.json` goes to `manifest["body"]`

@@ -7,7 +7,8 @@ from typing import Any
 
 import jsonschema
 
-from avatar_forge.core.paths import SCHEMA_DIR, manifest_path
+from avatar_forge.core import schemas
+from avatar_forge.core.paths import manifest_path
 
 SCHEMA_VERSION = 1
 
@@ -16,22 +17,9 @@ def now_iso() -> str:
     return datetime.now(UTC).isoformat(timespec="seconds")
 
 
-def _schema(name: str) -> dict[str, Any]:
-    with (SCHEMA_DIR / name).open("r", encoding="utf-8") as fh:
-        return json.load(fh)
-
-
 def _validator() -> jsonschema.Draft202012Validator:
     """Manifest validator that resolves $refs to sibling schema files."""
-    from referencing import Registry, Resource
-
-    registry = Registry()
-    for path in SCHEMA_DIR.glob("*.schema.json"):
-        schema = _schema(path.name)
-        registry = registry.with_resource(path.name, Resource.from_contents(schema))
-    return jsonschema.Draft202012Validator(
-        _schema("character_manifest.schema.json"), registry=registry
-    )
+    return schemas.validator("character_manifest.schema.json")
 
 
 def new_manifest(job_id: str, consent: dict[str, Any]) -> dict[str, Any]:

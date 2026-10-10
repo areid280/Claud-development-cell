@@ -1,4 +1,4 @@
-"""Run inside Unreal Editor (Tools -> Execute Python Script). Implemented by T26, extended in T38/T44.
+"""Run inside Unreal Editor (Tools -> Execute Python Script). T26; extended in T38/T44.
 
 Contract:
 - Ask the user for an import_manifest.json (or read AF_IMPORT_MANIFEST env var).
