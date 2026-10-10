@@ -132,3 +132,11 @@ Hand-build `StageContext` as in `tests/test_s04_body_fit.py`, with `config=load_
   - `/workspace/jobs/20261010-105049-4e1f93/s06_garments/fused/back.png`
   - `/workspace/jobs/20261010-110015-135a05/s06_garments/fused/front.png`
   - `/workspace/jobs/20261010-110015-135a05/s06_garments/fused/back.png`
+
+### Opus review (2026-10-10)
+Code PASS: matches the card step for step; tests cover all five cases (the real-Blender test also passes
+off-pod). VRAM peak 10.4–10.7 GB closes G1 item 5. The Warp "CUDA driver 13.0" message is harmless (NVIDIA
+Warp, pulled in by kaolin, falls back for its own kernels; TRELLIS does not depend on it). Not watertight is
+expected for the MVP. **Visual review pending:** owner runs
+`python scripts/preview_sheet.py /workspace/jobs/20261010-104423-71096a /workspace/jobs/20261010-105049-4e1f93 /workspace/jobs/20261010-110015-135a05`
+and sends `jobs/_review/s06_previews.png` to Opus. T26 may start meanwhile (it does not depend on the verdict).
