@@ -117,3 +117,18 @@ Hand-build `StageContext` as in `tests/test_s04_body_fit.py`, with `config=load_
 - The model output is consistently unusable (Opus decides whether to switch to triposr).
 
 ## Log
+
+- `bash scripts/install_trellis.sh` -> `TRELLIS ready: 2.4.1+cu124 kaolin 0.17.0`.
+- `ruff check src tests` -> `All checks passed!`
+- `pytest -q` -> `134 passed, 3 warnings in 41.18s`.
+- Real run `samples/a_front.png --set height=168` -> job `/workspace/jobs/20261010-104423-71096a`; s06 status `ok`, 148499 triangles (194436 raw), 5 parts removed, not watertight, height 1.68 m, peak VRAM 10.36 GB.
+- Real run `samples/b_front.png --set height=158` -> job `/workspace/jobs/20261010-105049-4e1f93`; s06 status `ok`, 148498 triangles (240708 raw), 16 parts removed, not watertight, height 1.58 m, peak VRAM 10.43 GB.
+- Real run `samples/c_front.png --set height=188` -> job `/workspace/jobs/20261010-110015-135a05`; s06 status `ok`, 148499 triangles (399148 raw), 9 parts removed, not watertight, height 1.88 m, peak VRAM 10.73 GB.
+- Warp logged `Insufficient CUDA driver version: minimum required 13.0, installed driver 12.8` on each TRELLIS run; all three stages completed successfully.
+- Preview images are listed for Opus visual review; visual quality has not been assessed here:
+  - `/workspace/jobs/20261010-104423-71096a/s06_garments/fused/front.png`
+  - `/workspace/jobs/20261010-104423-71096a/s06_garments/fused/back.png`
+  - `/workspace/jobs/20261010-105049-4e1f93/s06_garments/fused/front.png`
+  - `/workspace/jobs/20261010-105049-4e1f93/s06_garments/fused/back.png`
+  - `/workspace/jobs/20261010-110015-135a05/s06_garments/fused/front.png`
+  - `/workspace/jobs/20261010-110015-135a05/s06_garments/fused/back.png`
