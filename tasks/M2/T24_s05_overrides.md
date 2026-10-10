@@ -110,3 +110,27 @@ changes nothing else, input not mutated. For `run`: `tmp_path` job with a hand-w
   do not add one here, because `--set` values stay in the job's manifest.) Paste both outputs in Log.
 
 ## Log
+
+```text
+$ source ~/.avatar_forge_env && pytest -q
+126 passed, 3 warnings in 37.24s
+
+$ source ~/.avatar_forge_env && ruff check src tests
+All checks passed!
+```
+
+No existing job in `$AF_JOBS_DIR` had `s04_body_fit/body_fit.json`, so the CLI verification used an isolated job with a hand-written T23-shaped input fixture (no model/GPU run):
+
+```text
+Synthetic stage-input fixture (no existing T23 job was present): /tmp/avatar-forge-t24-cli.bsUNgd/jobs/20261010-101510-a71d72
+$ avatar-forge rerun /tmp/avatar-forge-t24-cli.bsUNgd/jobs/20261010-101510-a71d72 --from s05_body_params --to s05_body_params --set bust=+10% --set hair_color=#2B1D14
+2026-10-10 10:15:10,572 INFO    avatar_forge.core.runner: stage s05_body_params: starting
+s05_body_params  ok
+Job folder: /tmp/avatar-forge-t24-cli.bsUNgd/jobs/20261010-101510-a71d72
+
+$ python -c "import json,sys; j=sys.argv[1]; a=json.load(open(j+'/s04_body_fit/body_fit.json')); b=json.load(open(j+'/manifest.json')); print('bust', a['measurements']['bust'], '->', b['body']['measurements']['bust']); print('hair', b['body']['colors']['hair']); print(b['stages']['s05_body_params'])" /tmp/avatar-forge-t24-cli.bsUNgd/jobs/20261010-101510-a71d72
+2026-10-10 10:15:10,585 INFO    avatar_forge.core.runner: stage s05_body_params: ok
+bust 90.0 -> 99.0
+hair #2b1d14
+{'status': 'ok', 'started_at': '2026-10-10T10:15:10+00:00', 'finished_at': '2026-10-10T10:15:10+00:00', 'outputs': ['s05_body_params/body_params.json'], 'messages': [], 'data': {'normalised': False, 'changes': {}, 'overrides': {'bust': {'from': 90.0, 'to': 99.0}, 'hair': {'from': '#2b2420', 'to': '#2b1d14'}}}}
+```

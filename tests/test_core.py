@@ -102,8 +102,9 @@ def test_body_params_file_synced_into_manifest(front_image: Path, jobs_dir: Path
                          "hips": 95, "shoulder_width": 38, "inseam": 78},
         "colors": {"skin": "#e0b8a0", "hair": "#1c1a1f", "eyes": "#5a7a8c"},
     }
-    (job / "s05_body_params").mkdir()
-    (job / "s05_body_params" / "body_params.json").write_text(json.dumps(body))
+    input_dir = job / "s04_body_fit"
+    input_dir.mkdir()
+    (input_dir / "body_fit.json").write_text(json.dumps(body))
     run_job(job, load_pipeline_config(), from_stage="s05_body_params", to_stage="s05_body_params")
     assert mf.load(job)["body"]["measurements"]["height"] == 170
 
