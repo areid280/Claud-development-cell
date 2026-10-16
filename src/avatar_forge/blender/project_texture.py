@@ -33,7 +33,10 @@ from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 
 ALPHA_SOLID = 0.5  # photo pixels above this alpha belong to the person
-RAY_OFFSET_M = 0.002  # start occlusion rays just off the surface
+# Occlusion rays start this far toward the camera, so surface bumps and cloth folds closer than this
+# never count as occluders (TRELLIS surfaces are bumpy at mm scale, E-026); arms, hands and cloaks
+# that really hide the body are further away. A start point inside an occluder still hits it.
+MIN_OCCLUDER_M = 0.02
 WELD_DIST_M = 1e-5  # merge only coincident vertices (a soup's duplicated corners)
 UV_ANGLE_LIMIT_RAD = 1.15  # Smart UV Project angle limit (about 66 degrees)
 UV_ISLAND_MARGIN = 0.002
@@ -119,9 +122,11 @@ def _smoothstep(edge0: float, edge1: float, x: np.ndarray) -> np.ndarray:
     return t * t * (3.0 - 2.0 * t)
 
 
-def _photo_weights(obj: bpy.types.Object, options: argparse.Namespace) -> tuple[np.ndarray, int]:
+def _photo_weights(
+    obj: bpy.types.Object, options: argparse.Namespace
+) -> tuple[np.ndarray, int, int]:
     """Per-vertex weight: faces the camera (at -Y, looking +Y) and nothing in front of it.
-    Also returns how many camera-facing vertices were hidden behind other geometry."""
+    Also returns how many camera-facing vertices were hidden, and how many face the camera."""
     mesh = obj.data
     normals = np.array([v.normal.y for v in mesh.vertices])
     facing = _smoothstep(options.facing_min, options.facing_full, -normals)
@@ -132,10 +137,12 @@ def _photo_weights(obj: bpy.types.Object, options: argparse.Namespace) -> tuple[
     for index, vert in enumerate(mesh.vertices):
         if facing[index] <= 0.0:
             continue
-        hit, *_ = tree.ray_cast(vert.co + toward_camera * RAY_OFFSET_M, toward_camera)
+        hit, *_ = tree.ray_cast(vert.co + toward_camera * MIN_OCCLUDER_M, toward_camera)
         if hit is not None:
             visible[index] = 0.0
-    return facing * visible, int(((facing > 0.0) & (visible == 0.0)).sum())
+    facing_mask = facing > 0.0
+    hidden = int((facing_mask & (visible == 0.0)).sum())
+    return facing * visible, hidden, int(facing_mask.sum())
 
 
 def _add_point_attribute(mesh: bpy.types.Mesh, name: str, values: np.ndarray) -> None:
@@ -247,7 +254,7 @@ def main() -> None:
     mesh = obj.data
     photo, alpha = _load_photo(options.image, options.erode_px)
     fit = _fit(mesh, alpha)
-    weights, hidden = _photo_weights(obj, options)
+    weights, hidden, facing_count = _photo_weights(obj, options)
     _add_point_attribute(mesh, "af_photo_weight", weights)
     _projection_uvs(mesh, fit, photo.size)
     coverage = _coverage(mesh, fit, alpha, weights)
@@ -269,6 +276,7 @@ def main() -> None:
         "photo_vertex_share": round(float((weights > ALPHA_SOLID).mean()), 3),
         "coverage": round(coverage, 3),
         "hidden_vertices": hidden,
+        "facing_vertices": facing_count,
         "tex_px": options.tex_px,
         "seconds": round(time.monotonic() - started, 1),
     }

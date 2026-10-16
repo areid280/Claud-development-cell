@@ -149,3 +149,32 @@ def test_dense_triangle_soup_is_welded_and_projects_cleanly(tmp_path: Path) -> N
     texels = np.asarray(Image.open(tmp_path / "tex" / "c_basecolor.png").convert("RGB"))
     used = texels.reshape(-1, 3).any(axis=1).mean()
     assert used > 0.4  # one island per triangle left almost the whole atlas black
+
+
+@pytest.mark.blender
+def test_bumpy_surface_is_not_falsely_hidden(tmp_path: Path) -> None:
+    """E-026 follow-up: mm-scale bumps (normal for TRELLIS) must not count as occluders."""
+    trimesh = pytest.importorskip("trimesh")
+    import numpy as np
+
+    from avatar_forge.models.mesh_axes import Z_UP_TO_Y_UP
+
+    body = trimesh.creation.icosphere(subdivisions=6)  # vertex spacing close to a real TRELLIS mesh
+    body.apply_scale((0.25, 0.15, 0.85))
+    bumps = np.random.default_rng(0).uniform(-0.002, 0.002, (len(body.vertices), 1))
+    body.vertices += body.vertex_normals * bumps
+    body.apply_transform(Z_UP_TO_Y_UP)
+    body.export(tmp_path / "bumpy.glb")
+    _ellipse_photo(tmp_path / "front_rgba.png", 0.25, 0.85)
+
+    result = run_blender(
+        SCRIPTS / "project_texture.py",
+        ["--in", str(tmp_path / "bumpy.glb"), "--image", str(tmp_path / "front_rgba.png"),
+         "--out", str(tmp_path / "textured.glb"), "--tex-px", "256", "--facing-min", "0.2",
+         "--facing-full", "0.6", "--erode-px", "3", "--margin-px", "4"],
+        load_pipeline_config(),
+    )
+
+    line = next(row for row in result.stdout.splitlines() if row.startswith("PROJECT_STATS "))
+    stats = json.loads(line.split(" ", 1)[1])
+    assert stats["hidden_vertices"] < 0.01 * stats["facing_vertices"]  # was ~7% with a 2 mm offset

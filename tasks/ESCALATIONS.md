@@ -34,6 +34,13 @@ Cleanup now marks faces smooth (shared vertices; also smoother shading and a 3x 
 project_texture welds and smooths its input and builds its ray tree from the mesh data. Regression tests:
 `test_cleanup_output_is_welded_not_a_triangle_soup`, `test_dense_triangle_soup_is_welded_and_projects_cleanly`
 (both fail on the old code). Dense reproduction after the fix: coverage 1.0, hidden 0, sharp texture.
+Addendum (Opus, 2026-10-16, after the worker's re-run): hidden_vertices stayed at 13–15k. Part is genuine
+(bodysuit under the jacket, body behind the cloak), but TRELLIS surfaces are bumpy at mm scale and rays
+starting only 2 mm off the surface hit neighbouring bumps: a ±2 mm bumpy ellipsoid showed 1,152 false hidden
+vertices (~6% of camera-facing ones). Rays now start 2 cm toward the camera (`MIN_OCCLUDER_M`), so bumps and
+small folds are ignored while arms, hands and cloaks still occlude (a start point inside an occluder still
+hits it); false hidden on the bumpy test: 50 (0.3%). New stat `facing_vertices` lets the Log report a share.
+Test `test_bumpy_surface_is_not_falsely_hidden` fails on the old offset and passes now.
 
 ## E-025 — T25 — TRELLIS installer cannot write the nvdiffrast wheel to the volume   status: resolved
 Trigger: AGENTS.md §4 — GPU / build problem; T25 card says stop if "TRELLIS ready" is not printed
