@@ -32,7 +32,9 @@ export TORCH_HOME=$WS/cache/torch
 export PATH=/opt/tools/blender:\$PATH
 export GIT_MERGE_AUTOEDIT=no   # merges never open an editor (none on the pod)
 export PIP_CONSTRAINT=$REPO_DIR/config/pip-constraints.txt   # D-007: never replace the template torch
-if [ -f $VENV/bin/activate ]; then source $VENV/bin/activate; fi
+if [ -f $VENV/bin/activate ]; then source $VENV/bin/activate; else
+  echo "avatar-forge: $VENV is missing (fresh container?). Run: bash $REPO_DIR/scripts/setup_pod.sh" >&2
+fi
 EOF
 # jobs/ is git-ignored; link it so job outputs on the volume show in the VS Code Explorer
 [ -e "$REPO_DIR/jobs" ] || ln -s "$WS/jobs" "$REPO_DIR/jobs"
