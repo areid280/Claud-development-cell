@@ -22,10 +22,17 @@ def plan_import(manifest: dict[str, Any], export_dir: Path) -> list[dict[str, An
                 "fbx": str((export_dir / mesh["path"]).resolve()),
                 "destination": f"/Game/AvatarForge/{manifest['job_id']}",
                 "asset_name": mesh["id"],
-                "material": "garment" if material.get("basecolor") else "vertex_color",
+                "material": (
+                    "textured"
+                    if mesh.get("kind") == "fused" and material.get("basecolor")
+                    else "garment"
+                    if material.get("basecolor")
+                    else "vertex_color"
+                ),
                 "textures": {
                     suffix: str((export_dir / path).resolve())
                     for suffix, path in material.items()
+                    if suffix in {"basecolor", "normal", "roughness", "metallic"}
                 },
             }
         )
@@ -91,6 +98,52 @@ def ensure_vertex_color_material() -> str:
     return asset_path
 
 
+def ensure_textured_material(entry: dict[str, Any]) -> str:
+    import unreal
+
+    asset_tools = unreal.AssetToolsHelpers.get_asset_tools()
+    texture_task = unreal.AssetImportTask()
+    texture_task.set_editor_property("filename", entry["textures"]["basecolor"])
+    texture_task.set_editor_property("destination_path", entry["destination"])
+    texture_task.set_editor_property(
+        "destination_name", f"T_{entry['asset_name']}_BaseColor"
+    )
+    texture_task.set_editor_property("automated", True)
+    texture_task.set_editor_property("save", True)
+    texture_task.set_editor_property("replace_existing", True)
+    asset_tools.import_asset_tasks([texture_task])
+    texture_path = texture_task.get_editor_property("imported_object_paths")[0]
+
+    material_name = f"M_{entry['asset_name']}"
+    material_path = f"{entry['destination']}/{material_name}"
+    if unreal.EditorAssetLibrary.does_asset_exist(material_path):
+        unreal.EditorAssetLibrary.delete_asset(material_path)
+    material = asset_tools.create_asset(
+        material_name,
+        entry["destination"],
+        unreal.Material,
+        unreal.MaterialFactoryNew(),
+    )
+    texture_sample = unreal.MaterialEditingLibrary.create_material_expression(
+        material, unreal.MaterialExpressionTextureSample, -400, 0
+    )
+    texture_sample.set_editor_property(
+        "texture", unreal.EditorAssetLibrary.load_asset(texture_path)
+    )
+    mel = unreal.MaterialEditingLibrary
+    mel.connect_material_property(
+        texture_sample, "RGB", unreal.MaterialProperty.MP_BASE_COLOR
+    )
+    roughness = mel.create_material_expression(
+        material, unreal.MaterialExpressionConstant, -400, 200
+    )
+    roughness.set_editor_property("r", 0.6)
+    mel.connect_material_property(roughness, "", unreal.MaterialProperty.MP_ROUGHNESS)
+    mel.recompile_material(material)
+    unreal.EditorAssetLibrary.save_asset(material.get_path_name())
+    return material_path
+
+
 def ensure_garment_material() -> str:
     import unreal
 
@@ -149,11 +202,20 @@ def _import_fbx(entry: dict[str, Any]) -> None:
     unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
 
     imported_paths = task.get_editor_property("imported_object_paths")
+    material_path = (
+        ensure_textured_material(entry) if entry["material"] == "textured" else None
+    )
     for path in imported_paths:
-        if entry["material"] == "vertex_color":
+        if entry["material"] in {"textured", "vertex_color"}:
             mesh = unreal.EditorAssetLibrary.load_asset(path)
-            material_path = ensure_vertex_color_material()
-            mesh.set_material(0, unreal.EditorAssetLibrary.load_asset(material_path))
+            selected_material_path = (
+                material_path
+                if entry["material"] == "textured"
+                else ensure_vertex_color_material()
+            )
+            mesh.set_material(
+                0, unreal.EditorAssetLibrary.load_asset(selected_material_path)
+            )
             unreal.EditorAssetLibrary.save_asset(path)
         unreal.log(f"AvatarForge: Imported {path}")
 

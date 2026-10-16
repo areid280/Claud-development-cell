@@ -106,3 +106,29 @@ material happens in T27 step 3)
   needs Opus), or a UE error appears that the card's API calls do not explain.
 
 ## Log
+
+- `source ~/.avatar_forge_env && ruff check src tests unreal scripts`:
+  `/bin/bash: line 1: ruff: command not found` (exit 127).
+- `source ~/.avatar_forge_env && pytest -q`:
+  `/bin/bash: line 1: pytest: command not found` (exit 127).
+- Runtime check: `which python` returned `/usr/bin/python` (expected
+  `/opt/venv-af/bin/python`); `python -m pytest --version` returned
+  `/usr/bin/python: No module named pytest`. `/opt/venv-af/bin/python` and
+  `avatar-forge` are unavailable.
+- `python -m py_compile src/avatar_forge/stages/s06_garments.py
+  unreal/import_character.py tests/test_s06_garments.py tests/test_unreal_plan.py`:
+  passed.
+- `git diff --check`: passed.
+- After the configured pod environment was restored:
+  - `ruff check src tests unreal scripts` → `All checks passed!`
+  - `pytest -q` → `152 passed, 5 warnings in 63.09s`
+  - `pytest -q tests/test_s06_garments.py tests/test_unreal_plan.py` →
+    `12 passed in 4.98s`
+  - `avatar-forge rerun /workspace/jobs/20261010-104423-71096a --from s06_garments --to s09_export`
+    → `ok`, coverage `0.915`; hidden vertices `76543`; project seconds `19.3`.
+  - `avatar-forge rerun /workspace/jobs/20261010-105049-4e1f93 --from s06_garments --to s09_export`
+    → `ok`, coverage `0.935`; hidden vertices `91080`; project seconds `18.4`.
+  - `avatar-forge rerun /workspace/jobs/20261010-110015-135a05 --from s06_garments --to s09_export`
+    → `ok`, coverage `0.881`; hidden vertices `91651`; project seconds `19.9`.
+  - `python scripts/preview_sheet.py --compare /workspace/jobs/20261010-104423-71096a /workspace/jobs/20261010-105049-4e1f93 /workspace/jobs/20261010-110015-135a05`
+    → `jobs/_review/s06_previews.png`

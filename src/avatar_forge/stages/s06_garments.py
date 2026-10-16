@@ -45,6 +45,13 @@ def run(ctx: StageContext) -> StageResult:
     fused = ctx.stage_dir / "fused"
     fused.mkdir(parents=True, exist_ok=True)
 
+    texture_mode = cfg["mvp_texture"]
+    if texture_mode not in ("project_front", "vertex_colors"):
+        return StageResult(
+            status="fail",
+            messages=[f"Unknown mvp_texture '{texture_mode}'"],
+        )
+
     reset_vram_peak()
     with load_selected("image_to_3d") as model:
         name = model.name
@@ -58,13 +65,16 @@ def run(ctx: StageContext) -> StageResult:
     ctx.logger.info("s06_garments model=%s vram_peak_gb=%.2f", name, vram)
 
     out = fused / "character_fused.glb"
+    cleanup_out = (
+        fused / "character_vc.glb" if texture_mode == "project_front" else out
+    )
     cleanup_result = run_blender(
         BLENDER_DIR / "cleanup_mesh.py",
         [
             "--in",
             str(raw),
             "--out",
-            str(out),
+            str(cleanup_out),
             "--height-m",
             f"{height_m:.4f}",
             "--max-tris",
@@ -91,12 +101,65 @@ def run(ctx: StageContext) -> StageResult:
         )
     stats = json.loads(stats_lines[-1].split(" ", 1)[1])
 
+    projection_stats: dict[str, float | int] | None = None
+    if texture_mode == "project_front":
+        projection_result = run_blender(
+            BLENDER_DIR / "project_texture.py",
+            [
+                "--in",
+                str(cleanup_out),
+                "--image",
+                str(rgba_path),
+                "--out",
+                str(out),
+                "--tex-px",
+                str(cfg["project_tex_px"]),
+                "--facing-min",
+                str(cfg["project_facing_min"]),
+                "--facing-full",
+                str(cfg["project_facing_full"]),
+                "--erode-px",
+                str(cfg["project_erode_px"]),
+                "--margin-px",
+                str(cfg["project_margin_px"]),
+            ],
+            ctx.config,
+            log_path=ctx.job_dir / "logs" / "s06_garments_project.blender.log",
+        )
+        projection_lines = [
+            line
+            for line in projection_result.stdout.splitlines()
+            if line.startswith("PROJECT_STATS ")
+        ]
+        if not projection_lines:
+            return StageResult(
+                status="fail",
+                messages=["project_texture.py printed no PROJECT_STATS line"],
+            )
+        projection_stats = json.loads(projection_lines[-1].split(" ", 1)[1])
+
     run_blender(
         BLENDER_DIR / "render_previews.py",
         ["--in", str(out), "--out-dir", str(fused), "--size", str(cfg["mvp_preview_px"])],
         ctx.config,
         log_path=ctx.job_dir / "logs" / "s06_garments_previews.blender.log",
     )
+    if texture_mode == "project_front":
+        vertex_color_previews = fused / "vertex_colors"
+        vertex_color_previews.mkdir(parents=True, exist_ok=True)
+        run_blender(
+            BLENDER_DIR / "render_previews.py",
+            [
+                "--in",
+                str(cleanup_out),
+                "--out-dir",
+                str(vertex_color_previews),
+                "--size",
+                str(cfg["mvp_preview_px"]),
+            ],
+            ctx.config,
+            log_path=ctx.job_dir / "logs" / "s06_garments_previews_vc.blender.log",
+        )
     mesh = trimesh.load(out, force="mesh")
     mesh.merge_vertices(merge_tex=True, merge_norm=True)
 
@@ -106,16 +169,45 @@ def run(ctx: StageContext) -> StageResult:
         fused / "front.png",
         fused / "back.png",
     ]
+    if texture_mode == "project_front":
+        outputs.extend(
+            [
+                cleanup_out,
+                fused / "vertex_colors" / "front.png",
+                fused / "vertex_colors" / "back.png",
+            ]
+        )
+    data: dict[str, str | int | float | bool] = {
+        "model": name,
+        "triangles": len(mesh.faces),
+        "triangles_raw": stats["triangles_in"],
+        "parts_removed": stats["parts_removed"],
+        "watertight": bool(mesh.is_watertight),
+        "height_m": round(height_m, 4),
+        "vram_peak_gb": round(vram, 2),
+        "texture": texture_mode,
+    }
+    status = "ok"
+    messages: list[str] = []
+    if projection_stats is not None:
+        coverage = float(projection_stats["coverage"])
+        data.update(
+            {
+                "coverage": coverage,
+                "hidden_vertices": int(projection_stats["hidden_vertices"]),
+                "project_seconds": float(projection_stats["seconds"]),
+            }
+        )
+        minimum_coverage = cfg["project_min_coverage"]
+        if coverage < minimum_coverage:
+            status = "warn"
+            messages.append(
+                "Front photo may be misaligned with the mesh "
+                f"(coverage {coverage:.2f} < {minimum_coverage:.2f})"
+            )
     return StageResult(
-        status="ok",
+        status=status,
         outputs=[path.relative_to(ctx.job_dir).as_posix() for path in outputs],
-        data={
-            "model": name,
-            "triangles": len(mesh.faces),
-            "triangles_raw": stats["triangles_in"],
-            "parts_removed": stats["parts_removed"],
-            "watertight": bool(mesh.is_watertight),
-            "height_m": round(height_m, 4),
-            "vram_peak_gb": round(vram, 2),
-        },
+        messages=messages,
+        data=data,
     )

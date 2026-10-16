@@ -53,3 +53,28 @@ def test_plan_import_for_garment_with_texture_paths(tmp_path: Path) -> None:
     assert plan[0]["textures"]["basecolor"] == str(
         (tmp_path / "garments/textures/shirt_basecolor.png").resolve()
     )
+
+
+def test_plan_import_for_fused_mesh_with_texture_and_tint(tmp_path: Path) -> None:
+    module = _load_script()
+    manifest = {
+        "job_id": "job-789",
+        "meshes": [
+            {
+                "id": "character_fused",
+                "kind": "fused",
+                "path": "fused/character_fused.fbx",
+                "material": {
+                    "basecolor": "fused/textures/basecolor.png",
+                    "tint": "#ffffff",
+                },
+            }
+        ],
+    }
+
+    plan = module.plan_import(manifest, tmp_path)
+
+    assert plan[0]["material"] == "textured"
+    assert plan[0]["textures"] == {
+        "basecolor": str((tmp_path / "fused/textures/basecolor.png").resolve())
+    }
