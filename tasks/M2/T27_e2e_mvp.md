@@ -15,7 +15,7 @@ Collect everything Opus needs to make the G2 go/no-go decision.
    job, sample, each stage status, total seconds, height/bust/waist/hips, triangles,
    s06 `coverage` (T28), preview paths, and the s01 messages for the bad samples.
 3. Ask the owner to import one new export into UE5 (docs/03 §2; it now has a base-colour texture and a
-   per-mesh material from T28) and paste the `AvatarForge` / `Error` log lines, then for UE5 screenshots; save them (if they're of original characters)
+   per-mesh material from T28) and paste the `AvatarForge` / `Error` log lines, and fix only the errors that log shows (this is also T26's UE check); then ask for UE5 screenshots; save them (if they're of original characters)
    as `docs/screenshots/G2_<sample>_<front|back>.png` and link them in the evidence file.
 4. Mark T27 done and tell the human: "Gate G2 is due. Switch to Opus and run /gate G2."
 

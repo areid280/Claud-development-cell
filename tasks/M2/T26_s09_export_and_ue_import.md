@@ -140,3 +140,9 @@ Code PASS (lint clean; full suite incl. real-Blender tests passes off-pod). Expo
 5.8 MB FBX for a 148k-triangle mesh is as expected. Follow-up for T38 (not M2): `plan_import` turns every
 `material` key into a texture path, so a future `tint` (a hex colour) must be skipped there.
 Paused 2026-10-10 awaiting the owner's UE run.
+
+### Opus decision (2026-10-16): T26 closed; UE check moved to T27
+Code and export folder passed review. The owner's UE import is done once, in T27 step 3, on the textured
+export from T28 (D-016), instead of twice. Any UE error in that log is fixed in T27, in
+`unreal/import_character.py`, whichever material path (vertex colour or textured) it comes from.
+
