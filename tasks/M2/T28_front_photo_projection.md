@@ -132,3 +132,15 @@ material happens in T27 step 3)
     → `ok`, coverage `0.881`; hidden vertices `91651`; project seconds `19.9`.
   - `python scripts/preview_sheet.py --compare /workspace/jobs/20261010-104423-71096a /workspace/jobs/20261010-105049-4e1f93 /workspace/jobs/20261010-110015-135a05`
     → `jobs/_review/s06_previews.png`
+
+### Opus review (2026-10-16) — re-run needed (E-026), no code changes for the worker
+The worker's glue and tests are correct. The black textures were Opus's bug: `cleanup_mesh.py` exported
+flat-shaded faces, so every triangle had its own 3 vertices (a "triangle soup"). Smart UV Project then made
+~148k one-triangle islands (almost the whole atlas black) and the visibility rays misfired (hidden 76–91k).
+Fixed in `cleanup_mesh.py` (faces smooth → shared vertices) and `project_texture.py` (welds and smooths its
+input itself); regression tests added and shown to fail on the old code.
+**To finish T28 (worker):** `git pull`, set T28 `doing`, then re-run Verify steps 1–3 only (ruff, pytest, the
+three re-runs, the `--compare` preview sheet). Expect `hidden_vertices` in the hundreds or low thousands, not
+tens of thousands. Append the new output under a "Re-run after E-026" heading in this Log, set `done`, commit
+`T28: re-run after E-026`, push, and ask the owner to send the new preview sheet to Opus.
+

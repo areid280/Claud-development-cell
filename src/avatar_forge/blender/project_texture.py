@@ -27,12 +27,14 @@ from pathlib import Path
 
 import bpy  # isort: split
 
+import bmesh
 import numpy as np
 from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 
 ALPHA_SOLID = 0.5  # photo pixels above this alpha belong to the person
 RAY_OFFSET_M = 0.002  # start occlusion rays just off the surface
+WELD_DIST_M = 1e-5  # merge only coincident vertices (a soup's duplicated corners)
 UV_ANGLE_LIMIT_RAD = 1.15  # Smart UV Project angle limit (about 66 degrees)
 UV_ISLAND_MARGIN = 0.002
 BAKE_SAMPLES = 4
@@ -60,6 +62,17 @@ def _single_mesh() -> bpy.types.Object:
     obj.data.transform(obj.matrix_world)
     obj.parent = None
     obj.matrix_world.identity()
+    # Weld and smooth: a triangle soup (flat-shaded GLB, E-026) gives one UV island per triangle and
+    # breaks the visibility rays, so never rely on the input being welded.
+    bm = bmesh.new()
+    bm.from_mesh(obj.data)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=WELD_DIST_M)
+    for face in bm.faces:
+        face.smooth = True
+    bm.normal_update()
+    bm.to_mesh(obj.data)
+    bm.free()
+    obj.data.update()
     bpy.context.view_layer.objects.active = obj
     obj.select_set(True)
     return obj
@@ -112,7 +125,8 @@ def _photo_weights(obj: bpy.types.Object, options: argparse.Namespace) -> tuple[
     mesh = obj.data
     normals = np.array([v.normal.y for v in mesh.vertices])
     facing = _smoothstep(options.facing_min, options.facing_full, -normals)
-    tree = BVHTree.FromObject(obj, bpy.context.evaluated_depsgraph_get())
+    polygons = [p.vertices[:] for p in mesh.polygons]
+    tree = BVHTree.FromPolygons([v.co for v in mesh.vertices], polygons)
     toward_camera = Vector((0.0, -1.0, 0.0))
     visible = np.ones(len(mesh.vertices))
     for index, vert in enumerate(mesh.vertices):

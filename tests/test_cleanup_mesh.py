@@ -115,3 +115,19 @@ def test_previews_show_vertex_colours(tmp_path: Path) -> None:
     top, bottom = pixels[32, 64], pixels[100, 64]
     assert top[0] > top[2] + 40  # red half is red, not grey
     assert bottom[2] > bottom[0] + 40  # blue half is blue
+
+
+@pytest.mark.blender
+def test_cleanup_output_is_welded_not_a_triangle_soup(tmp_path: Path) -> None:
+    """E-026: flat-shaded output exported every triangle with its own 3 vertices."""
+    trimesh = pytest.importorskip("trimesh")
+    sphere = trimesh.creation.icosphere(subdivisions=3)  # 1280 faces, 642 shared vertices
+    sphere.export(tmp_path / "raw.glb")
+    out = tmp_path / "out.glb"
+    run_blender(SCRIPTS / "cleanup_mesh.py",
+                ["--in", str(tmp_path / "raw.glb"), "--out", str(out), "--height-m", "1.7",
+                 "--max-tris", "100000", "--merge-dist", "0.0005", "--min-part-frac", "0.01"],
+                load_pipeline_config())
+
+    mesh = trimesh.load(out, force="mesh", process=False)
+    assert len(mesh.vertices) < len(mesh.faces)  # a soup would have 3 x faces

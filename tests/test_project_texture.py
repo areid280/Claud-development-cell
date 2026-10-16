@@ -93,3 +93,59 @@ def test_hidden_surface_does_not_take_the_photo(tmp_path: Path) -> None:
     pytest.importorskip("trimesh")
     stats, _ = _project(tmp_path, blocker=True)
     assert stats["hidden_vertices"] > 0
+
+
+def _ellipse_photo(path: Path, half_w_m: float, half_h_m: float) -> None:
+    import numpy as np
+    from PIL import Image
+
+    a, c = half_w_m * PX_PER_M, half_h_m * PX_PER_M
+    rows, cols = int(2 * c) + 200, int(2 * a) + 200
+    yy, xx = np.mgrid[0:rows, 0:cols]
+    inside = ((xx - cols / 2) / a) ** 2 + ((yy - rows / 2) / c) ** 2 <= 1
+    checker = ((yy // 32 + xx // 32) % 2).astype(bool)
+    image = np.zeros((rows, cols, 4), dtype=np.uint8)
+    image[inside & checker] = (*CHECK_A, 255)
+    image[inside & ~checker] = (*CHECK_B, 255)
+    Image.fromarray(image, "RGBA").save(path)
+
+
+@pytest.mark.blender
+def test_dense_triangle_soup_is_welded_and_projects_cleanly(tmp_path: Path) -> None:
+    """E-026: a flat-shaded dense mesh arrives as a triangle soup; projection must weld it."""
+    trimesh = pytest.importorskip("trimesh")
+    import numpy as np
+    from PIL import Image
+
+    from avatar_forge.models.mesh_axes import Z_UP_TO_Y_UP
+
+    body = trimesh.creation.icosphere(subdivisions=5)  # 20,480 faces
+    body.apply_scale((0.25, 0.15, 0.85))  # Z-up ellipsoid, 1.7 m tall
+    body.apply_transform(Z_UP_TO_Y_UP)
+    corners = body.triangles.reshape(-1, 3)
+    soup = trimesh.Trimesh(corners, np.arange(len(corners)).reshape(-1, 3), process=False)
+    soup.visual = trimesh.visual.ColorVisuals(
+        vertex_colors=np.tile(np.array([*BODY_SRGB, 255], dtype=np.uint8), (len(corners), 1)))
+    soup.export(tmp_path / "soup.glb")
+    _ellipse_photo(tmp_path / "front_rgba.png", 0.25, 0.85)
+    out = tmp_path / "textured.glb"
+    config = load_pipeline_config()
+
+    result = run_blender(
+        SCRIPTS / "project_texture.py",
+        ["--in", str(tmp_path / "soup.glb"), "--image", str(tmp_path / "front_rgba.png"),
+         "--out", str(out), "--tex-px", "1024", "--facing-min", "0.2", "--facing-full", "0.6",
+         "--erode-px", "3", "--margin-px", "4"],
+        config,
+    )
+
+    line = next(row for row in result.stdout.splitlines() if row.startswith("PROJECT_STATS "))
+    stats = json.loads(line.split(" ", 1)[1])
+    assert stats["hidden_vertices"] == 0 and stats["coverage"] > 0.95
+    assert len(trimesh.load(out, force="mesh", process=False).vertices) < 20480  # welded
+    run_blender(SCRIPTS / "export_fbx.py",
+                ["--in", str(out), "--out-fbx", str(tmp_path / "c.fbx"),
+                 "--tex-dir", str(tmp_path / "tex")], config)
+    texels = np.asarray(Image.open(tmp_path / "tex" / "c_basecolor.png").convert("RGB"))
+    used = texels.reshape(-1, 3).any(axis=1).mean()
+    assert used > 0.4  # one island per triangle left almost the whole atlas black

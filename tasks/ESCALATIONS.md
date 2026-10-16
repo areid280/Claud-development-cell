@@ -21,6 +21,20 @@ Resolution (Opus): <filled in by Opus>
 
 ---
 
+## E-026 — T28 — projected textures almost entirely black   status: resolved
+Trigger: Opus visual review of the T28 preview sheet (owner)
+What I tried: n/a (found by Opus in review).
+Error / evidence: textured previews black with coloured specks on all three samples; `hidden_vertices`
+76,543–91,651 (almost every vertex); the vertex-colour previews were fine.
+Files involved: `src/avatar_forge/blender/cleanup_mesh.py`, `src/avatar_forge/blender/project_texture.py`
+Resolution (Opus, 2026-10-16): image-to-3D GLBs have no normals, Blender imports them flat-shaded, and
+the cleanup exported flat faces as a triangle soup (3 vertices per triangle; 245,760 vertices for 81,920
+triangles in a reproduction). Smart UV Project gave one island per triangle and the occlusion rays misfired.
+Cleanup now marks faces smooth (shared vertices; also smoother shading and a 3x lighter mesh in UE);
+project_texture welds and smooths its input and builds its ray tree from the mesh data. Regression tests:
+`test_cleanup_output_is_welded_not_a_triangle_soup`, `test_dense_triangle_soup_is_welded_and_projects_cleanly`
+(both fail on the old code). Dense reproduction after the fix: coverage 1.0, hidden 0, sharp texture.
+
 ## E-025 — T25 — TRELLIS installer cannot write the nvdiffrast wheel to the volume   status: resolved
 Trigger: AGENTS.md §4 — GPU / build problem; T25 card says stop if "TRELLIS ready" is not printed
 What I tried:

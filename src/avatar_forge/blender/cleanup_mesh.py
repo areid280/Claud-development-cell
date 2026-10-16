@@ -130,6 +130,8 @@ def main() -> None:
     bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=options.merge_dist)
     parts_removed = _remove_small_parts(bm, options.min_part_frac)
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    for face in bm.faces:  # image-to-3D GLBs carry no normals, so Blender imports them flat;
+        face.smooth = True  # flat faces export as a triangle soup (3 vertices each, E-026)
     bm.to_mesh(mesh)
     bm.free()
 

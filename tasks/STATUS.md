@@ -27,7 +27,7 @@ Single source of truth. Workers take the **first** `todo` whose dependencies are
 | T24 | Stage s05_body_params (overrides) | M2 | T23 | done |
 | T25 | Stage s06_garments (MVP fused mesh) | M2 | T24 | done |
 | T26 | Stage s09_export + UE5 import script | M2 | T25 | done |
-| T28 | Front-photo texture projection (D-016) | M2 | T26 | done |
+| T28 | Front-photo texture projection (D-016) | M2 | T26 | todo |
 | T27 | End-to-end MVP run and evidence pack | M2 | T28 | todo |
 | **G2** | **Gate: MVP go / no-go (Opus)** | M2 | T20–T28 | todo |
 | T30 | Garment taxonomy and classification | M3 | G2 | todo |
