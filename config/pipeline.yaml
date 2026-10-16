@@ -77,6 +77,14 @@ stages:
     mvp_color_space: srgb           # what the model's vertex colours really are (cleanup_mesh.py)
     mvp_seed: 0                     # image-to-3D sampling seed (reproducible runs)
     mvp_preview_px: 768             # front/back preview size
+    # T28, D-016: paint the full-resolution front photo onto the fused mesh (texture) or keep vertex colours
+    mvp_texture: project_front      # project_front | vertex_colors
+    project_tex_px: 4096            # baked texture size (face gets about 400 x 400 texels)
+    project_facing_min: 0.2         # surfaces turned further away than this keep the mesh colour
+    project_facing_full: 0.6        # ... and from here on take the photo fully (smooth blend between)
+    project_erode_px: 3             # shrink the photo's cut-out so no background bleeds in at edges
+    project_margin_px: 8            # bake padding around UV islands (prevents seams)
+    project_min_coverage: 0.7       # below this the photo looks misaligned: stage returns warn
     default_strategy:               # category -> strategy; T30 refines
       bodysuit: skin_layer
       leggings: skin_layer

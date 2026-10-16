@@ -1,5 +1,5 @@
 # T27 — End-to-end MVP run and evidence pack
-milestone: M2 · effort: low · depends: T26
+milestone: M2 · effort: low · depends: T28
 owner input: UE5 screenshots (front and back) of at least one imported character
 
 ## Goal
@@ -13,8 +13,9 @@ Collect everything Opus needs to make the G2 go/no-go decision.
    and both `bad_*` samples.
 2. Write `scripts/summarise_jobs.py` → `gates/reports/G2_evidence.md` with a table:
    job, sample, each stage status, total seconds, height/bust/waist/hips, triangles,
-   preview paths, and the s01 messages for the bad samples.
-3. Ask the owner for UE5 screenshots; save them (if they're of original characters)
+   s06 `coverage` (T28), preview paths, and the s01 messages for the bad samples.
+3. Ask the owner to import one new export into UE5 (docs/03 §2; it now has a base-colour texture and a
+   per-mesh material from T28) and paste the `AvatarForge` / `Error` log lines, then for UE5 screenshots; save them (if they're of original characters)
    as `docs/screenshots/G2_<sample>_<front|back>.png` and link them in the evidence file.
 4. Mark T27 done and tell the human: "Gate G2 is due. Switch to Opus and run /gate G2."
 

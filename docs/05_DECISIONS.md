@@ -183,3 +183,16 @@ then show them washed out (sRGB 0.5 → 0.73). Rule: wrapper GLBs (`raw.glb`) st
 correct linear `COLOR_0` and T26's FBX `colors_type="SRGB"` writes the original display colours. Previews use
 Workbench VERTEX colour with the Standard view transform. Note: trimesh mis-reads Blender's uint16 colours, so
 tests read `COLOR_0` from the GLB directly (`tests/test_cleanup_mesh.py`).
+
+## D-016 — Face from MetaHuman; front-photo projection brought forward  (2026-10-16, T25 visual review)
+Context: the fused TRELLIS mesh has the right shape but blurry colour and an unusable face (TRELLIS sees the
+face at ~50–70 px; vertex colours give the face roughly 26×26 colour samples). Unreal cannot add missing detail.
+Decision: (1) the final face never comes from image-to-3D output; it comes from MetaHuman (as the brief already
+plans), with skin/hair/eye colours from body_params. (2) A simple front-photo projection (T28, before G2) paints
+the full-resolution s02 cut-out (2048 px, face ~250 px) onto camera-facing, unhidden surfaces and bakes one
+base-colour texture; elsewhere the vertex colours remain. T36 (M3) generalises it per garment and multi-view.
+Alternatives: TRELLIS texture baking (needs diff-gaussian-rasterization, non-commercial licence; less detail
+than the photo) — kept as a fallback for a gate; a higher-resolution image-to-3D model — trial at a gate.
+Consequences: the export carries a base-colour texture; UE gets a per-mesh textured material. Back and sides
+stay vertex-coloured until multi-view input (M5).
+
